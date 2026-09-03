@@ -1043,9 +1043,9 @@ window.TARIFS = {
 
   
   horaire: {
-    actif: false,
+    actif: true,
     minimumHeures: 3,
-    prixHeure: null
+    prixHeure: 42.00
   },
 
   
@@ -1104,6 +1104,51 @@ window.TARIFS = {
     var mFactures = Math.min(m, G.minutesFacturablesMax || m);
     var brut = (G.priseEnCharge || 0) + coutDistance(km) + mFactures * (G.prixParMinute || 0);
     return { total: Math.ceil(Math.max(brut, G.minimumCourse || 0)), minutes: m };
+  }
+
+  /* UN SEUL affichage de devis pour les trois chemins (routeur, secours,
+     horaire) — il etait duplique, le mode horaire en aurait fait une 3e copie. */
+  function devis(montant, detail, recap, prefixe) {
+    sortie.innerHTML = "";
+    var box = document.createElement("div");
+    box.className = "devis";
+    var m = document.createElement("span");
+    m.className = "montant";
+    m.textContent = (prefixe || "Maximum ") + montant + " €";
+    box.appendChild(m);
+    var d2 = document.createElement("span");
+    d2.className = "detail";
+    d2.textContent = detail;
+    box.appendChild(d2);
+    if ((window.TARIFS.grille || {}).provisoire) {
+      box.appendChild(document.createElement("br"));
+      var w = document.createElement("span");
+      w.className = "avert";
+      w.textContent = "Aperçu — tarifs provisoires, non contractuels";
+      box.appendChild(w);
+    }
+    sortie.appendChild(box);
+    var resa = document.getElementById("resa");
+    resa.hidden = false;
+    resa.dataset.recap = recap;
+    window.evt("ViewContent", { content_name: "devis", value: montant, currency: "EUR" });
+  }
+
+  /* comme contact(), mais avec un bouton WhatsApp pre-rempli : un message qui
+     dit « ecrivez-nous » sans lien est une impasse (releve le 03/09/2026). */
+  function contactAction(msg, libelle, texteWa) {
+    sortie.innerHTML = "";
+    var p = document.createElement("span");
+    p.className = "detail";
+    p.textContent = msg;
+    sortie.appendChild(p);
+    var a = document.createElement("a");
+    a.className = "wa-bar";
+    a.href = "https://wa.me/32471984401?text=" + encodeURIComponent(texteWa);
+    a.target = "_blank"; a.rel = "noopener";
+    a.textContent = libelle;
+    a.setAttribute("data-wa", "");
+    sortie.appendChild(a);
   }
 
   function contact(msg) {
@@ -1172,8 +1217,55 @@ window.TARIFS = {
     var modeHeure = document.querySelector('.mode[aria-selected="true"]');
     if (modeHeure && modeHeure.dataset.mode === "heure") {
       var H = window.TARIFS.horaire || {};
+      if (H.actif && H.prixHeure != null) {
+        var lieuH = document.getElementById("a").value.trim();
+        if (!lieuH) {
+          contact("Indiquez le lieu de prise en charge.");
+          document.getElementById("a").focus();
+          return;
+        }
+        var brut = document.getElementById("b").value.trim().replace(",", ".");
+        var m = brut.match(/(\d+(?:\.\d+)?)/);
+        if (!m) {
+          contact("Indiquez la durée souhaitée en heures (par exemple 3 heures).");
+          document.getElementById("b").focus();
+          return;
+        }
+        var heures = parseFloat(m[1]);
+        var mini = H.minimumHeures || 1;
+        var facturees = Math.max(heures, mini);
+        var totalH = Math.ceil(facturees * H.prixHeure);
+        var dep = departChoisi();
+        if (dep && dep.getTime() < Date.now()) {
+          contact("Cette date est déjà passée. Choisissez le moment de votre départ.");
+          champDate.focus();
+          return;
+        }
+        var noteH = facturees > heures
+          ? "Minimum de " + mini + " heures de mise à disposition."
+          : facturees + (facturees > 1 ? " heures" : " heure") + " à " + String(H.prixHeure).replace(".", ",") + " € l'heure.";
+        devis(totalH, noteH + " TVA comprise. Vous ne paierez jamais plus que ce montant.",
+              "Mise à disposition · " + lieuH + " · " + facturees + " h · "
+              + dateLisible(champDate.value) + " à " + champHeure.value);
+        return;
+      }
       if (!H.actif || H.prixHeure == null) {
-        contact("La mise à disposition se convient directement : écrivez-nous sur WhatsApp ou appelez le +32 471 98 44 01 avec la durée souhaitée.");
+        /* pas de tarif horaire publie : on ne cote pas, mais on ne laisse pas
+           l'usager sans geste — le message porte un bouton WhatsApp pre-rempli. */
+        var lieu = document.getElementById("a").value.trim();
+        var duree = document.getElementById("b").value.trim();
+        if (!lieu) {
+          contact("Indiquez le lieu de prise en charge.");
+          document.getElementById("a").focus();
+          return;
+        }
+        var SL = String.fromCharCode(10);
+        var txtH = "Bonjour, je souhaite une mise à disposition."
+          + SL + "Prise en charge : " + lieu
+          + (duree ? SL + "Durée souhaitée : " + duree : "")
+          + SL + "Date : " + dateLisible(champDate.value) + " à " + champHeure.value;
+        contactAction("La mise à disposition se convient directement, selon la durée et le trajet.",
+                      "Demander sur WhatsApp", txtH);
         return;
       }
     }
@@ -1320,6 +1412,20 @@ document.querySelectorAll(".mode").forEach(function (b) {
     var i = dest.querySelector("input");
     i.placeholder = horaire ? "3 heures, demi-journée…" : "Adresse, aéroport, hôtel…";
     i.value = "";
+    /* en mode horaire ce champ recoit une DUREE, pas une adresse : on eteint
+       l'autocompletion, on ferme la liste et on vide les coordonnees. */
+    i.dataset.pasDAdresse = horaire ? "1" : "";
+    var li = document.getElementById("ac-" + i.id);
+    if (li) { li.hidden = true; li.innerHTML = ""; }
+    i.setAttribute("aria-expanded", "false");
+    var co = document.getElementById(i.id + "-coord");
+    if (co) co.value = "";
+    /* un devis calcule dans l'autre mode n'a plus de sens ici : on vide
+       l'affichage et on referme le panneau de reservation (03/09/2026). */
+    var out = document.getElementById("out");
+    if (out) out.innerHTML = "";
+    var resa = document.getElementById("resa");
+    if (resa) resa.hidden = true;
     var g = document.querySelector(".bk-grid");
     g.classList.remove("rejoue"); void g.offsetWidth; g.classList.add("rejoue");
   });
@@ -1949,6 +2055,8 @@ document.querySelectorAll(".mode").forEach(function (b) {
     majCroix();
 
     input.addEventListener("input", function () {
+      /* mode « A l'heure » : ce champ porte une duree, aucune adresse a chercher */
+      if (input.dataset.pasDAdresse === "1") { fermer(); return; }
       /* on garde les coordonnees de la rue si l'usager ne fait qu'ajouter son numero */
       if (!(input.dataset.sansNumero === "1" && /\d/.test(input.value))) champCoord.value = "";
       if (/\d/.test(input.value)) { input.dataset.sansNumero = ""; if (aide) aide.hidden = true; }
