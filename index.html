@@ -587,6 +587,10 @@ footer{background:var(--cream);padding-block:var(--s-5xl) var(--s-xl);border-top
 .ac li[aria-selected="true"]{background-color:#6e6e73}
 .ac li:active{background-color:#2a3038}
 .ac li .epingle{color:#aecff3}
+/* adresse absente d'OpenStreetMap (nouvelle construction) : on dit quoi faire au lieu de fermer la liste */
+.ac li.libre{cursor:default;color:#aeaeae;font-weight:400;font-size:14px;line-height:20px}
+.ac li.libre:hover,.ac li.libre[aria-selected="true"]{background-color:transparent}
+.ac li.libre .icone{stroke:#6e6e73}
 /* croix d'effacement dans le champ (la leur : bouton 1.5em, trait 1.5, visible des qu'il y a une valeur) */
 .fld .effacer{position:absolute;right:0;bottom:8px;width:24px;height:24px;padding:0;border:0;background:none;color:#fff;cursor:pointer;display:grid;place-items:center;transition:opacity .2s ease-in-out}
 .fld .effacer:hover{opacity:.7}
@@ -969,7 +973,7 @@ footer{background:var(--cream);padding-block:var(--s-5xl) var(--s-xl);border-top
       <details id="mentions">
         <summary>Mentions légales</summary>
         <div class="a">
-          <p><b>Éditeur du site</b> — OVER TIME SRL, Rue Jorez 7, 1070 Anderlecht (Belgique). Numéro d’entreprise 1014.602.974. Contact : contact@transfer.brussels, +32 471 98 44 01.</p>
+          <p><b>Éditeur du site</b> — OVER TIME SRL, Bergensesteenweg 24 boîte 8, 1600 Sint-Pieters-Leeuw (Belgique). Numéro d’entreprise 1014.602.974. Contact : contact@transfer.brussels, +32 471 98 44 01.</p>
           <p><b>Activité réglementée</b> — Service de taxis soumis à autorisation de la Région de Bruxelles-Capitale (ordonnance du 9 juin 2022). Autorité de contrôle : Bruxelles Mobilité, Direction Taxis, taxi@sprb.brussels.</p>
           <p><b>Tarifs</b> — Les tarifs publiés sur ce site respectent l’arrêté du 6 octobre 2022 relatif aux tarifs des services de taxis. Le montant annoncé avant la réservation est un maximum ; il ne peut être dépassé.</p>
           <p><b>Hébergement</b> — Site statique. Photographies d’illustration en attendant celles du véhicule.</p>
@@ -1019,7 +1023,7 @@ footer{background:var(--cream);padding-block:var(--s-5xl) var(--s-xl);border-top
       <div><h4>Légal</h4><a href="#mentions">Mentions légales</a><a href="#confidentialite">Confidentialité</a><a href="#conditions">Conditions</a></div>
     </div>
     <div class="mentions">
-      <b>OVER TIME SRL</b> — Rue Jorez 7, 1070 Anderlecht · Numéro d’entreprise 1014.602.974 · TVA BE 1014.602.974<br>
+      <b>OVER TIME SRL</b> — Bergensesteenweg 24 boîte 8, 1600 Sint-Pieters-Leeuw · Numéro d’entreprise 1014.602.974 · TVA BE 1014.602.974<br>
       Activité soumise à autorisation. Autorité de surveillance : Bruxelles Mobilité, Direction Taxis — taxi@sprb.brussels<br>
       © <span id="y"></span> Transfer Brussels — OVER TIME SRL.
     </div>
@@ -1987,7 +1991,11 @@ document.querySelectorAll(".mode").forEach(function (b) {
       vus[cle] = 1;
       /* categorie inconnue = commerce le plus souvent : on la place bas */
       var sc = SCORE[p.osm_value] || (p.housenumber ? 52 : 8);
-      if (p.countrycode === "BE") sc += 25;
+      /* la Belgique passe devant a nom egal ; un numero de maison a l'etranger est du bruit
+         (« Rue de la Belle Etoile 39 » sortait 7 adresses francaises et aucune belge, 04/09/2026).
+         Les VILLES etrangeres (Paris, Lille, Amsterdam) ne sont pas touchees : elles n'ont pas de numero. */
+      if (p.countrycode === "BE") sc += 70;
+      else if (p.housenumber) sc -= 40;
       if (p.state && /bruxelles|brussel|brabant/i.test(p.state)) sc += 20;
       if (rue && p.osm_key === "highway") sc += 80;          /* on a tape un type de voie : les rues d'abord */
       if (rue && p.osm_key !== "highway") sc -= 30;
@@ -2058,10 +2066,25 @@ document.querySelectorAll(".mode").forEach(function (b) {
       if (aide) aide.hidden = true;
       fermer();
     }
-    function afficher(res) {
+    /* Ici le PRIX exige des coordonnees : on ne peut pas accepter une adresse libre comme sur un
+       site sans calcul. L'echappatoire est donc « choisissez la rue, ajoutez votre numero » — les
+       coordonnees de la rue suffisent au calcul (retour d'Ahmed transpose ici, 04/09/2026). */
+    function aideLibre() {
+      var li0 = document.createElement("li");
+      li0.className = "libre";
+      li0.textContent = "Numéro introuvable ? Choisissez la rue, puis ajoutez votre numéro à la suite.";
+      liste.appendChild(li0);
+    }
+    function afficher(res, avecNumero) {
       liste.innerHTML = "";
-      if (!res.length) { fermer(); return; }
-      items = res.slice(0, 7);
+      if (!res.length) {
+        aideLibre();
+        liste.hidden = false;
+        input.setAttribute("aria-expanded", "true");
+        items = []; curseur = -1;
+        return;
+      }
+      items = res.slice(0, avecNumero ? 5 : 7);
       items.forEach(function (it, i) {
         var li = document.createElement("li");
         li.setAttribute("role", "option");
@@ -2084,6 +2107,7 @@ document.querySelectorAll(".mode").forEach(function (b) {
         li.addEventListener("mousedown", function (e) { e.preventDefault(); choisir(i); });
         liste.appendChild(li);
       });
+      if (avecNumero) aideLibre();
       liste.hidden = false;
       input.setAttribute("aria-expanded", "true");
       surligner(-1);
@@ -2112,7 +2136,7 @@ document.querySelectorAll(".mode").forEach(function (b) {
         var n = ++requete;
         chercher(q).then(function (res) {
           if (n !== requete) return;
-          afficher(fusionner(pins, trier(res.features, q, res.rue)));
+          afficher(fusionner(pins, trier(res.features, q, res.rue)), /\d/.test(q));
         });
       }, 220);
     });
