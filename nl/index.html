@@ -716,7 +716,7 @@ footer{background:var(--cream);padding-block:var(--s-5xl) var(--s-xl);border-top
           <input type="hidden" name="depart_coord" id="a-coord">
           <button type="button" class="effacer" aria-label="Wissen" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.76 17.24 12 12m5.24-5.24L12 12m0 0L6.76 6.76M12 12l5.24 5.24"/></svg></button>
           <ul class="ac" id="ac-a" role="listbox" aria-label="Suggesties" hidden></ul>
-          <span class="aide" id="aide-a" hidden>Voeg het huisnummer toe.</span>
+          <span class="aide" id="aide-a" hidden>Voeg uw huisnummer toe indien gewenst.</span>
         </div>
         <div class="fld" id="fld-dest">
           <label for="b">Bestemming</label>
@@ -726,7 +726,7 @@ footer{background:var(--cream);padding-block:var(--s-5xl) var(--s-xl);border-top
           <input type="hidden" name="destination_coord" id="b-coord">
           <button type="button" class="effacer" aria-label="Wissen" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.76 17.24 12 12m5.24-5.24L12 12m0 0L6.76 6.76M12 12l5.24 5.24"/></svg></button>
           <ul class="ac" id="ac-b" role="listbox" aria-label="Suggesties" hidden></ul>
-          <span class="aide" id="aide-b" hidden>Voeg het huisnummer toe.</span>
+          <span class="aide" id="aide-b" hidden>Voeg uw huisnummer toe indien gewenst.</span>
         </div>
         <div class="fld">
           <label for="d">Datum</label>
@@ -1320,14 +1320,10 @@ window.TARIFS = {
       (document.getElementById("a").value.trim() ? document.getElementById("b") : document.getElementById("a")).focus();
       return;
     }
-    /* une rue choisie sans numero de maison : on ne part pas sans (la reference fait pareil) */
-    var sansNum = ["a", "b"].map(function (id) { return document.getElementById(id); })
-      .filter(function (el) { return el.dataset.sansNumero === "1" && !/\d/.test(el.value); })[0];
-    if (sansNum) {
-      contact("Indiquez le numéro de maison pour « " + sansNum.value.split(",")[0] + " » (ex. 12).");
-      sansNum.focus();
-      return;
-    }
+    /* PAS de blocage sur le numero de maison : le prix se calcule sur les coordonnees de la RUE,
+       le numero ne sert qu'au message. La reference bloque parce qu'elle geocode au metre pres ;
+       nous, bloquer empeche simplement une nouvelle construction absente de la carte de demander
+       un prix (retour d'Ahmed transpose ici, 04/09/2026). L'INVITATION reste sous le champ. */
     var depart = departChoisi();
     if (depart && depart.getTime() < Date.now()) {
       contact("Deze datum is al voorbij. Kies het moment van uw vertrek.");
