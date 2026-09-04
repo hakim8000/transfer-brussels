@@ -178,6 +178,7 @@ section{padding-block:var(--s-7xl)}
   position:relative;display:flex;min-height:100svh;padding:0;
   background-position:center center;background-size:cover;background-attachment:fixed
 }
+
 /* le parallaxe est coupe sous 1024px, comme chez eux (pas seulement au toucher) */
 .hero-content{
   display:flex;flex:1 1;flex-direction:column;align-items:center;justify-content:flex-end;
@@ -667,16 +668,24 @@ footer{background:var(--cream);padding-block:var(--s-5xl) var(--s-xl);border-top
 .legal details[open] summary::after{content:"–"}
 .legal .a{padding-bottom:var(--s-lg);max-width:600px}
 .legal .a p{font-size:15px;line-height:23px;color:var(--ink-2);margin:0 0 12px}
+
+/* --- zones desservies (04/09/2026) : pastilles, pas de liens morts --- */
+.zones{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.zones span{display:inline-block;padding:8px 14px;border:1px solid var(--hair);
+  border-radius:999px;font-size:14px;line-height:20px;color:var(--ink)}
+.zgrp{margin-top:32px}
+.zgrp h3{font-size:18px;line-height:26px;margin:0}
+@media (max-width:1023px){.zones{gap:6px}.zones span{padding:6px 12px;font-size:13px}}
 </style>
 </head>
 <body>
 
-<section class="hero" style="background-image:url(/assets/img/vw/web-hero.jpg)">
+<section class="hero" style="background-image:linear-gradient(180deg,rgba(15,19,25,.62) 0%,rgba(15,19,25,.26) 26%,rgba(15,19,25,.30) 55%,rgba(15,19,25,.58) 100%),url(/assets/img/vw/hero-passager.jpg)">
   <header class="bar">
     <a href="#" class="logo">Transfer Brussels</a>
     <nav>
       <a href="#prestations">Our services</a>
-      <a href="#tarifs">Fares</a>
+      <a href="#tarifs">Fares</a><a href="#zones">Zones</a>
       <a href="#questions">Help</a>
       <span class="lang" aria-label="Language"><a href="/" hreflang="fr" lang="fr" >FR</a><a href="/en/" hreflang="en" lang="en" aria-current="page">EN</a><a href="/nl/" hreflang="nl" lang="nl" >NL</a></span>
       <a href="tel:+32471984401" class="btn btn-ghost" data-appel>Call</a>
@@ -893,6 +902,40 @@ footer{background:var(--cream);padding-block:var(--s-5xl) var(--s-xl);border-top
   </div>
 </section>
 
+<section id="zones" class="cream">
+  <div class="wrap">
+    <div class="head reveal">
+      <h2>Areas we serve.</h2>
+      <p>Every journey starts in Brussels or its outskirts. These are the most requested destinations — the fare is calculated for any address, even one not listed here.</p>
+    </div>
+
+    <div class="zgrp reveal">
+      <h3>Brussels and its 19 municipalities</h3>
+      <div class="zones"><span>Brussels City</span><span>Ixelles</span><span>Uccle</span><span>Etterbeek</span><span>Schaerbeek</span><span>Saint-Gilles</span><span>Woluwe-Saint-Lambert</span><span>Woluwe-Saint-Pierre</span><span>Anderlecht</span><span>Forest</span><span>Auderghem</span><span>Watermael-Boitsfort</span><span>Molenbeek</span><span>Jette</span><span>Evere</span><span>Ganshoren</span><span>Koekelberg</span><span>Berchem-Sainte-Agathe</span><span>Saint-Josse-ten-Noode</span></div>
+    </div>
+
+    <div class="zgrp reveal">
+      <h3>Airports</h3>
+      <div class="zones"><span>Brussels Airport (Zaventem)</span><span>Charleroi Airport</span><span>Liège Airport</span><span>Roissy-Charles-de-Gaulle</span><span>Schiphol (Amsterdam)</span></div>
+    </div>
+
+    <div class="zgrp reveal">
+      <h3>Stations</h3>
+      <div class="zones"><span>Brussels-Midi</span><span>Brussels-Central</span><span>Brussels-North</span><span>Brussels-Luxembourg</span><span>Lille-Europe station</span></div>
+    </div>
+
+    <div class="zgrp reveal">
+      <h3>Belgium</h3>
+      <div class="zones"><span>Antwerp</span><span>Ghent</span><span>Bruges</span><span>Leuven</span><span>Liège</span><span>Namur</span><span>Mons</span><span>Waterloo</span><span>Leuven-la-Neuve</span><span>Mechelen</span><span>Ostend</span><span>Hasselt</span></div>
+    </div>
+
+    <div class="zgrp reveal">
+      <h3>Long distance</h3>
+      <div class="zones"><span>Lille</span><span>Paris</span><span>Amsterdam</span><span>Rotterdam</span><span>Luxembourg</span><span>Cologne</span><span>Düsseldorf</span><span>Aachen</span><span>Maastricht</span></div>
+    </div>
+  </div>
+</section>
+
 <section id="questions" class="cream">
   <div class="wrap">
     <div class="head reveal"><h2>Frequently asked questions.</h2></div>
@@ -926,7 +969,7 @@ footer{background:var(--cream);padding-block:var(--s-5xl) var(--s-xl);border-top
       <details id="mentions">
         <summary>Legal notice</summary>
         <div class="a">
-          <p><b>Site publisher</b> — OVER TIME SRL, Rue Jorez 7, 1070 Anderlecht (Belgium). Company number 1014.602.974. Contact: overtimetaxi24@gmail.com, +32 471 98 44 01.</p>
+          <p><b>Site publisher</b> — OVER TIME SRL, Rue Jorez 7, 1070 Anderlecht (Belgium). Company number 1014.602.974. Contact: contact@transfer.brussels, +32 471 98 44 01.</p>
           <p><b>Regulated activity</b> — Taxi service subject to authorisation by the Brussels-Capital Region (ordinance of 9 June 2022 — ordonnance du 9 juin 2022). Supervisory authority: Brussels Mobility, Direction Taxis, taxi@sprb.brussels.</p>
           <p><b>Fares</b> — The fares published on this site comply with the order of 6 October 2022 on taxi service fares (arrêté du 6 octobre 2022 relatif aux tarifs des services de taxis). The fare quoted before booking is a maximum; it may not be exceeded.</p>
           <p><b>Hosting</b> — Static site. Illustrative photographs until those of the vehicle are available.</p>
@@ -941,7 +984,7 @@ footer{background:var(--cream);padding-block:var(--s-5xl) var(--s-xl);border-top
           <p><b>How it is transmitted</b> — The request is prepared as a WhatsApp message that you send yourself, from your own phone, to the chauffeur’s business number. The site keeps none of this data on a server.</p>
           <p><b>Addresses entered</b> — To suggest addresses as you type and to calculate the distance, the site queries open mapping services (Photon, OpenStreetMap). Only the text typed and the coordinates of the journey are sent to them, never your identity.</p>
           <p><b>Audience measurement</b> — The site may use the Meta pixel to measure the effectiveness of advertising. You can object to this through your browser settings or your Meta account settings.</p>
-          <p><b>Your rights</b> — Access, rectification, erasure, objection: write to overtimetaxi24@gmail.com. You may also lodge a complaint with the Data Protection Authority (autoriteprotectiondonnees.be).</p>
+          <p><b>Your rights</b> — Access, rectification, erasure, objection: write to contact@transfer.brussels. You may also lodge a complaint with the Data Protection Authority (autoriteprotectiondonnees.be).</p>
           <p><b>Retention</b> — The chauffeur keeps the ride details for as long as needed to carry it out, invoice it and meet his regulatory obligations, then deletes them.</p>
         </div>
       </details>
@@ -972,7 +1015,7 @@ footer{background:var(--cream);padding-block:var(--s-5xl) var(--s-xl);border-top
       </div>
       <div><h4>Services</h4><a href="#prestations">Airport transfer</a><a href="#prestations">Long distance</a><a href="#prestations">Hourly hire</a></div>
       <div><h4>Information</h4><a href="#tarifs">Fares</a><a href="#questions">FAQ</a><a href="#reserver">Book</a></div>
-      <div><h4>Contact us</h4><a href="tel:+32471984401" data-appel>+32 471 98 44 01</a><a href="https://wa.me/32471984401" target="_blank" rel="noopener" data-wa>WhatsApp</a><a href="mailto:overtimetaxi24@gmail.com">overtimetaxi24@gmail.com</a></div>
+      <div><h4>Contact us</h4><a href="tel:+32471984401" data-appel>+32 471 98 44 01</a><a href="https://wa.me/32471984401" target="_blank" rel="noopener" data-wa>WhatsApp</a><a href="mailto:contact@transfer.brussels">contact@transfer.brussels</a></div>
       <div><h4>Legal</h4><a href="#mentions">Legal notice</a><a href="#confidentialite">Privacy</a><a href="#conditions">Terms</a></div>
     </div>
     <div class="mentions">
@@ -1049,7 +1092,7 @@ window.TARIFS = {
   
   whatsapp: '32471984401',
   telephone: '+32 471 98 44 01',
-  email: 'overtimetaxi24@gmail.com'
+  email: 'contact@transfer.brussels'
 };
 
 
@@ -1362,7 +1405,7 @@ window.TARIFS = {
       .catch(function () {
         /* le service d'itineraire ne repond pas : on ESTIME plutot que de
            laisser le client sans rien. Vol d'oiseau x 1,35 (facteur routier
-           usuel en Belgique), 40 km/h de moyenne. Marque comme estimation. */
+           usuel en Belgium), 40 km/h de moyenne. Marque comme estimation. */
         var R = 6371, toRad = Math.PI / 180;
         var la1 = +A[0] * toRad, la2 = +B[0] * toRad;
         var dLa = la2 - la1, dLo = (+B[1] - +A[1]) * toRad;
@@ -1948,13 +1991,13 @@ document.querySelectorAll(".mode").forEach(function (b) {
       if (p.state && /bruxelles|brussel|brabant/i.test(p.state)) sc += 20;
       if (rue && p.osm_key === "highway") sc += 80;          /* on a tape un type de voie : les rues d'abord */
       if (rue && p.osm_key !== "highway") sc -= 30;
-      /* une VILLE tapee en entier passe devant les commerces qui portent son nom (« Paris » = Paris, pas un bar de Gand) */
+      /* une VILLE tapee en entier passe devant les commerces qui portent son nom (« Paris » = Paris, pas un bar de Ghent) */
       if (p.osm_key === "place" && /^(city|town|village|municipality)$/.test(p.osm_value) && nu(nom) === nu(q)) sc += 90;
       var nn = nu(nom), nq = nu(q);
       if (nn === nq) sc += 60;                 /* nom exact : « atomium » */
       else if (nn.indexOf(nq) === 0) sc += 15; /* commence par la requete */
       /* part des mots tapes reellement presents dans le nom :
-         « rue neuve » couvre 2/2 sur « Rue Neuve », 1/2 sur « Louvain-la-Neuve » */
+         « rue neuve » couvre 2/2 sur « Rue Neuve », 1/2 sur « Leuven-la-Neuve » */
       var ms = mots(q).filter(function (m) { return !OUTILS[m]; });   /* « de » ne compte pas comme mot trouve */
       if (ms.length) {
         var trouves = 0;
