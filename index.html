@@ -17,11 +17,26 @@
 <meta name="description" content="Chauffeur privé en Belgique. Transferts aéroport, longue distance, gares et mise à disposition. Sur réservation, prix annoncé avant le départ.">
 <title>Transfer Brussels — chauffeur privé, prix annoncé avant de réserver</title>
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
-<!-- Pixel Meta — ⚠️ REMPLACER __PIXEL_ID__ par l'identifiant du compte publicitaire
-     avant la mise en ligne. Tant que le jeton est la, rien n'est envoye. -->
+<!-- Mesure : Google (Consent Mode v2, tout refuse par defaut, bandeau) + pixel Meta.
+     ⚠️ Jetons __AW_ID__ (Google Ads, ex. AW-123456789) et __PIXEL_ID__ (Meta) a remplacer par les identifiants
+     des comptes ; tant qu'un jeton est la, aucun script tiers correspondant n'est charge. -->
 <script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){ dataLayer.push(arguments); }
+/* Consent Mode v2 (Belgique / APD) : tout refuse par defaut, le bandeau met a jour ; url_passthrough garde le gclid sans cookie */
+gtag('consent', 'default', { 'ad_storage': 'denied', 'ad_user_data': 'denied', 'ad_personalization': 'denied', 'analytics_storage': 'denied', 'wait_for_update': 500 });
+gtag('set', 'url_passthrough', true);
+gtag('set', 'ads_data_redaction', true);
+window.__AW_ID__ = "__AW_ID__";
+if (!/^__/.test(window.__AW_ID__)) {
+  var _g = document.createElement('script'); _g.async = true;
+  _g.src = 'https://www.googletagmanager.com/gtag/js?id=' + window.__AW_ID__; document.head.appendChild(_g);
+  gtag('js', new Date()); gtag('config', window.__AW_ID__);
+}
 window.__PIXEL_ID__ = "__PIXEL_ID__";
-if (!/^__/.test(window.__PIXEL_ID__)) {
+/* Le pixel Meta ne se charge qu'APRES consentement (bandeau) — appele par window.initMeta() */
+window.initMeta = function () {
+  if (window.fbq || /^__/.test(window.__PIXEL_ID__)) return;
   !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
   n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
   n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
@@ -29,7 +44,7 @@ if (!/^__/.test(window.__PIXEL_ID__)) {
   document,'script','https://connect.facebook.net/en_US/fbevents.js');
   fbq('init', window.__PIXEL_ID__);
   fbq('track', 'PageView');
-}
+};
 /* appel sur : ne casse jamais si le pixel n'est pas charge */
 window.evt = function (nom, data) { try { if (window.fbq) fbq('track', nom, data || {}); } catch (e) {} };
 </script>
@@ -649,6 +664,15 @@ footer{background:var(--cream);padding-block:var(--s-5xl) var(--s-xl);border-top
 /* ---------- etape 2 : reserver ce trajet ---------- */
 .resa{margin-top:var(--s-sm);padding-top:var(--s-sm);border-top:1px solid #fff}
 .resa[hidden]{display:none}
+/* ---- bandeau cookies (APD : deux choix equivalents, rien avant consentement) ---- */
+.cookies{position:fixed;left:16px;right:auto;bottom:16px;z-index:9999;max-width:440px;background:#fff;color:var(--ink);border:1px solid var(--hair);border-radius:12px;box-shadow:0 10px 30px rgba(15,19,25,.12);padding:14px 16px;display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;font-size:13px;line-height:1.45}
+.cookies[hidden]{display:none}
+.cookies p{margin:0;flex:1 1 100%;color:var(--grey)}
+.cookies a{color:var(--ink);text-decoration:underline}
+.cookies-btns{display:flex;gap:8px;flex:1 1 100%}
+.cookies-btns button{flex:1 1 0;min-width:0;padding:9px 12px;border-radius:9px;font:inherit;font-weight:500;cursor:pointer;border:1.5px solid var(--ink);background:#fff;color:var(--ink)}
+.cookies-btns button:focus-visible{outline:3px solid #aecff3;outline-offset:2px}
+@media (max-width:1023px){.cookies{bottom:84px;left:10px;right:10px;max-width:none;padding:12px 14px}}
 .resa .ligne{display:grid;grid-template-columns:1fr 1fr 1fr;gap:var(--s-sm);margin-bottom:var(--s-xs)}
 .resa .fld{margin:0}
 .resa .actions{display:flex;gap:var(--s-xs);align-items:center;flex-wrap:wrap;margin-top:var(--s-xs)}
@@ -1020,7 +1044,7 @@ footer{background:var(--cream);padding-block:var(--s-5xl) var(--s-xl);border-top
       <div><h4>Prestations</h4><a href="#prestations">Transfert aéroport</a><a href="#prestations">Longue distance</a><a href="#prestations">Mise à disposition</a></div>
       <div><h4>Informations</h4><a href="#tarifs">Tarifs</a><a href="#questions">Questions fréquentes</a><a href="#reserver">Réserver</a></div>
       <div><h4>Nous joindre</h4><a href="tel:+32471984401" data-appel>+32 471 98 44 01</a><a href="https://wa.me/32471984401" target="_blank" rel="noopener" data-wa>WhatsApp</a><a href="mailto:contact@transfer.brussels">contact@transfer.brussels</a></div>
-      <div><h4>Légal</h4><a href="#mentions">Mentions légales</a><a href="#confidentialite">Confidentialité</a><a href="#conditions">Conditions</a></div>
+      <div><h4>Légal</h4><a href="#mentions">Mentions légales</a><a href="#confidentialite">Confidentialité</a><a href="#conditions">Conditions</a><a href="#" id="ck-ouvrir">Cookies</a></div>
     </div>
     <div class="mentions">
       
@@ -1030,6 +1054,10 @@ footer{background:var(--cream);padding-block:var(--s-5xl) var(--s-xl);border-top
   </div>
 </footer>
 
+<div id="cookies" class="cookies" role="dialog" aria-label="Cookies et mesure d'audience" hidden>
+  <p>Ce site utilise des cookies de mesure d'audience. Vous pouvez les accepter ou les refuser. <a href="#confidentialite">En savoir plus</a></p>
+  <div class="cookies-btns"><button type="button" id="ck-non">Refuser</button><button type="button" id="ck-oui">Accepter</button></div>
+</div>
 <a class="wa-flot" href="https://wa.me/32471984401" target="_blank" rel="noopener"
    data-wa aria-label="Écrire sur WhatsApp">
   <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.47 14.38c-.3-.15-1.75-.86-2.02-.96-.27-.1-.47-.15-.67.15-.2.3-.77.96-.94 1.16-.17.2-.35.22-.64.07-.3-.15-1.25-.46-2.38-1.47-.88-.78-1.47-1.75-1.64-2.05-.17-.3-.02-.46.13-.6.13-.14.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.6-.92-2.2-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.01-1.04 2.47s1.06 2.86 1.21 3.06c.15.2 2.1 3.2 5.08 4.49.71.3 1.26.49 1.69.63.71.22 1.36.19 1.87.12.57-.09 1.75-.72 2-1.41.25-.69.25-1.28.17-1.41-.07-.13-.27-.2-.57-.35M12.04 21.5h-.01a9.44 9.44 0 0 1-4.8-1.32l-.35-.2-3.57.93.96-3.47-.23-.36a9.4 9.4 0 0 1-1.44-5.02c0-5.2 4.24-9.44 9.45-9.44 2.52 0 4.89.99 6.67 2.77a9.37 9.37 0 0 1 2.76 6.68c0 5.2-4.24 9.44-9.44 9.44M20.5 3.49A11.82 11.82 0 0 0 12.04 0C5.46 0 .1 5.35.1 11.93c0 2.1.55 4.15 1.6 5.96L0 24l6.26-1.64a11.9 11.9 0 0 0 5.78 1.47h.01c6.58 0 11.93-5.35 11.94-11.93a11.86 11.86 0 0 0-3.48-8.41"/></svg>
@@ -2148,6 +2176,25 @@ document.querySelectorAll(".mode").forEach(function (b) {
   }
 
   document.querySelectorAll("input[data-ac]").forEach(brancher);
+})();
+</script>
+
+<script>
+/* ---- bandeau cookies : refus par defaut, choix garde 180 jours, Consent Mode v2 + pixel Meta apres accord ---- */
+(function () {
+  var K = "overtime_consent", el = document.getElementById("cookies"); if (!el) return;
+  function lire() { try { var v = JSON.parse(localStorage.getItem(K) || "null"); if (v && v.t && Date.now() - v.t < 180 * 864e5) return v.c; } catch (e) {} return null; }
+  function appliquer(c) {
+    var g = c === "granted" ? "granted" : "denied";
+    try { gtag("consent", "update", { "ad_storage": g, "ad_user_data": g, "ad_personalization": g, "analytics_storage": g }); } catch (e) {}
+    if (c === "granted" && window.initMeta) window.initMeta();
+  }
+  function choisir(c) { try { localStorage.setItem(K, JSON.stringify({ c: c, t: Date.now() })); } catch (e) {} appliquer(c); el.hidden = true; }
+  var c = lire();
+  if (c) { appliquer(c); } else { el.hidden = false; }
+  document.getElementById("ck-oui").addEventListener("click", function () { choisir("granted"); });
+  document.getElementById("ck-non").addEventListener("click", function () { choisir("denied"); });
+  var o = document.getElementById("ck-ouvrir"); if (o) o.addEventListener("click", function (e) { e.preventDefault(); el.hidden = false; el.querySelector("button").focus(); });
 })();
 </script>
 
