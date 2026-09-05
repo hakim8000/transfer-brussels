@@ -49,36 +49,40 @@ window.initMeta = function () {
    = CPA faux de moitie et signal d'enchere double). __LABEL_WA__ = action PRINCIPALE (clic WhatsApp), __LABEL_APPEL__ = action
    SECONDAIRE (Ilias ne decroche pas : jamais d'optimisation sur l'appel — FAITS-VERIFIES). Jetons a remplacer avec __AW_ID__. */
 window.__LABEL_WA__ = "__LABEL_WA__"; window.__LABEL_APPEL__ = "__LABEL_APPEL__";
-function _convGoogle(label, valeur, userData) {
+function _convGoogle(label, valeur) {
   if (/^__/.test(window.__AW_ID__) || /^__/.test(label)) return;
   var p = { 'send_to': window.__AW_ID__ + '/' + label };
   /* valeur = montant du devis (le site le calcule) : rapport par mot-cle en euros, puis Max valeur a >= 30 conv */
   if (valeur > 0) { p.value = Math.round(valeur); p.currency = 'EUR'; }
-  /* conversions ameliorees pour prospects : tel. saisi par l'usager, hache par gtag, SEULEMENT si consentement (ad_user_data) */
-  if (userData && window.consentPub && window.consentPub()) p.user_data = userData;
   try { gtag('event', 'conversion', p); } catch (e) {}
 }
-window.convWa = function (valeur, userData) { _convGoogle(window.__LABEL_WA__, valeur, userData); };
+window.convWa = function (valeur) { _convGoogle(window.__LABEL_WA__, valeur); };
 window.convAppel = function () { _convGoogle(window.__LABEL_APPEL__); };
-/* Reference de suivi ecrite en fin de message WhatsApp — c'est ce qui relie une course reelle a la publicite
-   (journal d'Ilias -> import hors ligne). TB-G-xxxx : visite venue d'une annonce Google (gclid dans l'URL) ET
-   consentement accorde ; TB-S-xxxx : site sans publicite identifiee ou consentement refuse (le gclid n'est alors
-   jamais lu). Rien n'est stocke : la reference se calcule au clic. */
-window.refPub = function () {
-  var ok = !!(window.consentPub && window.consentPub());
-  var g = ok ? (location.search.match(/[?&]gclid=([^&#]+)/) || [])[1] : null;
-  var base = g ? g.replace(/[^A-Za-z0-9]/g, "").slice(-6) : Date.now().toString(36).slice(-5);
-  return "TB-" + (g ? "G" : "S") + "-" + base.toUpperCase();
-};
-/* E.164 pour un numero belge saisi librement (0471... -> +32471...) ; autre indicatif : tel quel si deja en + */
-window.telE164 = function (t) {
-  var d = String(t || "").replace(/[^\d+]/g, "");
-  if (/^\+/.test(d)) return d;
-  if (/^00/.test(d)) return "+" + d.slice(2);
-  if (/^0/.test(d)) return "+32" + d.slice(1);
-  if (/^32/.test(d)) return "+" + d;
-  return d ? "+32" + d : "";
-};
+/* ---- reference de suivi (STANDARD PRESTO, 06/09/2026) : clic d'annonce Google -> code court dans le message WhatsApp ----
+   Rien n'est stocke sur l'appareil : l'identifiant du clic (gclid/gbraid/wbraid) est lu dans l'URL de la page
+   (url_passthrough le conserve) UNIQUEMENT quand la personne choisit de contacter Transfer Brussels.
+   Le code est visible dans son message ; le rapprochement code<->clic est fait cote serveur (ref_store.gs, Apps Script
+   + Sheet, 90 j), puis les courses reellement faites sont renvoyees a Google (import hors ligne, Data Manager).
+   Prefixe T (Presto = P). __REF_ENDPOINT__ = URL /exec du magasin ; tant que le jeton est la, aucun envoi. */
+window.__REF_ENDPOINT__ = "__REF_ENDPOINT__";
+window.refSuivi = (function () {
+  var q = new URLSearchParams(location.search), id = null, type = null;
+  ["gclid", "gbraid", "wbraid"].forEach(function (k) { if (!id && q.get(k) && /^[A-Za-z0-9_-]{10,200}$/.test(q.get(k))) { id = q.get(k); type = k; } });
+  if (!id) return function () { return null; };
+  var h = 0x811c9dc5, i; for (i = 0; i < id.length; i++) { h ^= id.charCodeAt(i); h = (h * 16777619) >>> 0; }
+  var A = "0123456789ABCDEFGHJKMNPQRSTVWXYZ", code = "T", n = h; for (i = 0; i < 5; i++) { code += A[n % 32]; n = Math.floor(n / 32); }
+  var envoye = false;
+  return function () {
+    if (!envoye && !/^__/.test(window.__REF_ENDPOINT__)) {
+      envoye = true;
+      var consent = window.consentPub ? (window.consentPub() ? "granted" : (window.consentChoisi && window.consentChoisi() ? "denied" : null)) : null;
+      /* text/plain = requete « simple » (pas de preflight CORS, qu'Apps Script ne sait pas repondre) */
+      try { navigator.sendBeacon(window.__REF_ENDPOINT__, new Blob([JSON.stringify({ code: code, id: id, type: type, page: location.pathname, consent: consent })], { type: "text/plain" })); } catch (e) {}
+    }
+    return code;
+  };
+})();
+window.refTexte = function (base) { var c = window.refSuivi(); return c ? base + " (réf. " + c + ")" : base; };
 /* appel sur : ne casse jamais si le pixel n'est pas charge */
 window.evt = function (nom, data) { try { if (window.fbq) fbq('track', nom, data || {}); } catch (e) {} };
 </script>
@@ -1045,7 +1049,7 @@ footer{background:var(--cream);padding-block:var(--s-5xl) var(--s-xl);border-top
           <p><b>Pourquoi</b> — Uniquement pour organiser et exécuter la course demandée, et vous en confirmer le montant. Base légale : l’exécution du contrat de transport que vous sollicitez.</p>
           <p><b>Comment ça transite</b> — La demande vous est proposée sous forme de message WhatsApp que vous envoyez vous-même, depuis votre téléphone, au numéro professionnel du chauffeur. Le site ne conserve aucune de ces données sur un serveur.</p>
           <p><b>Adresses saisies</b> — Pour vous proposer des adresses au fil de la frappe et calculer la distance, le site interroge des services cartographiques libres (Photon, OpenStreetMap). Seul le texte tapé et les coordonnées du trajet leur sont transmis, jamais votre identité.</p>
-          <p><b>Mesure d’audience</b> — Le site utilise le tag Google Ads et peut utiliser le pixel Meta pour mesurer l’efficacité de la publicité, uniquement si vous l’acceptez dans le bandeau. Si vous acceptez : une référence de demande est ajoutée à votre message, et le numéro de téléphone que vous saisissez pour réserver peut être transmis à Google sous forme chiffrée (hachée) afin de rattacher la réservation à la publicité qui l’a permise. Vous pouvez retirer votre accord à tout moment via le lien « Cookies » en bas de page.</p>
+          <p><b>Mesure d’audience</b> — Le site utilise le tag Google Ads et peut utiliser le pixel Meta pour mesurer l’efficacité de la publicité, uniquement si vous l’acceptez dans le bandeau ; vous pouvez retirer votre accord via le lien « Cookies » en bas de page. Référence de suivi : si vous arrivez sur ce site depuis une annonce Google et que vous nous contactez, une courte référence (ex. « réf. T7K4QX ») est ajoutée à votre message. Elle nous permet de savoir quelles annonces mènent à de vraies courses. Elle est reliée uniquement à l’identifiant technique du clic sur l’annonce, jamais à votre nom ou à votre numéro, et elle est effacée après 90 jours. Aucun cookie n’est déposé pour cela.</p>
           <p><b>Vos droits</b> — Accès, rectification, effacement, opposition : écrivez à contact@transfer.brussels. Vous pouvez aussi saisir l’Autorité de protection des données (autoriteprotectiondonnees.be).</p>
           <p><b>Conservation</b> — Le chauffeur conserve les informations de la course le temps nécessaire à son exécution, sa facturation et ses obligations réglementaires, puis les supprime.</p>
         </div>
@@ -1252,7 +1256,7 @@ window.TARIFS = {
     sortie.appendChild(p);
     var a = document.createElement("a");
     a.className = "wa-bar";
-    a.href = "https://wa.me/32471984401?text=" + encodeURIComponent(texteWa + (window.refPub ? "\nRéf. : " + window.refPub() : ""));
+    a.href = "https://wa.me/32471984401?text=" + encodeURIComponent(window.refTexte(texteWa));
     a.target = "_blank"; a.rel = "noopener";
     a.textContent = libelle;
     a.setAttribute("data-wa", "");
@@ -1834,15 +1838,14 @@ document.querySelectorAll(".mode").forEach(function (b) {
       (nom ? document.getElementById("r-tel") : document.getElementById("r-nom")).focus();
       return;
     }
-    var ref = window.refPub ? window.refPub() : "";
     var txt = "Bonjour, je souhaite réserver :\n" + recap
             + "\nNom : " + nom + "\nTél : " + tel
             + (vol ? "\nVol : " + vol : "")
-            + "\n(demande envoyée depuis le site)"
-            + (ref ? "\nRéf. : " + ref : "");
+            + "\n(demande envoyée depuis le site)";
+    txt = window.refTexte(txt);
     var montant = parseFloat(document.getElementById("resa").dataset.montant) || 0;
     window.evt("Lead", { content_name: "reservation", value: montant, currency: "EUR" });
-    window.convWa(montant, { phone_number: window.telE164 ? window.telE164(tel) : tel });
+    window.convWa(montant);
     window.open("https://wa.me/32471984401?text=" + encodeURIComponent(txt), "_blank", "noopener");
   });
 })();
@@ -2226,6 +2229,7 @@ document.querySelectorAll(".mode").forEach(function (b) {
   var K = "overtime_consent", el = document.getElementById("cookies"); if (!el) return;
   function lire() { try { var v = JSON.parse(localStorage.getItem(K) || "null"); if (v && v.t && Date.now() - v.t < 180 * 864e5) return v.c; } catch (e) {} return null; }
   window.consentPub = function () { return lire() === "granted"; };
+  window.consentChoisi = function () { return lire() !== null; };
   function appliquer(c) {
     var g = c === "granted" ? "granted" : "denied";
     try { gtag("consent", "update", { "ad_storage": g, "ad_user_data": g, "ad_personalization": g, "analytics_storage": g }); } catch (e) {}
@@ -2244,7 +2248,13 @@ document.querySelectorAll(".mode").forEach(function (b) {
 /* ---- clics WhatsApp / appel -> compteurs (delegation : liens statiques ET crees par le devis) ---- */
 document.addEventListener("click", function (e) {
   var wa = e.target.closest && e.target.closest("[data-wa]");
-  if (wa) { window.convWa(); window.evt("Contact", { canal: "whatsapp" }); return; }
+  if (wa) {
+    var c = window.refSuivi && window.refSuivi();
+    if (c && wa.href && wa.href.indexOf("wa.me") > -1 && wa.href.indexOf("text=") < 0) {
+      wa.href = wa.href.split("?")[0] + "?text=" + encodeURIComponent("Bonjour, je souhaite réserver un trajet. (réf. " + c + ")");
+    }
+    window.convWa(); window.evt("Contact", { canal: "whatsapp" }); return;
+  }
   var tel = e.target.closest && e.target.closest("[data-appel]");
   if (tel) { window.convAppel(); window.evt("Contact", { canal: "appel" }); }
 }, true);
