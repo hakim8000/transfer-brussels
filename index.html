@@ -45,6 +45,16 @@ window.initMeta = function () {
   fbq('init', window.__PIXEL_ID__);
   fbq('track', 'PageView');
 };
+/* Compteurs Google Ads — un clic = UNE conversion (lecon Presto 05/09/2026 : deux actions principales sur le meme clic
+   = CPA faux de moitie et signal d'enchere double). __LABEL_WA__ = action PRINCIPALE (clic WhatsApp), __LABEL_APPEL__ = action
+   SECONDAIRE (Ilias ne decroche pas : jamais d'optimisation sur l'appel — FAITS-VERIFIES). Jetons a remplacer avec __AW_ID__. */
+window.__LABEL_WA__ = "__LABEL_WA__"; window.__LABEL_APPEL__ = "__LABEL_APPEL__";
+function _convGoogle(label) {
+  if (/^__/.test(window.__AW_ID__) || /^__/.test(label)) return;
+  try { gtag('event', 'conversion', { 'send_to': window.__AW_ID__ + '/' + label }); } catch (e) {}
+}
+window.convWa = function () { _convGoogle(window.__LABEL_WA__); };
+window.convAppel = function () { _convGoogle(window.__LABEL_APPEL__); };
 /* appel sur : ne casse jamais si le pixel n'est pas charge */
 window.evt = function (nom, data) { try { if (window.fbq) fbq('track', nom, data || {}); } catch (e) {} };
 </script>
@@ -1802,6 +1812,7 @@ document.querySelectorAll(".mode").forEach(function (b) {
             + (vol ? "\nVol : " + vol : "")
             + "\n(demande envoyée depuis le site)";
     window.evt("Lead", { content_name: "reservation" });
+    window.convWa();
     window.open("https://wa.me/32471984401?text=" + encodeURIComponent(txt), "_blank", "noopener");
   });
 })();
@@ -2196,6 +2207,16 @@ document.querySelectorAll(".mode").forEach(function (b) {
   document.getElementById("ck-non").addEventListener("click", function () { choisir("denied"); });
   var o = document.getElementById("ck-ouvrir"); if (o) o.addEventListener("click", function (e) { e.preventDefault(); el.hidden = false; el.querySelector("button").focus(); });
 })();
+</script>
+
+<script>
+/* ---- clics WhatsApp / appel -> compteurs (delegation : liens statiques ET crees par le devis) ---- */
+document.addEventListener("click", function (e) {
+  var wa = e.target.closest && e.target.closest("[data-wa]");
+  if (wa) { window.convWa(); window.evt("Contact", { canal: "whatsapp" }); return; }
+  var tel = e.target.closest && e.target.closest("[data-appel]");
+  if (tel) { window.convAppel(); window.evt("Contact", { canal: "appel" }); }
+}, true);
 </script>
 
 </body>
