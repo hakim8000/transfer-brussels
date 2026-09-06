@@ -61,10 +61,12 @@ window.convAppel = function () { _convGoogle(window.__LABEL_APPEL__); };
 /* ---- reference de suivi (STANDARD PRESTO, 06/09/2026) : clic d'annonce Google -> code court dans le message WhatsApp ----
    Rien n'est stocke sur l'appareil : l'identifiant du clic (gclid/gbraid/wbraid) est lu dans l'URL de la page
    (url_passthrough le conserve) UNIQUEMENT quand la personne choisit de contacter Transfer Brussels.
-   Le code est visible dans son message ; le rapprochement code<->clic est fait cote serveur (ref_store.gs, Apps Script
-   + Sheet, 90 j), puis les courses reellement faites sont renvoyees a Google (import hors ligne, Data Manager).
-   Prefixe T (Presto = P). __REF_ENDPOINT__ = URL /exec du magasin ; tant que le jeton est la, aucun envoi. */
-window.__REF_ENDPOINT__ = "__REF_ENDPOINT__";
+   Le code est visible dans son message ; le rapprochement code<->clic est memorise dans le Google Form technique « refs »
+   (meme pile que le carnet des demandes : les reponses tombent dans le Sheet de l'agence, 90 j), puis les courses
+   reellement faites sont renvoyees a Google (import hors ligne, Data Manager). Prefixe T (Presto = P).
+   __REF_FORM__ = URL formResponse du Form « refs », __REF_ENTRIES__ = ses champs entry.xxx (google ads/20-ilias-vtc/carnet/carnet.json). */
+window.__REF_FORM__ = "https://docs.google.com/forms/d/e/1FAIpQLScEfM0OG91xnuF72vSDnaBXcSSPB4e2gUbBKGnpMLtYevEStw/formResponse";
+window.__REF_ENTRIES__ = {"code": "entry.972482410", "id": "entry.493331477", "type": "entry.1782808285", "page": "entry.520315805", "consent": "entry.153005485"};
 window.refSuivi = (function () {
   var q = new URLSearchParams(location.search), id = null, type = null;
   ["gclid", "gbraid", "wbraid"].forEach(function (k) { if (!id && q.get(k) && /^[A-Za-z0-9_-]{10,200}$/.test(q.get(k))) { id = q.get(k); type = k; } });
@@ -73,11 +75,12 @@ window.refSuivi = (function () {
   var A = "0123456789ABCDEFGHJKMNPQRSTVWXYZ", code = "T", n = h; for (i = 0; i < 5; i++) { code += A[n % 32]; n = Math.floor(n / 32); }
   var envoye = false;
   return function () {
-    if (!envoye && !/^__/.test(window.__REF_ENDPOINT__)) {
+    if (!envoye && !/^__/.test(window.__REF_FORM__) && window.__REF_ENTRIES__) {
       envoye = true;
-      var consent = window.consentPub ? (window.consentPub() ? "granted" : (window.consentChoisi && window.consentChoisi() ? "denied" : null)) : null;
-      /* text/plain = requete « simple » (pas de preflight CORS, qu'Apps Script ne sait pas repondre) */
-      try { navigator.sendBeacon(window.__REF_ENDPOINT__, new Blob([JSON.stringify({ code: code, id: id, type: type, page: location.pathname, consent: consent })], { type: "text/plain" })); } catch (e) {}
+      var consent = window.consentPub ? (window.consentPub() ? "granted" : (window.consentChoisi && window.consentChoisi() ? "denied" : "")) : "";
+      var E = window.__REF_ENTRIES__, d = {}; d[E.code] = code; d[E.id] = id; d[E.type] = type; d[E.page] = location.pathname; d[E.consent] = consent;
+      /* application/x-www-form-urlencoded = requete « simple » (pas de preflight) ; Google Forms accepte le POST cross-origin */
+      try { navigator.sendBeacon(window.__REF_FORM__, new Blob([new URLSearchParams(d).toString()], { type: "application/x-www-form-urlencoded" })); } catch (e) {}
     }
     return code;
   };
