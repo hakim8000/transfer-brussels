@@ -49,6 +49,11 @@ window.initMeta = function () {
    = CPA faux de moitie et signal d'enchere double). __LABEL_WA__ = action PRINCIPALE (clic WhatsApp), __LABEL_APPEL__ = action
    SECONDAIRE (Ilias ne decroche pas : jamais d'optimisation sur l'appel — FAITS-VERIFIES). Jetons a remplacer avec __AW_ID__. */
 window.__LABEL_WA__ = "__LABEL_WA__"; window.__LABEL_APPEL__ = "__LABEL_APPEL__";
+/* __LABEL_DEVIS__ = action SECONDAIRE « Devis calculé » : le prix s'est affiche pour un trajet reel.
+   C'est le signal d'intention le plus fort AVANT le contact, et le plus frequent — a 23 EUR/jour Google
+   n'aura que ~10-20 conversions principales par mois, trop peu pour apprendre. Jamais PRINCIPALE :
+   deux actions principales sur le meme parcours = CPA faux de moitie (erreur constatee chez Presto le 05/09). */
+window.__LABEL_DEVIS__ = "__LABEL_DEVIS__";
 function _convGoogle(label, valeur) {
   if (/^__/.test(window.__AW_ID__) || /^__/.test(label)) return;
   var p = { 'send_to': window.__AW_ID__ + '/' + label };
@@ -58,6 +63,7 @@ function _convGoogle(label, valeur) {
 }
 window.convWa = function (valeur) { _convGoogle(window.__LABEL_WA__, valeur); };
 window.convAppel = function () { _convGoogle(window.__LABEL_APPEL__); };
+window.convDevis = function (valeur) { _convGoogle(window.__LABEL_DEVIS__, valeur); };
 /* ---- reference de suivi (STANDARD PRESTO, 06/09/2026) : clic d'annonce Google -> code court dans le message WhatsApp ----
    Rien n'est stocke sur l'appareil : l'identifiant du clic (gclid/gbraid/wbraid) est lu dans l'URL de la page
    (url_passthrough le conserve) UNIQUEMENT quand la personne choisit de contacter Transfer Brussels.
@@ -1255,6 +1261,7 @@ window.TARIFS = {
     resa.dataset.recap = recap;
     resa.dataset.montant = montant;
     window.evt("ViewContent", { content_name: "devis", value: montant, currency: "EUR" });
+    window.convDevis(montant);
   }
 
   /* comme contact(), mais avec un bouton WhatsApp pre-rempli : un message qui
@@ -1480,6 +1487,7 @@ window.TARIFS = {
           + " · maximum " + total + " €";
         resa.dataset.montant = total;
         window.evt("ViewContent", { content_name: "devis", value: total, currency: "EUR" });
+        window.convDevis(total);
       })
       .catch(function () {
         /* le service d'itineraire ne repond pas : on ESTIME plutot que de
@@ -1515,6 +1523,7 @@ window.TARIFS = {
           + " · environ " + res.total + " € maximum (estimation)";
         resa.dataset.montant = res.total;
         window.evt("ViewContent", { content_name: "devis-estime", value: res.total, currency: "EUR" });
+        window.convDevis(res.total);
       })
       .finally(function () { if (go) go.disabled = false; });
   });
