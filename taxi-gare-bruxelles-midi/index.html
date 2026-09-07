@@ -1,21 +1,21 @@
 <!DOCTYPE html>
-<html lang="nl">
+<html lang="fr">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#0f1319">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Transfer Brussels — privéchauffeur, prijs bekend vóór u reserveert">
-<meta property="og:description" content="Luchthavenvervoer, stations en lange afstand vanuit Brussel. Het bedrag verschijnt vóór de reservatie, incl. btw, en kan niet stijgen.">
-<meta property="og:locale" content="nl_BE">
-<link rel="alternate" hreflang="fr" href="https://transfer.brussels/">
-<link rel="alternate" hreflang="en" href="https://transfer.brussels/en/">
-<link rel="alternate" hreflang="nl" href="https://transfer.brussels/nl/">
-<link rel="alternate" hreflang="x-default" href="https://transfer.brussels/">
-<link rel="canonical" href="https://transfer.brussels/nl/">
+<meta property="og:title" content="Taxi gare de Bruxelles-Midi, Central, Nord – sur réservation | Transfer Brussels">
+<meta property="og:description" content="Taxi privé vers ou depuis les gares de Bruxelles-Midi (Eurostar, Thalys, TGV), Central et Nord, sur réservation. Prix affiché avant de réserver, TVA comprise, il ne peut pas augmenter.">
+<meta property="og:locale" content="fr_BE">
+<link rel="alternate" hreflang="fr" href="https://transfer.brussels/taxi-gare-bruxelles-midi/">
+<link rel="alternate" hreflang="en" href="https://transfer.brussels/en/taxi-gare-bruxelles-midi/">
+<link rel="alternate" hreflang="nl" href="https://transfer.brussels/nl/taxi-gare-bruxelles-midi/">
+<link rel="alternate" hreflang="x-default" href="https://transfer.brussels/taxi-gare-bruxelles-midi/">
+<link rel="canonical" href="https://transfer.brussels/taxi-gare-bruxelles-midi/">
 <meta name="robots" content="index,follow">
-<meta name="description" content="Privéchauffeur in België. Luchthavenvervoer, lange afstand, stations en chauffeur ter beschikking. Op reservatie, prijs bekend vóór vertrek.">
-<title>Transfer Brussels — privéchauffeur, prijs bekend vóór u reserveert</title>
+<meta name="description" content="Taxi privé vers ou depuis les gares de Bruxelles-Midi (Eurostar, Thalys, TGV), Central et Nord, sur réservation. Prix affiché avant de réserver, TVA comprise, il ne peut pas augmenter.">
+<title>Taxi gare de Bruxelles-Midi, Central, Nord – sur réservation | Transfer Brussels</title>
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <!-- Mesure : Google (Consent Mode v2, tout refuse par defaut, bandeau) + pixel Meta.
      ⚠️ Jetons __AW_ID__ (Google Ads, ex. AW-123456789) et __PIXEL_ID__ (Meta) a remplacer par les identifiants
@@ -23,7 +23,7 @@
 <script>
 window.dataLayer = window.dataLayer || [];
 function gtag(){ dataLayer.push(arguments); }
-/* Consent Mode v2 (België / APD) : tout refuse par defaut, le bandeau met a jour ; url_passthrough garde le gclid sans cookie */
+/* Consent Mode v2 (Belgique / APD) : tout refuse par defaut, le bandeau met a jour ; url_passthrough garde le gclid sans cookie */
 gtag('consent', 'default', { 'ad_storage': 'denied', 'ad_user_data': 'denied', 'ad_personalization': 'denied', 'analytics_storage': 'denied', 'wait_for_update': 500 });
 gtag('set', 'url_passthrough', true);
 gtag('set', 'ads_data_redaction', true);
@@ -91,7 +91,7 @@ window.refSuivi = (function () {
     return code;
   };
 })();
-window.refTexte = function (base) { var c = window.refSuivi(); return c ? base + " (ref. " + c + ")" : base; };
+window.refTexte = function (base) { var c = window.refSuivi(); return c ? base + " (réf. " + c + ")" : base; };
 /* appel sur : ne casse jamais si le pixel n'est pas charge */
 window.evt = function (nom, data) { try { if (window.fbq) fbq('track', nom, data || {}); } catch (e) {} };
 </script>
@@ -727,12 +727,12 @@ footer{background:var(--cream);padding-block:var(--s-5xl) var(--s-xl);border-top
 .resa .btn-wa:not(:disabled):hover{background-color:#1c9d4c}
 .resa .btn-wa:not(:disabled):active{background-color:#199046}
 .resa .btn-wa:disabled{cursor:default;background-color:#aeaeae}
-.resa .of{font-size:14px;line-height:20px;letter-spacing:.15px;color:#aeaeae}
-.resa .of a{position:relative;color:#fff;font-weight:500;text-decoration:underline;text-decoration-color:transparent;text-decoration-thickness:1px;text-underline-offset:4px;transition:color .2s ease-in-out,text-decoration-color .2s ease-in-out}
-.resa .of a:hover{color:#eef1f3;text-decoration-color:currentColor}
-.resa .of a:active{color:#c9ced3}
-.resa .of a:focus-visible{border-radius:4px;outline:2px solid #0f1319;outline-offset:2px}
-@media (max-width:1023px){ .resa .ligne{grid-template-columns:1fr} .resa .actions{flex-direction:column;align-items:stretch} .resa .btn-wa{width:100%} .resa .of{text-align:center} }
+.resa .ou{font-size:14px;line-height:20px;letter-spacing:.15px;color:#aeaeae}
+.resa .ou a{position:relative;color:#fff;font-weight:500;text-decoration:underline;text-decoration-color:transparent;text-decoration-thickness:1px;text-underline-offset:4px;transition:color .2s ease-in-out,text-decoration-color .2s ease-in-out}
+.resa .ou a:hover{color:#eef1f3;text-decoration-color:currentColor}
+.resa .ou a:active{color:#c9ced3}
+.resa .ou a:focus-visible{border-radius:4px;outline:2px solid #0f1319;outline-offset:2px}
+@media (max-width:1023px){ .resa .ligne{grid-template-columns:1fr} .resa .actions{flex-direction:column;align-items:stretch} .resa .btn-wa{width:100%} .resa .ou{text-align:center} }
 
 /* ---------- sections legales ---------- */
 #legal{padding-block:var(--s-5xl)}
@@ -757,131 +757,139 @@ footer{background:var(--cream);padding-block:var(--s-5xl) var(--s-xl);border-top
 
 <section class="hero" style="background-image:linear-gradient(180deg,rgba(15,19,25,.62) 0%,rgba(15,19,25,.26) 26%,rgba(15,19,25,.30) 55%,rgba(15,19,25,.58) 100%),url(/assets/img/vw/hero-passager.jpg)">
   <header class="bar">
-    <a href="#" class="logo">Transfer Brussels</a>
+    <a href="/" class="logo">Transfer Brussels</a>
     <nav>
-      <a href="#prestations">Onze diensten</a>
-      <a href="#tarifs">Tarieven</a><a href="#zones">Zones</a>
-      <a href="#questions">Hulp</a>
-      <span class="lang" aria-label="Taal"><a href="/" hreflang="fr" lang="fr" >FR</a><a href="/en/" hreflang="en" lang="en" >EN</a><a href="/nl/" hreflang="nl" lang="nl" aria-current="page">NL</a></span>
-      <a href="tel:+32471984401" class="btn btn-ghost" data-appel>Bellen</a>
-      <a href="https://wa.me/32471984401" class="wa-bar" target="_blank" rel="noopener" data-wa aria-label="Schrijven via WhatsApp"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.47 14.38c-.3-.15-1.75-.86-2.02-.96-.27-.1-.47-.15-.67.15-.2.3-.77.96-.94 1.16-.17.2-.35.22-.64.07-.3-.15-1.25-.46-2.38-1.47-.88-.78-1.47-1.75-1.64-2.05-.17-.3-.02-.46.13-.6.13-.14.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.6-.92-2.2-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.01-1.04 2.47s1.06 2.86 1.21 3.06c.15.2 2.1 3.2 5.08 4.49.71.3 1.26.49 1.69.63.71.22 1.36.19 1.87.12.57-.09 1.75-.72 2-1.41.25-.69.25-1.28.17-1.41-.07-.13-.27-.2-.57-.35M12.04 21.5h-.01a9.44 9.44 0 0 1-4.8-1.32l-.35-.2-3.57.93.96-3.47-.23-.36a9.4 9.4 0 0 1-1.44-5.02c0-5.2 4.24-9.44 9.45-9.44 2.52 0 4.89.99 6.67 2.77a9.37 9.37 0 0 1 2.76 6.68c0 5.2-4.24 9.44-9.44 9.44M20.5 3.49A11.82 11.82 0 0 0 12.04 0C5.46 0 .1 5.35.1 11.93c0 2.1.55 4.15 1.6 5.96L0 24l6.26-1.64a11.9 11.9 0 0 0 5.78 1.47h.01c6.58 0 11.93-5.35 11.94-11.93a11.86 11.86 0 0 0-3.48-8.41"/></svg></a>
-      <a href="#reserver" class="btn">Reserveren</a>
+      <a href="#prestations">Nos prestations</a>
+      <a href="#tarifs">Tarifs</a><a href="#zones">Zones</a>
+      <a href="#questions">Aide</a>
+      <span class="lang" aria-label="Langue"><a href="/taxi-gare-bruxelles-midi/" hreflang="fr" lang="fr" aria-current="page">FR</a><a href="/en/taxi-gare-bruxelles-midi/" hreflang="en" lang="en" >EN</a><a href="/nl/taxi-gare-bruxelles-midi/" hreflang="nl" lang="nl" >NL</a></span>
+      <a href="tel:+32471984401" class="btn btn-ghost" data-appel>Appeler</a>
+      <a href="https://wa.me/32471984401" class="wa-bar" target="_blank" rel="noopener" data-wa aria-label="Écrire sur WhatsApp"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.47 14.38c-.3-.15-1.75-.86-2.02-.96-.27-.1-.47-.15-.67.15-.2.3-.77.96-.94 1.16-.17.2-.35.22-.64.07-.3-.15-1.25-.46-2.38-1.47-.88-.78-1.47-1.75-1.64-2.05-.17-.3-.02-.46.13-.6.13-.14.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.6-.92-2.2-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.01-1.04 2.47s1.06 2.86 1.21 3.06c.15.2 2.1 3.2 5.08 4.49.71.3 1.26.49 1.69.63.71.22 1.36.19 1.87.12.57-.09 1.75-.72 2-1.41.25-.69.25-1.28.17-1.41-.07-.13-.27-.2-.57-.35M12.04 21.5h-.01a9.44 9.44 0 0 1-4.8-1.32l-.35-.2-3.57.93.96-3.47-.23-.36a9.4 9.4 0 0 1-1.44-5.02c0-5.2 4.24-9.44 9.45-9.44 2.52 0 4.89.99 6.67 2.77a9.37 9.37 0 0 1 2.76 6.68c0 5.2-4.24 9.44-9.44 9.44M20.5 3.49A11.82 11.82 0 0 0 12.04 0C5.46 0 .1 5.35.1 11.93c0 2.1.55 4.15 1.6 5.96L0 24l6.26-1.64a11.9 11.9 0 0 0 5.78 1.47h.01c6.58 0 11.93-5.35 11.94-11.93a11.86 11.86 0 0 0-3.48-8.41"/></svg></a>
+      <a href="#reserver" class="btn">Réserver</a>
     </nav>
   </header>
 
   <div class="hero-content" id="reserver">
-    <h1 class="hero-title anim-hero-title">U weet wie u komt ophalen.</h1>
+    <h1 class="hero-title anim-hero-title">Votre taxi à la gare, réservé avant votre train.</h1>
 
-    <div class="modes glass anim-hero-tabs" role="tablist" aria-label="Soort rit">
-      <button class="mode" role="tab" aria-selected="true" data-mode="trajet">Enkele rit</button>
-      <button class="mode" role="tab" aria-selected="false" data-mode="heure">Per uur</button>
+    <div class="modes glass anim-hero-tabs" role="tablist" aria-label="Type de course">
+      <button class="mode" role="tab" aria-selected="true" data-mode="trajet">Aller simple</button>
+      <button class="mode" role="tab" aria-selected="false" data-mode="heure">À l’heure</button>
     </div>
 
     <form class="booking glass anim-hero-widget" id="req" novalidate>
       <div class="bk-grid">
         <div class="fld">
-          <label for="a">Ophaaladres</label>
-          <input id="a" name="depart" placeholder="Adres, luchthaven, hotel…" required
+          <label for="a">Lieu de prise en charge</label>
+          <input id="a" name="depart" placeholder="Adresse, aéroport, hôtel…" required
                  autocomplete="off" role="combobox" aria-expanded="false"
                  aria-autocomplete="list" aria-controls="ac-a" data-ac>
           <input type="hidden" name="depart_coord" id="a-coord">
-          <button type="button" class="effacer" aria-label="Wissen" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.76 17.24 12 12m5.24-5.24L12 12m0 0L6.76 6.76M12 12l5.24 5.24"/></svg></button>
-          <ul class="ac" id="ac-a" role="listbox" aria-label="Suggesties" hidden></ul>
-          <span class="aide" id="aide-a" hidden>Voeg uw huisnummer toe indien gewenst.</span>
+          <button type="button" class="effacer" aria-label="Effacer" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.76 17.24 12 12m5.24-5.24L12 12m0 0L6.76 6.76M12 12l5.24 5.24"/></svg></button>
+          <ul class="ac" id="ac-a" role="listbox" aria-label="Suggestions" hidden></ul>
+          <span class="aide" id="aide-a" hidden>Ajoutez votre numéro si vous le souhaitez.</span>
         </div>
         <div class="fld" id="fld-dest">
-          <label for="b">Bestemming</label>
-          <input id="b" name="destination" placeholder="Adres, luchthaven, hotel…" required
+          <label for="b">Destination</label>
+          <input id="b" name="destination" placeholder="Adresse, aéroport, hôtel…" required
                  autocomplete="off" role="combobox" aria-expanded="false"
                  aria-autocomplete="list" aria-controls="ac-b" data-ac>
           <input type="hidden" name="destination_coord" id="b-coord">
-          <button type="button" class="effacer" aria-label="Wissen" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.76 17.24 12 12m5.24-5.24L12 12m0 0L6.76 6.76M12 12l5.24 5.24"/></svg></button>
-          <ul class="ac" id="ac-b" role="listbox" aria-label="Suggesties" hidden></ul>
-          <span class="aide" id="aide-b" hidden>Voeg uw huisnummer toe indien gewenst.</span>
+          <button type="button" class="effacer" aria-label="Effacer" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.76 17.24 12 12m5.24-5.24L12 12m0 0L6.76 6.76M12 12l5.24 5.24"/></svg></button>
+          <ul class="ac" id="ac-b" role="listbox" aria-label="Suggestions" hidden></ul>
+          <span class="aide" id="aide-b" hidden>Ajoutez votre numéro si vous le souhaitez.</span>
         </div>
         <div class="fld">
-          <label for="d">Datum</label>
-          <select id="d" name="date" required aria-label="Datum"></select>
+          <label for="d">Date</label>
+          <select id="d" name="date" required aria-label="Date"></select>
         </div>
         <div class="fld">
-          <label for="h">Ophaaluur</label>
-          <select id="h" name="heure" required aria-label="Uur"></select>
+          <label for="h">Heure de prise en charge</label>
+          <select id="h" name="heure" required aria-label="Heure"></select>
         </div>
         <div class="fld fld-go">
-          <button class="btn" type="submit">Prijs bekijken</button>
+          <button class="btn" type="submit">Voir le prix</button>
         </div>
       </div>
-      <p class="bk-note" id="out">Het bedrag verschijnt meteen. In deze stap betaalt u niets.</p>
+      <p class="bk-note" id="out">Le montant s’affiche immédiatement. Aucun paiement à cette étape.</p>
 
       <div class="resa" id="resa" hidden>
         <div class="ligne">
-          <div class="fld"><label for="r-nom">Uw naam</label><input id="r-nom" placeholder="Voor- en achternaam" autocomplete="name"></div>
-          <div class="fld"><label for="r-tel">Uw telefoonnummer</label><input id="r-tel" type="tel" placeholder="+32 …" autocomplete="tel"></div>
-          <div class="fld"><label for="r-vol">Vluchtnummer <span style="opacity:.6">(bij luchthaven)</span></label><input id="r-vol" placeholder="SN 3722" autocomplete="off"></div>
+          <div class="fld"><label for="r-nom">Votre nom</label><input id="r-nom" placeholder="Prénom et nom" autocomplete="name"></div>
+          <div class="fld"><label for="r-tel">Votre téléphone</label><input id="r-tel" type="tel" placeholder="+32 …" autocomplete="tel"></div>
+          <div class="fld"><label for="r-vol">Numéro de vol <span style="opacity:.6">(si aéroport)</span></label><input id="r-vol" placeholder="SN 3722" autocomplete="off"></div>
         </div>
         <div class="actions">
-          <button type="button" class="btn btn-wa" id="r-envoyer">Verstuur via WhatsApp</button>
-          <span class="of">of <a href="tel:+32471984401">bel +32 471 98 44 01</a></span>
+          <button type="button" class="btn btn-wa" id="r-envoyer">Envoyer sur WhatsApp</button>
+          <span class="ou">ou <a href="tel:+32471984401">appelez le +32 471 98 44 01</a></span>
         </div>
       </div>
     </form>
   </div>
 </section>
+<section class="blanc"><div class="wrap" style="padding-block:56px;max-width:760px">
+  <p style="font-size:18px;line-height:30px;margin:0 0 18px">Un train a une heure d’arrivée&nbsp;: c’est exactement ce qu’il faut pour réserver un taxi à l’avance. Indiquez votre adresse et la gare — Bruxelles-Midi, Central ou Nord — et le prix s’affiche tout de suite, TVA comprise. C’est un <b>maximum</b>&nbsp;: il ne peut pas augmenter, même dans les embouteillages.</p>
+  <p style="font-size:18px;line-height:30px;margin:0 0 18px"><b>À l’arrivée, le chauffeur vous attend à l’heure convenue</b>, avec votre numéro de train. Bruxelles-Midi est la gare de l’Eurostar, du Thalys et du TGV&nbsp;: un départ tôt le matin ou un retour tard le soir se réserve la veille, en une minute, sur WhatsApp.</p>
+  <p style="font-size:18px;line-height:30px;margin:0 0 18px">Voiture privée, chauffeur agréé, quatre passagers et leurs bagages. Le trajet vers la gare ou depuis la gare se réserve de la même façon, aller simple ou aller-retour.</p>
+  <p style="margin:26px 0 0"><a href="#reserver" class="btn">Voir le prix de mon trajet</a></p>
+</div></section>
+<script>window.addEventListener("DOMContentLoaded", function () { window.preremplir && window.preremplir("midi"); });</script>
+
 
 <section id="prestations">
   <div class="wrap">
     <div class="first">
-      <h2 class="xl">Vier ritten,<br>één chauffeur.</h2>
-      <p class="sub">Vier diensten, allemaal op reservatie — zo kunnen we het uur en de prijs garanderen.</p>
+      <h2 class="xl">Quatre trajets,<br>un seul chauffeur.</h2>
+      <p class="sub">Quatre prestations, toutes sur réservation — c’est ce qui permet de garantir l’heure et le prix.</p>
     </div>
     <div class="cards">
       <article class="card">
         <div class="bd">
           <p class="tag">Zaventem · Charleroi</p>
-          <h3>Luchthavenvervoer</h3>
-          <p>Heen en terug. De vlucht wordt gevolgd: landt u later, dan staat de wagen er toch.</p>
+          <h3>Transfert aéroport</h3>
+          <p>À l’aller comme au retour. Le vol est suivi : si vous atterrissez en retard, la voiture est là quand même.</p>
         </div>
       </article>
       <article class="card">
         <div class="bd">
-          <p class="tag">Parijs · Amsterdam · Rijsel</p>
-          <h3>Lange afstand</h3>
-          <p>Een maximumbedrag dat vóór vertrek wordt meegedeeld, tol en brandstof inbegrepen. Bij aankomst komt er niets bij.</p>
+          <p class="tag">Paris · Amsterdam · Lille</p>
+          <h3>Longue distance</h3>
+          <p>Un montant maximum annoncé avant le départ, péages et carburant compris. Rien ne s’ajoute à l’arrivée.</p>
         </div>
       </article>
       <article class="card">
         <div class="bd">
-          <p class="tag">Zuid · Centraal · Ziekenhuizen</p>
-          <h3>Stations en afspraken</h3>
-          <p>De chauffeur wacht ter plaatse. U zoekt niemand als u buitenkomt, u stapt in.</p>
+          <p class="tag">Midi · Central · Cliniques</p>
+          <h3>Gares et rendez-vous</h3>
+          <p>Le chauffeur attend sur place. Vous ne cherchez personne en sortant, vous montez.</p>
         </div>
       </article>
       <article class="card">
         <div class="bd">
-          <p class="tag">Per uur</p>
-          <h3>Chauffeur ter beschikking</h3>
-          <p>De wagen en de chauffeur voor een afgesproken duur, met zoveel stops als nodig.</p>
+          <p class="tag">À l’heure</p>
+          <h3>Mise à disposition</h3>
+          <p>La voiture et le chauffeur pour une durée convenue, avec autant d’arrêts que nécessaire.</p>
         </div>
       </article>
     </div>
     <div class="marks">
-      <span>Vertrek ’s nachts of heel vroeg</span>
-      <span>Vergunde exploitant, geldige vergunning</span>
-      <span>Tijdslot vastgelegd bij reservatie</span>
-      <span>Factuur op aanvraag</span>
+      <span>Départs de nuit et très tôt</span>
+      <span>Exploitant autorisé, licence en cours</span>
+      <span>Créneau bloqué à la réservation</span>
+      <span>Facture sur demande</span>
     </div>
   </div>
 </section>
 
 <section id="bord" class="bleu">
   <div class="wrap two reveal">
-    <img src="/assets/img/vw/web-bord.jpg" alt="Aan boord" loading="lazy">
+    <img src="/assets/img/vw/web-bord.jpg" alt="À bord" loading="lazy">
     <div>
-      <h2>Aan boord.</h2>
+      <h2>À bord.</h2>
       <div class="list">
-        <div><h3>Dezelfde chauffeur</h3><p>Geen platform, geen onbekende die opdaagt. U weet wie u komt ophalen, en hij weet waar u naartoe moet.</p></div>
-        <div><h3>Stilte, als u dat wilt</h3><p>Sommigen willen praten, anderen een telefoongesprek afronden of twintig minuten slapen. We passen ons aan, zonder het u twee keer te vragen.</p></div>
-        <div><h3>Een propere wagen, elke rit</h3><p>Interieur gereinigd tussen twee klanten, water bij de hand, opladers. Het detail dat telt om vijf uur ’s morgens.</p></div>
+        <div><h3>Le même chauffeur</h3><p>Pas de plateforme, pas d’inconnu qui arrive. Vous savez qui vient vous chercher, et il sait où vous allez.</p></div>
+        <div><h3>Le silence, si vous le voulez</h3><p>Certains veulent parler, d’autres finir un appel ou dormir vingt minutes. On s’adapte sans qu’on vous le demande deux fois.</p></div>
+        <div><h3>Une voiture propre, chaque course</h3><p>Intérieur fait entre deux clients, eau à disposition, chargeurs. Le détail qui compte à cinq heures du matin.</p></div>
       </div>
     </div>
   </div>
@@ -890,29 +898,29 @@ footer{background:var(--cream);padding-block:var(--s-5xl) var(--s-xl);border-top
 <section class="blanc" id="moments">
   <div class="wrap">
     <div class="head pinhead">
-      <h2 class="lg">Wat een app niet doet.</h2>
-      <p class="sub">Drie momenten waarop u het verschil ziet.</p>
+      <h2 class="lg">Ce qu’une application ne fait pas.</h2>
+      <p class="sub">Trois moments où la différence se voit.</p>
     </div>
   </div>
   <div class="pinzone">
     <div class="pinstick">
       <figure class="pincard pc-photo">
-        <img src="/assets/img/vw/web-band.jpg" alt="Aankomst ’s nachts" loading="lazy">
+        <img src="/assets/img/vw/web-band.jpg" alt="Arrivée de nuit" loading="lazy">
         <figcaption class="glass">
-          <h3>Vier uur veertig ’s morgens.</h3>
-          <p>De wagen staat beneden, de motor draait, en niemand vraagt u om wat dan ook te bevestigen.</p>
+          <h3>Quatre heures quarante du matin.</h3>
+          <p>La voiture est en bas, le moteur tourne, et personne ne vous demande de confirmer quoi que ce soit.</p>
         </figcaption>
       </figure>
       <figure class="pincard pc-bleu">
         <figcaption>
-          <h3>De vlucht wordt gevolgd.</h3>
-          <p>Landing veertig minuten vertraagd? De wagen komt veertig minuten later. U hoeft niets te schrijven, niets te bevestigen.</p>
+          <h3>Le vol est suivi.</h3>
+          <p>Atterrissage retardé de quarante minutes ? La voiture arrive quarante minutes plus tard. Vous n’avez rien à écrire, rien à confirmer.</p>
         </figcaption>
       </figure>
       <figure class="pincard pc-creme">
         <figcaption>
-          <h3>Het bedrag verandert niet.</h3>
-          <p>Het bedrag dat bij de reservatie wordt aangekondigd, is een maximum. U betaalt nooit meer, ook niet in de file.</p>
+          <h3>Le montant ne bouge pas.</h3>
+          <p>Celui annoncé à la réservation est un maximum. Vous ne paierez jamais plus, même dans les embouteillages.</p>
         </figcaption>
       </figure>
     </div>
@@ -921,19 +929,19 @@ footer{background:var(--cream);padding-block:var(--s-5xl) var(--s-xl);border-top
 
 <section class="cream">
   <div class="wrap">
-    <div class="head repli-piliers"><h2 class="lg">Waarop u kunt rekenen.</h2></div>
+    <div class="head repli-piliers"><h2 class="lg">Ce sur quoi vous pouvez compter.</h2></div>
     <div class="pillars stagger">
       <div class="pillar">
-        <h3>Stipt op tijd</h3><p>De chauffeur vertrekt ruim op tijd en is er vóór u. De enige belofte die telt als u een vliegtuig moet halen.</p>
+        <h3>L’heure, tenue</h3><p>Le chauffeur part en avance et arrive avant vous. La seule promesse qui compte quand vous avez un avion.</p>
       </div>
       <div class="pillar">
-        <h3>De prijs, vooraf</h3><p>Het maximumbedrag wordt u meegedeeld vóór u bevestigt, incl. btw. Onderweg kan het niet stijgen.</p>
+        <h3>Le prix, avant</h3><p>Le montant maximum vous est annoncé avant que vous confirmiez, TVA comprise. Il ne peut pas augmenter en route.</p>
       </div>
       <div class="pillar">
-        <h3>In orde</h3><p>Exploitant vergund door het Brussels Hoofdstedelijk Gewest, geldige vergunning en geregistreerd voertuig.</p>
+        <h3>En règle</h3><p>Exploitant autorisé par la Région de Bruxelles-Capitale, licence en cours et véhicule enregistré.</p>
       </div>
       <div class="pillar">
-        <h3>Voor bedrijven</h3><p>Factuur op naam van uw bedrijf, terugkerende ritten en één vast aanspreekpunt.</p>
+        <h3>Pour les sociétés</h3><p>Facture au nom de votre entreprise, trajets récurrents et interlocuteur unique.</p>
       </div>
     </div>
   </div>
@@ -942,35 +950,35 @@ footer{background:var(--cream);padding-block:var(--s-5xl) var(--s-xl);border-top
 <section id="tarifs" class="blanc">
   <div class="wrap">
     <div class="head reveal">
-      <h2>U kent het bedrag vóór u reserveert.</h2>
-      <p class="sub">De Brusselse regelgeving verplicht ons de tarieven te publiceren en het bedrag vóór de reservatie mee te delen. Dit zijn de onze.</p>
+      <h2>Vous connaissez le montant avant de réserver.</h2>
+      <p class="sub">La réglementation bruxelloise impose de publier les tarifs et d’annoncer le montant avant la réservation. Voici les nôtres.</p>
     </div>
 
     <div class="grille reveal" id="grille-tarifs">
       <div class="gl">
-        <div class="gl-k">Instaptarief</div>
+        <div class="gl-k">Prise en charge</div>
         <div class="gl-v" data-t="priseEnCharge">—</div>
       </div>
       <div class="gl">
-        <div class="gl-k">Per kilometer</div>
+        <div class="gl-k">Par kilomètre</div>
         <div class="gl-v" data-t="km">—</div>
         <div class="gl-n"></div>
       </div>
       <div class="gl">
-        <div class="gl-k">Per begonnen minuut</div>
+        <div class="gl-k">Par minute entamée</div>
         <div class="gl-v" data-t="prixParMinute">—</div>
-        <div class="gl-n">tijdens de eerste 45 minuten</div>
+        <div class="gl-n">sur les 45 premières minutes</div>
       </div>
       <div class="gl">
-        <div class="gl-k">Minimum per rit</div>
+        <div class="gl-k">Minimum de course</div>
         <div class="gl-v" data-t="minimumCourse">—</div>
       </div>
     </div>
 
-    <p class="small" style="margin:20px 0 40px">Het bedrag houdt rekening met het verkeer op de dag en het uur van uw vertrek. Het is een maximum: u betaalt nooit meer.</p>
+    <p class="small" style="margin:20px 0 40px">Le montant tient compte de la circulation au jour et à l’heure de votre départ. Il est un maximum : vous ne paierez jamais plus.</p>
 
-    <table class="tt reveal" id="exemples-tarifs" aria-label="Voorbeeldbedragen vanuit het centrum van Brussel">
-      <thead><tr><th scope="col">Vanuit het centrum van Brussel</th><th scope="col" class="n">Afstand</th><th scope="col" class="n">Nacht</th><th scope="col" class="n">Overdag</th><th scope="col" class="n">Spitsuur</th></tr></thead>
+    <table class="tt reveal" id="exemples-tarifs" aria-label="Exemples de montants depuis le centre de Bruxelles">
+      <thead><tr><th scope="col">Depuis le centre de Bruxelles</th><th scope="col" class="n">Distance</th><th scope="col" class="n">Nuit</th><th scope="col" class="n">Journée</th><th scope="col" class="n">Heure de pointe</th></tr></thead>
       <tbody></tbody>
     </table>
     <p class="small" id="tarifs-note" style="margin-top:12px"></p>
@@ -980,59 +988,59 @@ footer{background:var(--cream);padding-block:var(--s-5xl) var(--s-xl);border-top
 <section id="zones" class="cream">
   <div class="wrap">
     <div class="head reveal">
-      <h2>Bediende zones.</h2>
-      <p>Elke rit vertrekt vanuit Brussel of de rand. Dit zijn de meest gevraagde bestemmingen — de prijs wordt berekend voor elk adres, ook als het hier niet vermeld staat.</p><p style="margin-top:14px"><b>Detailpagina’s&nbsp;:</b> <a href="/nl/taxi-zaventem/">Taxi luchthaven Zaventem</a> · <a href="/nl/taxi-charleroi/">Taxi luchthaven Charleroi</a> · <a href="/nl/longue-distance/">Taxi lange afstand</a></p>
+      <h2>Zones desservies.</h2>
+      <p>Toutes les courses partent de Bruxelles et de sa périphérie. Ces villes sont les plus demandées&nbsp;: le prix se calcule pour n’importe quelle adresse, même si elle ne figure pas ici.</p><p style="margin-top:14px"><b>Pages détaillées&nbsp;:</b> <a href="/taxi-zaventem/">Taxi aéroport Zaventem</a> · <a href="/taxi-charleroi/">Taxi aéroport Charleroi</a> · <a href="/longue-distance/">Taxi longue distance</a> · <a href="/taxi-gare-bruxelles-midi/">Taxi gare de Bruxelles-Midi</a> · <a href="/chauffeur-prive/">Chauffeur privé à l’heure</a></p>
     </div>
 
     <div class="zgrp reveal">
-      <h3>Brussel en zijn 19 gemeenten</h3>
-      <div class="zones"><span>Brussel-Stad</span><span>Elsene</span><span>Ukkel</span><span>Etterbeek</span><span>Schaarbeek</span><span>Sint-Gillis</span><span>Sint-Lambrechts-Woluwe</span><span>Sint-Pieters-Woluwe</span><span>Anderlecht</span><span>Vorst</span><span>Oudergem</span><span>Watermaal-Bosvoorde</span><span>Molenbeek</span><span>Jette</span><span>Evere</span><span>Ganshoren</span><span>Koekelberg</span><span>Sint-Agatha-Berchem</span><span>Sint-Joost-ten-Node</span></div>
+      <h3>Bruxelles et ses 19 communes</h3>
+      <div class="zones"><span>Bruxelles-Ville</span><span>Ixelles</span><span>Uccle</span><span>Etterbeek</span><span>Schaerbeek</span><span>Saint-Gilles</span><span>Woluwe-Saint-Lambert</span><span>Woluwe-Saint-Pierre</span><span>Anderlecht</span><span>Forest</span><span>Auderghem</span><span>Watermael-Boitsfort</span><span>Molenbeek</span><span>Jette</span><span>Evere</span><span>Ganshoren</span><span>Koekelberg</span><span>Berchem-Sainte-Agathe</span><span>Saint-Josse-ten-Noode</span></div>
     </div>
 
     <div class="zgrp reveal">
-      <h3>Luchthavens</h3>
-      <div class="zones"><span>Brussels Airport (Zaventem)</span><span>Charleroi Airport</span><span>Luchthaven Luik</span><span>Roissy-Charles-de-Gaulle</span><span>Schiphol (Amsterdam)</span></div>
+      <h3>Aéroports</h3>
+      <div class="zones"><span>Brussels Airport (Zaventem)</span><span>Charleroi Airport</span><span>Liège Airport</span><span>Roissy-Charles-de-Gaulle</span><span>Schiphol (Amsterdam)</span></div>
     </div>
 
     <div class="zgrp reveal">
-      <h3>Stations</h3>
-      <div class="zones"><span>Brussel-Zuid</span><span>Brussel-Centraal</span><span>Brussel-Noord</span><span>Brussel-Luxemburg</span><span>Station Rijsel-Europa</span></div>
+      <h3>Gares</h3>
+      <div class="zones"><span>Bruxelles-Midi</span><span>Bruxelles-Central</span><span>Bruxelles-Nord</span><span>Bruxelles-Luxembourg</span><span>Gare de Lille-Europe</span></div>
     </div>
 
     <div class="zgrp reveal">
-      <h3>België</h3>
-      <div class="zones"><span>Antwerpen</span><span>Gent</span><span>Brugge</span><span>Leuven</span><span>Liège</span><span>Namen</span><span>Bergen</span><span>Waterloo</span><span>Leuven-la-Neuve</span><span>Mechelen</span><span>Oostende</span><span>Hasselt</span></div>
+      <h3>Belgique</h3>
+      <div class="zones"><span>Anvers</span><span>Gand</span><span>Bruges</span><span>Louvain</span><span>Liège</span><span>Namur</span><span>Mons</span><span>Waterloo</span><span>Louvain-la-Neuve</span><span>Malines</span><span>Ostende</span><span>Hasselt</span></div>
     </div>
 
     <div class="zgrp reveal">
-      <h3>Lange afstand</h3>
-      <div class="zones"><span>Rijsel</span><span>Paris</span><span>Amsterdam</span><span>Rotterdam</span><span>Luxembourg</span><span>Keulen</span><span>Düsseldorf</span><span>Aken</span><span>Maastricht</span></div>
+      <h3>Longue distance</h3>
+      <div class="zones"><span>Lille</span><span>Paris</span><span>Amsterdam</span><span>Rotterdam</span><span>Luxembourg</span><span>Cologne</span><span>Düsseldorf</span><span>Aix-la-Chapelle</span><span>Maastricht</span></div>
     </div>
   </div>
 </section>
 
 <section id="questions" class="cream">
   <div class="wrap">
-    <div class="head reveal"><h2>Veelgestelde vragen.</h2></div>
+    <div class="head reveal"><h2>Questions fréquentes.</h2></div>
     <details open>
-      <summary>Hoelang op voorhand moet ik reserveren?</summary>
-      <div class="a"><p>Hoe vroeger, hoe beter, zeker voor een vroege vlucht. Een aanvraag voor dezelfde dag wordt behandeld als het tijdslot vrij is — verstuur ze, u krijgt een duidelijk antwoord, ja of nee.</p></div>
+      <summary>Combien de temps à l’avance faut-il réserver&nbsp;?</summary>
+      <div class="a"><p>Le plus tôt reste le mieux, surtout pour un vol matinal. Une demande le jour même est traitée si le créneau est libre — envoyez-la, vous aurez une réponse claire, oui ou non.</p></div>
     </details>
     <details>
-      <summary>Wat als mijn vlucht vertraging heeft?</summary>
-      <div class="a"><p>Bij de reservatie vragen we uw vluchtnummer en volgen we de werkelijke aankomst. De chauffeur richt zich naar het effectieve landingsuur, niet naar dat op uw ticket.</p></div>
+      <summary>Que se passe-t-il si mon vol a du retard&nbsp;?</summary>
+      <div class="a"><p>Le numéro de vol est demandé à la réservation et l’arrivée réelle est suivie. Le chauffeur se cale sur l’heure d’atterrissage effective, pas sur celle du billet.</p></div>
     </details>
     <details>
-      <summary>Kan de prijs achteraf nog veranderen?</summary>
-      <div class="a"><p>Hij kan niet stijgen. Het aangekondigde bedrag is een maximum, incl. btw — is de rit korter dan voorzien, dan betaalt u minder.</p></div>
+      <summary>Le prix peut-il changer après&nbsp;?</summary>
+      <div class="a"><p>Il ne peut pas augmenter. Le montant annoncé est un maximum, TVA comprise — si la course est plus courte que prévu, vous payez moins.</p></div>
     </details>
     <details>
-      <summary>Hoe betaal ik?</summary>
-      <div class="a"><p>Ter plaatse, op het einde van de rit. Een factuur op naam van uw bedrijf wordt op eenvoudig verzoek opgemaakt; meld het bij de reservatie.</p></div>
+      <summary>Comment régler&nbsp;?</summary>
+      <div class="a"><p>Sur place à la fin de la course. Une facture au nom de votre société est établie sur simple demande, à signaler au moment de la réservation.</p></div>
     </details>
     <details>
-      <summary>Rijdt u ook buiten Brussel?</summary>
-      <div class="a"><p>Ja, in België en in het buitenland, op reservatie. Om u buiten het Brussels Gewest op te halen, moet de rit vooraf besteld zijn — dat schrijft de regelgeving voor, en daarom nemen we geen ritten aan zonder reservatie.</p></div>
+      <summary>Roulez-vous en dehors de Bruxelles&nbsp;?</summary>
+      <div class="a"><p>Oui, en Belgique comme à l’étranger, sur réservation. Pour une prise en charge hors de la Région bruxelloise, la course doit avoir été commandée au préalable — c’est ce que prévoit la réglementation, et la raison pour laquelle nous ne prenons pas de course à la volée.</p></div>
     </details>
   </div>
 </section>
@@ -1042,38 +1050,38 @@ footer{background:var(--cream);padding-block:var(--s-5xl) var(--s-xl);border-top
     <div class="legal">
 
       <details id="mentions">
-        <summary>Wettelijke vermeldingen</summary>
+        <summary>Mentions légales</summary>
         <div class="a">
           
-          <p><b>Gereglementeerde activiteit</b> — Service de taxis soumis à autorisation de la Région de Brussel-Capitale (ordonnance du 9 juin 2022). </p>
-          <p><b>Tarieven</b> — De tarieven op deze site zijn in overeenstemming met het besluit van 6 oktober 2022 betreffende de tarieven van de taxidiensten. Het bedrag dat vóór de reservatie wordt meegedeeld, is een maximum; het mag niet worden overschreden.</p>
-          <p><b>Hosting</b> — Statische site. Illustratiefoto’s in afwachting van die van het voertuig.</p>
+          <p><b>Activité réglementée</b> — Service de taxis soumis à autorisation de la Région de Bruxelles-Capitale (ordonnance du 9 juin 2022). </p>
+          <p><b>Tarifs</b> — Les tarifs publiés sur ce site respectent l’arrêté du 6 octobre 2022 relatif aux tarifs des services de taxis. Le montant annoncé avant la réservation est un maximum ; il ne peut être dépassé.</p>
+          <p><b>Hébergement</b> — Site statique. Photographies d’illustration en attendant celles du véhicule.</p>
         </div>
       </details>
 
       <details id="confidentialite">
-        <summary>Privacy en persoonsgegevens</summary>
+        <summary>Confidentialité et données personnelles</summary>
         <div class="a">
-          <p><b>Wat we verzamelen</b> — Wanneer u een reservatie aanvraagt, bezorgt u ons uw naam, uw telefoonnummer, het vertrek- en aankomstadres, de datum en het uur van de rit en, in voorkomend geval, een vluchtnummer. Niets anders.</p>
-          <p><b>Waarom</b> — Uitsluitend om de gevraagde rit te organiseren en uit te voeren, en u het bedrag ervan te bevestigen. Rechtsgrond: de uitvoering van de vervoersovereenkomst die u aanvraagt.</p>
-          <p><b>Hoe dat verloopt</b> — De aanvraag wordt u voorgesteld als WhatsApp-bericht dat u zelf, vanaf uw telefoon, naar het professionele nummer van de chauffeur stuurt. De site bewaart geen van deze gegevens op een server.</p>
-          <p><b>Ingevoerde adressen</b> — Om u tijdens het typen adressen voor te stellen en de afstand te berekenen, raadpleegt de site vrije kaartdiensten (Photon, OpenStreetMap). Alleen de getypte tekst en de coördinaten van de rit worden aan hen doorgegeven, nooit uw identiteit.</p>
-          <p><b>Bezoekersmeting</b> — De site gebruikt de Google Ads-tag en kan de Meta-pixel gebruiken om de doeltreffendheid van de reclame te meten, alleen als u dit in de banner aanvaardt; u kunt uw toestemming intrekken via de link “Cookies” onderaan de pagina. Opvolgingsreferentie: als u deze site via een Google-advertentie bereikt en contact met ons opneemt, wordt een korte referentie (bv. “ref. T7K4QX”) aan uw bericht toegevoegd. Zo weten we welke advertenties tot echte ritten leiden. Ze is enkel gekoppeld aan de technische identificatie van de klik op de advertentie, nooit aan uw naam of telefoonnummer, en wordt na 90 dagen gewist. Hiervoor wordt geen cookie geplaatst.</p>
-          <p><b>Uw rechten</b> — Inzage, verbetering, wissing, bezwaar: schrijf naar contact@transfer.brussels. U kunt zich ook wenden tot de Gegevensbeschermingsautoriteit (gegevensbeschermingsautoriteit.be).</p>
-          <p><b>Bewaring</b> — De chauffeur bewaart de gegevens van de rit zolang nodig voor de uitvoering, de facturatie en zijn wettelijke verplichtingen, en verwijdert ze daarna.</p>
+          <p><b>Ce que nous collectons</b> — Lorsque vous demandez une réservation, vous nous communiquez votre nom, votre numéro de téléphone, les adresses de départ et d’arrivée, la date et l’heure du trajet et, le cas échéant, un numéro de vol. Rien d’autre.</p>
+          <p><b>Pourquoi</b> — Uniquement pour organiser et exécuter la course demandée, et vous en confirmer le montant. Base légale : l’exécution du contrat de transport que vous sollicitez.</p>
+          <p><b>Comment ça transite</b> — La demande vous est proposée sous forme de message WhatsApp que vous envoyez vous-même, depuis votre téléphone, au numéro professionnel du chauffeur. Le site ne conserve aucune de ces données sur un serveur.</p>
+          <p><b>Adresses saisies</b> — Pour vous proposer des adresses au fil de la frappe et calculer la distance, le site interroge des services cartographiques libres (Photon, OpenStreetMap). Seul le texte tapé et les coordonnées du trajet leur sont transmis, jamais votre identité.</p>
+          <p><b>Mesure d’audience</b> — Le site utilise le tag Google Ads et peut utiliser le pixel Meta pour mesurer l’efficacité de la publicité, uniquement si vous l’acceptez dans le bandeau ; vous pouvez retirer votre accord via le lien « Cookies » en bas de page. Référence de suivi : si vous arrivez sur ce site depuis une annonce Google et que vous nous contactez, une courte référence (ex. « réf. T7K4QX ») est ajoutée à votre message. Elle nous permet de savoir quelles annonces mènent à de vraies courses. Elle est reliée uniquement à l’identifiant technique du clic sur l’annonce, jamais à votre nom ou à votre numéro, et elle est effacée après 90 jours. Aucun cookie n’est déposé pour cela.</p>
+          <p><b>Vos droits</b> — Accès, rectification, effacement, opposition : écrivez à contact@transfer.brussels. Vous pouvez aussi saisir l’Autorité de protection des données (autoriteprotectiondonnees.be).</p>
+          <p><b>Conservation</b> — Le chauffeur conserve les informations de la course le temps nécessaire à son exécution, sa facturation et ses obligations réglementaires, puis les supprime.</p>
         </div>
       </details>
 
       <details id="conditions">
-        <summary>Reservatievoorwaarden</summary>
+        <summary>Conditions de réservation</summary>
         <div class="a">
-          <p><b>Reservatie</b> — Een rit is gereserveerd zodra de chauffeur die aan u heeft bevestigd, via WhatsApp of telefonisch. Een verstuurde aanvraag is nog geen reservatie.</p>
-          <p><b>Bedrag</b> — Het aangekondigde bedrag is een maximum, incl. btw. Het kan niet stijgen, ook niet bij file. Is de rit korter dan voorzien, dan kan het werkelijk verschuldigde bedrag lager liggen.</p>
-          <p><b>Wijzigingen</b> — Een extra stop of een andere bestemming wordt vóór vertrek afgesproken; het bedrag wordt dan opnieuw meegedeeld vóór het wordt aanvaard.</p>
-          <p><b>Luchthaven</b> — Geef uw vluchtnummer door: de chauffeur richt zich naar het werkelijke landingsuur.</p>
-          <p><b>Betaling</b> — Ter plaatse, op het einde van de rit. Factuur op naam van uw bedrijf op aanvraag; meld het bij de reservatie.</p>
-          <p><b>Lange afstanden</b> — Voor een rit van meer dan 50 km of waarvan het geraamde bedrag hoger ligt dan 100 €, kan bij de reservatie een voorschot van de helft van het geraamde bedrag worden gevraagd, overeenkomstig de Brusselse regelgeving.</p>
-          <p><b>Annulering</b> — Verwittig ons zo vroeg mogelijk, via WhatsApp of telefonisch.</p>
+          <p><b>Réservation</b> — Une course est réservée lorsque le chauffeur vous l’a confirmée, par WhatsApp ou par téléphone. Une demande envoyée n’est pas encore une réservation.</p>
+          <p><b>Montant</b> — Le montant annoncé est un maximum, TVA comprise. Il ne peut pas augmenter, y compris en cas d’embouteillage. Si la course est plus courte que prévu, le montant réellement dû peut être inférieur.</p>
+          <p><b>Modifications</b> — Un arrêt supplémentaire ou un changement de destination se convient avant le départ ; le montant est alors réannoncé avant qu’il soit accepté.</p>
+          <p><b>Aéroport</b> — Communiquez votre numéro de vol : le chauffeur se cale sur l’heure d’atterrissage réelle.</p>
+          <p><b>Paiement</b> — Sur place, à la fin de la course. Facture au nom de votre société sur demande, à signaler à la réservation.</p>
+          <p><b>Longues distances</b> — Pour une course de plus de 50 km ou dont le montant estimé dépasse 100 €, une provision égale à la moitié du montant estimé peut être demandée à la réservation, conformément à la réglementation bruxelloise.</p>
+          <p><b>Annulation</b> — Prévenez le plus tôt possible, par WhatsApp ou par téléphone.</p>
         </div>
       </details>
 
@@ -1086,12 +1094,12 @@ footer{background:var(--cream);padding-block:var(--s-5xl) var(--s-xl);border-top
     <div class="fg">
       <div>
         <div class="logo" style="margin-bottom:12px">Transfer Brussels</div>
-        <p class="small" style="max-width:34ch">Privéchauffeur in België. Luchthavenvervoer, lange afstand en chauffeur ter beschikking, op reservatie.</p>
+        <p class="small" style="max-width:34ch">Chauffeur privé en Belgique. Transferts aéroport, longue distance et mise à disposition, sur réservation.</p>
       </div>
-      <div><h4>Diensten</h4><a href="#prestations">Luchthavenvervoer</a><a href="#prestations">Lange afstand</a><a href="#prestations">Chauffeur ter beschikking</a></div>
-      <div><h4>Informatie</h4><a href="#tarifs">Tarieven</a><a href="#questions">Veelgestelde vragen</a><a href="#reserver">Reserveren</a></div>
-      <div><h4>Contact</h4><a href="tel:+32471984401" data-appel>+32 471 98 44 01</a><a href="https://wa.me/32471984401" target="_blank" rel="noopener" data-wa>WhatsApp</a><a href="mailto:contact@transfer.brussels">contact@transfer.brussels</a></div>
-      <div><h4>Wettelijk</h4><a href="#mentions">Wettelijke vermeldingen</a><a href="#confidentialite">Privacy</a><a href="#conditions">Voorwaarden</a><a href="#" id="ck-ouvrir">Cookies</a></div>
+      <div><h4>Prestations</h4><a href="#prestations">Transfert aéroport</a><a href="#prestations">Longue distance</a><a href="#prestations">Mise à disposition</a></div>
+      <div><h4>Informations</h4><a href="#tarifs">Tarifs</a><a href="#questions">Questions fréquentes</a><a href="#reserver">Réserver</a></div>
+      <div><h4>Nous joindre</h4><a href="tel:+32471984401" data-appel>+32 471 98 44 01</a><a href="https://wa.me/32471984401" target="_blank" rel="noopener" data-wa>WhatsApp</a><a href="mailto:contact@transfer.brussels">contact@transfer.brussels</a></div>
+      <div><h4>Légal</h4><a href="#mentions">Mentions légales</a><a href="#confidentialite">Confidentialité</a><a href="#conditions">Conditions</a><a href="#" id="ck-ouvrir">Cookies</a></div>
     </div>
     <div class="mentions">
       
@@ -1101,12 +1109,12 @@ footer{background:var(--cream);padding-block:var(--s-5xl) var(--s-xl);border-top
   </div>
 </footer>
 
-<div id="cookies" class="cookies" role="dialog" aria-label="Cookies en bezoekersmeting" hidden>
-  <p>Deze site gebruikt cookies voor bezoekersmeting. U kunt ze accepteren of weigeren. <a href="#confidentialite">Meer informatie</a></p>
-  <div class="cookies-btns"><button type="button" id="ck-non">Weigeren</button><button type="button" id="ck-oui">Accepteren</button></div>
+<div id="cookies" class="cookies" role="dialog" aria-label="Cookies et mesure d'audience" hidden>
+  <p>Ce site utilise des cookies de mesure d'audience. Vous pouvez les accepter ou les refuser. <a href="#confidentialite">En savoir plus</a></p>
+  <div class="cookies-btns"><button type="button" id="ck-non">Refuser</button><button type="button" id="ck-oui">Accepter</button></div>
 </div>
 <a class="wa-flot" href="https://wa.me/32471984401" target="_blank" rel="noopener"
-   data-wa aria-label="Schrijven via WhatsApp">
+   data-wa aria-label="Écrire sur WhatsApp">
   <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.47 14.38c-.3-.15-1.75-.86-2.02-.96-.27-.1-.47-.15-.67.15-.2.3-.77.96-.94 1.16-.17.2-.35.22-.64.07-.3-.15-1.25-.46-2.38-1.47-.88-.78-1.47-1.75-1.64-2.05-.17-.3-.02-.46.13-.6.13-.14.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.6-.92-2.2-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.01-1.04 2.47s1.06 2.86 1.21 3.06c.15.2 2.1 3.2 5.08 4.49.71.3 1.26.49 1.69.63.71.22 1.36.19 1.87.12.57-.09 1.75-.72 2-1.41.25-.69.25-1.28.17-1.41-.07-.13-.27-.2-.57-.35M12.04 21.5h-.01a9.44 9.44 0 0 1-4.8-1.32l-.35-.2-3.57.93.96-3.47-.23-.36a9.4 9.4 0 0 1-1.44-5.02c0-5.2 4.24-9.44 9.45-9.44 2.52 0 4.89.99 6.67 2.77a9.37 9.37 0 0 1 2.76 6.68c0 5.2-4.24 9.44-9.44 9.44M20.5 3.49A11.82 11.82 0 0 0 12.04 0C5.46 0 .1 5.35.1 11.93c0 2.1.55 4.15 1.6 5.96L0 24l6.26-1.64a11.9 11.9 0 0 0 5.78 1.47h.01c6.58 0 11.93-5.35 11.94-11.93a11.86 11.86 0 0 0-3.48-8.41"/></svg>
 </a>
 
@@ -1137,7 +1145,7 @@ window.TARIFS = {
 
   
   trafic: {
-    sourceCoefficients: 'Indice de circulation TomTom — Brussel, relevé le 01/09/2026',
+    sourceCoefficients: 'Indice de circulation TomTom — Bruxelles, relevé le 01/09/2026',
     parCreneau: [
      [ 9, 4, 3, 2, 1, 6,22,49,78,61,44,42,47,46,47,61,77,84,66,36,23,18,21,16],
      [ 9, 4, 3, 2, 2, 7,24,54,88,73,52,48,52,51,52,68,86,96,80,44,24,18,23,16],
@@ -1151,14 +1159,14 @@ window.TARIFS = {
 
   
   exemples: [
-    { id: 'zaventem',   label: 'Brussel → Brussels Airport (Zaventem)', km: null, minutes: null },
-    { id: 'charleroi',  label: 'Brussel → Charleroi Airport',           km: null, minutes: null },
-    { id: 'midi',       label: 'Brussel → Zuidstation',                km: null, minutes: null },
-    { id: 'anvers',     label: 'Brussel → Antwerpen',                      km: null, minutes: null },
-    { id: 'lille',      label: 'Brussel → Rijsel',                       km: null, minutes: null },
-    { id: 'paris',      label: 'Brussel → Paris',                       km: null, minutes: null },
-    { id: 'amsterdam',  label: 'Brussel → Amsterdam',                   km: null, minutes: null },
-    { id: 'luxembourg', label: 'Brussel → Luxembourg',                  km: null, minutes: null }
+    { id: 'zaventem',   label: 'Bruxelles → Brussels Airport (Zaventem)', km: null, minutes: null },
+    { id: 'charleroi',  label: 'Bruxelles → Charleroi Airport',           km: null, minutes: null },
+    { id: 'midi',       label: 'Bruxelles → Gare du Midi',                km: null, minutes: null },
+    { id: 'anvers',     label: 'Bruxelles → Anvers',                      km: null, minutes: null },
+    { id: 'lille',      label: 'Bruxelles → Lille',                       km: null, minutes: null },
+    { id: 'paris',      label: 'Bruxelles → Paris',                       km: null, minutes: null },
+    { id: 'amsterdam',  label: 'Bruxelles → Amsterdam',                   km: null, minutes: null },
+    { id: 'luxembourg', label: 'Bruxelles → Luxembourg',                  km: null, minutes: null }
   ],
 
   
@@ -1244,7 +1252,7 @@ window.TARIFS = {
       box.appendChild(document.createElement("br"));
       var w = document.createElement("span");
       w.className = "avert";
-      w.textContent = "Ter indicatie — voorlopige tarieven, niet bindend";
+      w.textContent = "Aperçu — tarifs provisoires, non contractuels";
       box.appendChild(w);
     }
     sortie.appendChild(box);
@@ -1297,8 +1305,8 @@ window.TARIFS = {
       var d = new Date(auj.getTime() + i * 86400000);
       var o = document.createElement("option");
       o.value = iso(d);
-      var lib = d.toLocaleDateString("nl-BE", { weekday: "short", day: "numeric", month: "short" });
-      o.textContent = i === 0 ? "Vandaag, " + lib : (i === 1 ? "Morgen, " + lib : lib);
+      var lib = d.toLocaleDateString("fr-BE", { weekday: "short", day: "numeric", month: "short" });
+      o.textContent = i === 0 ? "Aujourd’hui, " + lib : (i === 1 ? "Demain, " + lib : lib);
       champDate.appendChild(o);
     }
     var sepH = document.documentElement.lang === "fr" ? " h " : ":";   /* « 08 h 30 » en FR, « 08:30 » en EN/NL */
@@ -1320,7 +1328,7 @@ window.TARIFS = {
   function dateLisible(iso) {
     var d = new Date(iso + "T12:00");
     if (isNaN(d.getTime())) return iso;
-    return d.toLocaleDateString("nl-BE", { weekday: "long", day: "numeric", month: "long" });
+    return d.toLocaleDateString("fr-BE", { weekday: "long", day: "numeric", month: "long" });
   }
 
   function departChoisi() {
@@ -1359,7 +1367,7 @@ window.TARIFS = {
         var totalH = Math.ceil(facturees * H.prixHeure);
         var dep = departChoisi();
         if (dep && dep.getTime() < Date.now()) {
-          contact("Deze datum is al voorbij. Kies het moment van uw vertrek.");
+          contact("Cette date est déjà passée. Choisissez le moment de votre départ.");
           champDate.focus();
           return;
         }
@@ -1367,7 +1375,7 @@ window.TARIFS = {
           ? "Minimum de " + mini + " heures de mise à disposition."
           : facturees + (facturees > 1 ? " heures" : " heure") + " à " + String(H.prixHeure).replace(".", ",") + " € l'heure.";
         devis(totalH, noteH + " TVA comprise. Vous ne paierez jamais plus que ce montant.",
-              "Chauffeur ter beschikking · " + lieuH + " · " + facturees + " h · "
+              "Mise à disposition · " + lieuH + " · " + facturees + " h · "
               + dateLisible(champDate.value) + " à " + champHeure.value);
         return;
       }
@@ -1383,9 +1391,9 @@ window.TARIFS = {
         }
         var SL = String.fromCharCode(10);
         var txtH = "Bonjour, je souhaite une mise à disposition."
-          + SL + "Instaptarief : " + lieu
-          + (duree ? SL + "Gewenste duur : " + duree : "")
-          + SL + "Datum : " + dateLisible(champDate.value) + " à " + champHeure.value;
+          + SL + "Prise en charge : " + lieu
+          + (duree ? SL + "Durée souhaitée : " + duree : "")
+          + SL + "Date : " + dateLisible(champDate.value) + " à " + champHeure.value;
         contactAction("La mise à disposition se convient directement, selon la durée et le trajet.",
                       "Demander sur WhatsApp", txtH);
         return;
@@ -1393,7 +1401,7 @@ window.TARIFS = {
     }
 
     if (!document.getElementById("a").value.trim() || !document.getElementById("b").value.trim()) {
-      contact("Geef het ophaaladres en de bestemming op.");
+      contact("Indiquez le lieu de prise en charge et la destination.");
       (document.getElementById("a").value.trim() ? document.getElementById("b") : document.getElementById("a")).focus();
       return;
     }
@@ -1403,35 +1411,35 @@ window.TARIFS = {
        un prix (retour d'Ahmed transpose ici, 04/09/2026). L'INVITATION reste sous le champ. */
     var depart = departChoisi();
     if (depart && depart.getTime() < Date.now()) {
-      contact("Deze datum is al voorbij. Kies het moment van uw vertrek.");
+      contact("Cette date est déjà passée. Choisissez le moment de votre départ.");
       champDate.focus();
       return;
     }
     /* depart tres proche : on ne refuse pas, on met au telephone —
        c'est la demande la plus chaude qui soit. */
     if (depart && depart.getTime() - Date.now() < 120 * 60 * 1000) {
-      contact("Vertrekt u binnen de twee uur, bel dan "
-            + "+32 471 98 44 01: u krijgt meteen antwoord.");
+      contact("Pour un départ dans moins de deux heures, appelez le "
+            + "+32 471 98 44 01 : la réponse est immédiate.");
       return;
     }
 
     if (!ca || !cb) {
-      contact("Kies het vertrekpunt en de bestemming in de lijst die verschijnt, "
-            + "zodat het bedrag berekend kan worden.");
+      contact("Choisissez le départ et la destination dans la liste qui s’affiche, "
+            + "pour que le montant puisse être calculé.");
       return;
     }
     if (G.priseEnCharge == null) {
-      contact("We antwoorden u met een vast bedrag. U kunt ook bellen naar "
+      contact("Nous vous répondons avec un montant ferme. Vous pouvez aussi appeler le "
             + "+32 471 98 44 01.");
       return;
     }
 
     var go = document.querySelector('#req [type=submit]');
     if (go) go.disabled = true;
-    sortie.innerHTML = '<span class="spin" aria-hidden="true"></span>Bezig met berekenen…';
+    sortie.innerHTML = '<span class="spin" aria-hidden="true"></span>Calcul en cours…';
 
     var A = ca.split(","), B = cb.split(",");
-    /* 8 s maximum : si le service d'itineraire traine, on bascule sur l'estimation au lieu de laisser « Bezig met berekenen… » */
+    /* 8 s maximum : si le service d'itineraire traine, on bascule sur l'estimation au lieu de laisser « Calcul en cours… » */
     var ctrl = (typeof AbortController !== "undefined") ? new AbortController() : null;
     if (ctrl) setTimeout(function () { ctrl.abort(); }, 8000);
     fetch(ROUTEUR + A[1] + "," + A[0] + ";" + B[1] + "," + B[0] + "?overview=false", ctrl ? { signal: ctrl.signal } : {})
@@ -1456,17 +1464,17 @@ window.TARIFS = {
 
         var d2 = document.createElement("span");
         d2.className = "detail";
-        d2.textContent = km.toFixed(1).replace(".", ",") + " km · ongeveer "
+        d2.textContent = km.toFixed(1).replace(".", ",") + " km · environ "
                        + res.minutes + " min"
-                       + (pct >= 45 ? " (druk verkeer op dit uur)" : "")
-                       + " · incl. btw. U betaalt nooit meer dan dit bedrag.";
+                       + (pct >= 45 ? " (circulation dense à cette heure)" : "")
+                       + " · TVA comprise. Vous ne paierez jamais plus que ce montant.";
         box.appendChild(d2);
 
         if (G.provisoire) {
           box.appendChild(document.createElement("br"));
           var w = document.createElement("span");
           w.className = "avert";
-          w.textContent = "Ter indicatie — voorlopige tarieven, niet bindend";
+          w.textContent = "Aperçu — tarifs provisoires, non contractuels";
           box.appendChild(w);
         }
         sortie.appendChild(box);
@@ -1484,7 +1492,7 @@ window.TARIFS = {
       .catch(function () {
         /* le service d'itineraire ne repond pas : on ESTIME plutot que de
            laisser le client sans rien. Vol d'oiseau x 1,35 (facteur routier
-           usuel en België), 40 km/h de moyenne. Marque comme estimation. */
+           usuel en Belgique), 40 km/h de moyenne. Marque comme estimation. */
         var R = 6371, toRad = Math.PI / 180;
         var la1 = +A[0] * toRad, la2 = +B[0] * toRad;
         var dLa = la2 - la1, dLo = (+B[1] - +A[1]) * toRad;
@@ -1500,11 +1508,11 @@ window.TARIFS = {
         box.className = "devis";
         var m = document.createElement("span");
         m.className = "montant";
-        m.textContent = "Ongeveer " + res.total + " € maximum";
+        m.textContent = "Environ " + res.total + " € maximum";
         box.appendChild(m);
         var d2 = document.createElement("span");
         d2.className = "detail";
-        d2.textContent = "Raming — het exacte bedrag wordt u bij de reservatie bevestigd. Incl. btw.";
+        d2.textContent = "Estimation — le montant exact vous est confirmé à la réservation. TVA comprise.";
         box.appendChild(d2);
         sortie.appendChild(box);
 
@@ -1530,9 +1538,9 @@ document.querySelectorAll(".mode").forEach(function (b) {
     b.setAttribute("aria-selected", "true");
     var horaire = b.dataset.mode === "heure";
     var dest = document.getElementById("fld-dest");
-    dest.querySelector("label").textContent = horaire ? "Gewenste duur" : "Bestemming";
+    dest.querySelector("label").textContent = horaire ? "Durée souhaitée" : "Destination";
     var i = dest.querySelector("input");
-    i.placeholder = horaire ? "3 uur, halve dag…" : "Adres, luchthaven, hotel…";
+    i.placeholder = horaire ? "3 heures, demi-journée…" : "Adresse, aéroport, hôtel…";
     i.value = "";
     /* en mode horaire ce champ recoit une DUREE, pas une adresse : on eteint
        l'autocompletion, on ferme la liste et on vide les coordonnees. */
@@ -1850,10 +1858,10 @@ document.querySelectorAll(".mode").forEach(function (b) {
       (nom ? document.getElementById("r-tel") : document.getElementById("r-nom")).focus();
       return;
     }
-    var txt = "Goedendag, ik wil graag reserveren:\n" + recap
-            + "\nNaam: " + nom + "\nTel.: " + tel
-            + (vol ? "\nVlucht: " + vol : "")
-            + "\n(aanvraag verstuurd via de website)";
+    var txt = "Bonjour, je souhaite réserver :\n" + recap
+            + "\nNom : " + nom + "\nTél : " + tel
+            + (vol ? "\nVol : " + vol : "")
+            + "\n(demande envoyée depuis le site)";
     txt = window.refTexte(txt);
     var montant = parseFloat(document.getElementById("resa").dataset.montant) || 0;
     window.evt("Lead", { content_name: "reservation", value: montant, currency: "EUR" });
@@ -1881,7 +1889,7 @@ document.querySelectorAll(".mode").forEach(function (b) {
     if (note && tr.length > 1) {
       var parts = [];
       for (var i = 0; i < tr.length; i++) {
-        parts.push(eur(tr[i].prix.toFixed(2)) + (i < tr.length - 1 ? " tot " + tr[i].jusqua + " km" : " daarboven"));
+        parts.push(eur(tr[i].prix.toFixed(2)) + (i < tr.length - 1 ? " jusqu’à " + tr[i].jusqua + " km" : " au-delà"));
       }
       note.textContent = parts.join(" · ");
     }
@@ -1890,10 +1898,10 @@ document.querySelectorAll(".mode").forEach(function (b) {
   /* exemples : km et minutes mesures le 01/09/2026 (OSRM, depuis la Grand-Place) */
   var EX = [
     { nom: "Brussels Airport (Zaventem)", km: 15.0, min: 22 },
-    { nom: "Zuidstation",                km: 2.2,  min: 8  },
+    { nom: "Gare du Midi",                km: 2.2,  min: 8  },
     { nom: "Charleroi Airport",           km: 56.1, min: 45 },
-    { nom: "Antwerpen",                      km: 53.7, min: 48 }
-    /* Rijsel retiree le 03/09/2026 : trajet transfrontalier, hors droit bruxellois — tarifs.js le dit, le tableau le contredisait */
+    { nom: "Anvers",                      km: 53.7, min: 48 }
+    /* Lille retiree le 03/09/2026 : trajet transfrontalier, hors droit bruxellois — tarifs.js le dit, le tableau le contredisait */
   ];
   function coutDistance(km) {
     var reste = km, bas = 0, total = 0;
@@ -1913,7 +1921,7 @@ document.querySelectorAll(".mode").forEach(function (b) {
   var nuit = mar[3] || 0, jour = mar[12] || 0, pointe = mar[8] || 0;
   var corps = document.querySelector("#exemples-tarifs tbody");
   if (!corps) return;
-  var ETQ = ["", "Afstand", "Nacht", "Overdag", "Spitsuur"];
+  var ETQ = ["", "Distance", "Nuit", "Journée", "Heure de pointe"];
   EX.forEach(function (e) {
     var trr = document.createElement("tr");
     [e.nom, e.km.toFixed(1).replace(".", ",") + " km",
@@ -1927,8 +1935,8 @@ document.querySelectorAll(".mode").forEach(function (b) {
     corps.appendChild(trr);
   });
   var note = document.getElementById("tarifs-note");
-  if (note) note.textContent = (G.provisoire ? "Ter indicatie — voorlopige tarieven, niet bindend. " : "")
-    + "Maximumbedragen, incl. btw, vanuit het centrum van Brussel. Het exacte bedrag van uw rit verschijnt in het formulier.";
+  if (note) note.textContent = (G.provisoire ? "Aperçu — tarifs provisoires, non contractuels. " : "")
+    + "Montants maximums, TVA comprise, depuis le centre de Bruxelles. Le montant exact de votre trajet s’affiche dans le formulaire.";
 })();
 
 /* ---- bascule de fond : leur scrollTrigger start/end "top 50%" ----
@@ -1969,24 +1977,24 @@ document.querySelectorAll(".mode").forEach(function (b) {
    jamais une demande parce qu'un service gratuit est tombe.            */
 (function () {
   var EPINGLES = [
-    { nom:"Luchthaven Brussel-Nationaal (Zaventem)", det:"Zaventem · BRU", lat:50.9010, lon:4.4844,
+    { nom:"Aéroport de Bruxelles-National (Zaventem)", det:"Zaventem · BRU", lat:50.9010, lon:4.4844,
       mots:"zaventem brussels airport bru aeroport bruxelles national avion vol" },
-    { nom:"Luchthaven Charleroi-Brussel-Zuid", det:"Charleroi · CRL", lat:50.4592, lon:4.4525,
+    { nom:"Aéroport de Charleroi-Bruxelles-Sud", det:"Charleroi · CRL", lat:50.4592, lon:4.4525,
       mots:"charleroi crl aeroport bruxelles sud gosselies ryanair avion vol" },
-    { nom:"Station Brussel-Zuid", det:"Sint-Gillis · Eurostar, Thalys", lat:50.8358, lon:4.3363,
+    { nom:"Gare de Bruxelles-Midi", det:"Saint-Gilles · Eurostar, Thalys", lat:50.8358, lon:4.3363,
       mots:"midi zuid gare eurostar thalys train bruxelles" },
-    { nom:"Station Brussel-Centraal", det:"Brussel", lat:50.8455, lon:4.3571,
+    { nom:"Gare de Bruxelles-Central", det:"Bruxelles", lat:50.8455, lon:4.3571,
       mots:"central centraal gare train bruxelles" },
-    { nom:"Station Brussel-Noord", det:"Schaarbeek", lat:50.8598, lon:4.3607,
+    { nom:"Gare de Bruxelles-Nord", det:"Schaerbeek", lat:50.8598, lon:4.3607,
       mots:"nord noord gare train bruxelles" },
-    { nom:"Station Brussel-Luxemburg", det:"Elsene · Europese wijk", lat:50.8393, lon:4.3745,
+    { nom:"Gare de Bruxelles-Luxembourg", det:"Ixelles · Quartier européen", lat:50.8393, lon:4.3745,
       mots:"luxembourg gare train europeen schuman" },
-    { nom:"Grote Markt van Brussel", det:"Brussel · centrum", lat:50.8467, lon:4.3525,
+    { nom:"Grand-Place de Bruxelles", det:"Bruxelles · centre", lat:50.8467, lon:4.3525,
       mots:"grand place grote markt centre ville bruxelles" }
   ];
 
   /* PRE-REMPLISSAGE de la destination (07/09/2026, audit des tunnels Google Ads).
-     Une annonce « Taxi vers Charleroi Airport » qui atterrit sur un champ Bestemming VIDE fait
+     Une annonce « Taxi vers Charleroi Airport » qui atterrit sur un champ Destination VIDE fait
      retaper au visiteur ce qu'il vient de cliquer : c'est la friction n°1 du tunnel. Les pages
      /taxi-charleroi/, /taxi-zaventem/, /taxi-gare-bruxelles-midi/ appellent preremplir(code) ;
      l'accueil accepte aussi #charleroi, #zaventem, #midi (destination) et #heure (mise a
@@ -2034,7 +2042,7 @@ document.querySelectorAll(".mode").forEach(function (b) {
     if (/station|halt|gare\b/.test(t)) return ICONES.train;
     return ICONES.pin;
   }
-  var PAYS = { BE:1, FR:1, NL:1, LU:1, DE:1 };   /* code pays, pas le libelle : Photon repond en francais, anglais of local selon la langue de la page */
+  var PAYS = { BE:1, FR:1, NL:1, LU:1, DE:1 };   /* code pays, pas le libelle : Photon repond en francais, anglais ou local selon la langue de la page */
 
   function nu(t) {
     try { return (t || "").toLowerCase().normalize("NFD").replace(/\p{Diacritic}/gu, ""); }
@@ -2048,7 +2056,7 @@ document.querySelectorAll(".mode").forEach(function (b) {
   }
 
   /* correspondance par MOTS, pas par chaine entiere : « gare du midi » doit
-     trouver « Station Brussel-Zuid ». Les mots outils sont ignores. */
+     trouver « Gare de Bruxelles-Midi ». Les mots outils sont ignores. */
   var OUTILS = { de:1, du:1, la:1, le:1, les:1, des:1, et:1, aux:1, "a":1 };
   function epinglesPour(q) {
     var ms = mots(q).filter(function (m) { return !OUTILS[m]; });
@@ -2064,13 +2072,13 @@ document.querySelectorAll(".mode").forEach(function (b) {
   /* Photon, DEUX appels (mesure le 03/09/2026 sur Presto, meme code : pour « Rue de », l'appel
      simple rendait le Conseil de l'UE, la Monnaie, les Beaux-Arts — des BUREAUX de la rue de la
      Loi — avant la moindre rue) :
-     (1) dans la ZONE (Brussel + Brabant wallon + aeroports), limite aux RUES (`layer=street`)
+     (1) dans la ZONE (Bruxelles + Brabant wallon + aeroports), limite aux RUES (`layer=street`)
          quand la saisie commence par un type de voie sans numero ;
-     (2) sans zone, pour les destinations lointaines (Paris, Amsterdam, Rijsel) — classe apres.  */
+     (2) sans zone, pour les destinations lointaines (Paris, Amsterdam, Lille) — classe apres.  */
   var ZONE = "4.10,50.40,5.10,50.95";
   var VOIE = /^(rue|r\.|av|av\.|avenue|chauss[ée]e|ch[ée]e|place|pl\.|boulevard|bd|bld|dr[èe]ve|clos|all[ée]e|chemin|square|sentier|cours|quai|impasse|voie|route|rte|venelle|ruelle|straat|laan|steenweg|plein|dreef)\b/i;
   function photon(q, extra) {
-    return fetch("https://photon.komoot.io/api?lang=default&limit=12&lat=50.8466&lon=4.3528&q=" + encodeURIComponent(q) + (extra || ""))
+    return fetch("https://photon.komoot.io/api?lang=fr&limit=12&lat=50.8466&lon=4.3528&q=" + encodeURIComponent(q) + (extra || ""))
       .then(function (r) { return r.ok ? r.json() : null; })
       .then(function (d) { return (d && d.features) || []; })
       .catch(function () { return []; });
@@ -2096,21 +2104,21 @@ document.querySelectorAll(".mode").forEach(function (b) {
       vus[cle] = 1;
       /* categorie inconnue = commerce le plus souvent : on la place bas */
       var sc = SCORE[p.osm_value] || (p.housenumber ? 52 : 8);
-      /* la België passe devant a nom egal ; un numero de maison a l'etranger est du bruit
+      /* la Belgique passe devant a nom egal ; un numero de maison a l'etranger est du bruit
          (« Rue de la Belle Etoile 39 » sortait 7 adresses francaises et aucune belge, 04/09/2026).
-         Les VILLES etrangeres (Paris, Rijsel, Amsterdam) ne sont pas touchees : elles n'ont pas de numero. */
+         Les VILLES etrangeres (Paris, Lille, Amsterdam) ne sont pas touchees : elles n'ont pas de numero. */
       if (p.countrycode === "BE") sc += 70;
       else if (p.housenumber) sc -= 40;
       if (p.state && /bruxelles|brussel|brabant/i.test(p.state)) sc += 20;
       if (rue && p.osm_key === "highway") sc += 80;          /* on a tape un type de voie : les rues d'abord */
       if (rue && p.osm_key !== "highway") sc -= 30;
-      /* une VILLE tapee en entier passe devant les commerces qui portent son nom (« Paris » = Paris, pas un bar de Gent) */
+      /* une VILLE tapee en entier passe devant les commerces qui portent son nom (« Paris » = Paris, pas un bar de Gand) */
       if (p.osm_key === "place" && /^(city|town|village|municipality)$/.test(p.osm_value) && nu(nom) === nu(q)) sc += 90;
       var nn = nu(nom), nq = nu(q);
       if (nn === nq) sc += 60;                 /* nom exact : « atomium » */
       else if (nn.indexOf(nq) === 0) sc += 15; /* commence par la requete */
       /* part des mots tapes reellement presents dans le nom :
-         « rue neuve » couvre 2/2 sur « Rue Neuve », 1/2 sur « Leuven-la-Neuve » */
+         « rue neuve » couvre 2/2 sur « Rue Neuve », 1/2 sur « Louvain-la-Neuve » */
       var ms = mots(q).filter(function (m) { return !OUTILS[m]; });   /* « de » ne compte pas comme mot trouve */
       if (ms.length) {
         var trouves = 0;
@@ -2127,7 +2135,7 @@ document.querySelectorAll(".mode").forEach(function (b) {
     var cles = pins.map(function (p) { return nu(p.nom); });
     return pins.concat(res.filter(function (r) {
       var n = nu(r.nom), memeFamille = /station|halt|aerodrome|terminal|stop/.test(r.type || "");
-      /* on n'ecarte que le MEME lieu (gare of aeroport deja epingle), pas la commune qui porte son nom */
+      /* on n'ecarte que le MEME lieu (gare ou aeroport deja epingle), pas la commune qui porte son nom */
       return !cles.some(function (c) { return c === n || (memeFamille && (c.indexOf(n) >= 0 || n.indexOf(c) >= 0)); });
     }));
   }
@@ -2177,7 +2185,7 @@ document.querySelectorAll(".mode").forEach(function (b) {
     function aideLibre() {
       var li0 = document.createElement("li");
       li0.className = "libre";
-      li0.textContent = "Nummer niet gevonden? Kies de straat en voeg daarna uw huisnummer toe.";
+      li0.textContent = "Numéro introuvable ? Choisissez la rue, puis ajoutez votre numéro à la suite.";
       liste.appendChild(li0);
     }
     function afficher(res, avecNumero) {
@@ -2288,7 +2296,7 @@ document.addEventListener("click", function (e) {
   if (wa) {
     var c = window.refSuivi && window.refSuivi();
     if (c && wa.href && wa.href.indexOf("wa.me") > -1 && wa.href.indexOf("text=") < 0) {
-      wa.href = wa.href.split("?")[0] + "?text=" + encodeURIComponent("Goedendag, ik wil graag een rit reserveren. (ref. " + c + ")");
+      wa.href = wa.href.split("?")[0] + "?text=" + encodeURIComponent("Bonjour, je souhaite réserver un trajet. (réf. " + c + ")");
     }
     window.convWa(); window.evt("Contact", { canal: "whatsapp" }); return;
   }

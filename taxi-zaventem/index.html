@@ -833,6 +833,7 @@ footer{background:var(--cream);padding-block:var(--s-5xl) var(--s-xl);border-top
   <p style="font-size:18px;line-height:30px;margin:0 0 18px">La prise en charge se fait à l’adresse que vous indiquez, à l’heure convenue, par un chauffeur agréé en berline récente, quatre passagers et leurs bagages. Le retour depuis Zaventem se réserve de la même façon&nbsp;: une course réservée à l’avance, confirmée par le chauffeur avant votre départ.</p>
   <p style="margin:26px 0 0"><a href="#reserver" class="btn">Voir le prix de mon trajet</a></p>
 </div></section>
+<script>window.addEventListener("DOMContentLoaded", function () { window.preremplir && window.preremplir("zaventem"); });</script>
 
 
 <section id="prestations">
@@ -988,7 +989,7 @@ footer{background:var(--cream);padding-block:var(--s-5xl) var(--s-xl);border-top
   <div class="wrap">
     <div class="head reveal">
       <h2>Zones desservies.</h2>
-      <p>Toutes les courses partent de Bruxelles et de sa périphérie. Ces villes sont les plus demandées&nbsp;: le prix se calcule pour n’importe quelle adresse, même si elle ne figure pas ici.</p><p style="margin-top:14px"><b>Pages détaillées&nbsp;:</b> <a href="/taxi-zaventem/">Taxi aéroport Zaventem</a> · <a href="/taxi-charleroi/">Taxi aéroport Charleroi</a> · <a href="/longue-distance/">Taxi longue distance</a></p>
+      <p>Toutes les courses partent de Bruxelles et de sa périphérie. Ces villes sont les plus demandées&nbsp;: le prix se calcule pour n’importe quelle adresse, même si elle ne figure pas ici.</p><p style="margin-top:14px"><b>Pages détaillées&nbsp;:</b> <a href="/taxi-zaventem/">Taxi aéroport Zaventem</a> · <a href="/taxi-charleroi/">Taxi aéroport Charleroi</a> · <a href="/longue-distance/">Taxi longue distance</a> · <a href="/taxi-gare-bruxelles-midi/">Taxi gare de Bruxelles-Midi</a> · <a href="/chauffeur-prive/">Chauffeur privé à l’heure</a></p>
     </div>
 
     <div class="zgrp reveal">
@@ -1991,6 +1992,31 @@ document.querySelectorAll(".mode").forEach(function (b) {
     { nom:"Grand-Place de Bruxelles", det:"Bruxelles · centre", lat:50.8467, lon:4.3525,
       mots:"grand place grote markt centre ville bruxelles" }
   ];
+
+  /* PRE-REMPLISSAGE de la destination (07/09/2026, audit des tunnels Google Ads).
+     Une annonce « Taxi vers Charleroi Airport » qui atterrit sur un champ Destination VIDE fait
+     retaper au visiteur ce qu'il vient de cliquer : c'est la friction n°1 du tunnel. Les pages
+     /taxi-charleroi/, /taxi-zaventem/, /taxi-gare-bruxelles-midi/ appellent preremplir(code) ;
+     l'accueil accepte aussi #charleroi, #zaventem, #midi (destination) et #heure (mise a
+     disposition) dans les URL des annonces. On ne touche JAMAIS au depart : c'est SON adresse.
+     Les coordonnees viennent des EPINGLES, comme si le visiteur avait choisi la suggestion. */
+  var CODES = { charleroi: /CRL/, zaventem: /BRU/, midi: /Eurostar/ };
+  window.preremplir = function (code) {
+    var re = CODES[code]; if (!re) return false;
+    var it = null;
+    for (var k = 0; k < EPINGLES.length; k++) { if (re.test(EPINGLES[k].det)) { it = EPINGLES[k]; break; } }
+    var b = document.getElementById("b"), bc = document.getElementById("b-coord");
+    if (!it || !b || !bc || b.value) return false;
+    b.value = it.nom;
+    bc.value = it.lat.toFixed(6) + "," + it.lon.toFixed(6);
+    return true;
+  };
+  window.modeHeure = function () {
+    var m = document.querySelector('.mode[data-mode="heure"]');
+    if (m && m.getAttribute("aria-selected") !== "true") m.click();
+  };
+  var hachage = (location.hash || "").replace("#", "").toLowerCase();
+  if (hachage === "heure") window.modeHeure(); else if (CODES[hachage]) window.preremplir(hachage);
 
   var SCORE = { aerodrome:100, terminal:95, station:85, halt:70, hotel:70, hostel:55,
                 hospital:65, university:50, college:45, museum:40, attraction:40,
