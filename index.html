@@ -821,7 +821,7 @@ footer{background:var(--cream);padding-block:var(--s-5xl) var(--s-xl);border-top
         </div>
         <div class="actions">
           <button type="button" class="btn btn-wa" id="r-envoyer">Envoyer sur WhatsApp</button>
-          <span class="ou">ou <a href="tel:+32471984401">appelez le +32 471 98 44 01</a></span>
+          <span class="ou">ou <a href="tel:+32471984401" data-appel>appelez le +32 471 98 44 01</a></span>
         </div>
       </div>
     </form>
@@ -987,6 +987,11 @@ footer{background:var(--cream);padding-block:var(--s-5xl) var(--s-xl);border-top
     <div class="zgrp reveal">
       <h3>Bruxelles et ses 19 communes</h3>
       <div class="zones"><span>Bruxelles-Ville</span><span>Ixelles</span><span>Uccle</span><span>Etterbeek</span><span>Schaerbeek</span><span>Saint-Gilles</span><span>Woluwe-Saint-Lambert</span><span>Woluwe-Saint-Pierre</span><span>Anderlecht</span><span>Forest</span><span>Auderghem</span><span>Watermael-Boitsfort</span><span>Molenbeek</span><span>Jette</span><span>Evere</span><span>Ganshoren</span><span>Koekelberg</span><span>Berchem-Sainte-Agathe</span><span>Saint-Josse-ten-Noode</span></div>
+    </div>
+
+    <div class="zgrp reveal">
+      <h3>Périphérie flamande, sur réservation</h3>
+      <div class="zones"><span>Vilvoorde</span><span>Grimbergen</span><span>Asse</span><span>Wemmel</span><span>Londerzeel</span><span>Merchtem</span><span>Meise</span><span>Opwijk</span><span>Halle</span><span>Dilbeek</span><span>Sint-Pieters-Leeuw</span></div>
     </div>
 
     <div class="zgrp reveal">
@@ -2290,7 +2295,12 @@ document.addEventListener("click", function (e) {
     if (c && wa.href && wa.href.indexOf("wa.me") > -1 && wa.href.indexOf("text=") < 0) {
       wa.href = wa.href.split("?")[0] + "?text=" + encodeURIComponent("Bonjour, je souhaite réserver un trajet. (réf. " + c + ")");
     }
-    window.convWa(); window.evt("Contact", { canal: "whatsapp" }); return;
+    /* 08/09 (revue) : ce chemin envoyait une conversion a 0 EUR — et ONE_PER_CLICK fige ce 0 pour tout le clic.
+       Si le panneau de reservation est ouvert, son montant est le devis affiche : on le propage. Sinon rien (pas 0). */
+    var _r = document.getElementById("resa");
+    var _m = (_r && !_r.hidden && _r.dataset && _r.dataset.montant) ? parseFloat(_r.dataset.montant) : 0;
+    if (_m > 0) window.convWa(_m); else window.convWa();
+    window.evt("Contact", { canal: "whatsapp" }); return;
   }
   var tel = e.target.closest && e.target.closest("[data-appel]");
   if (tel) { window.convAppel(); window.evt("Contact", { canal: "appel" }); }
