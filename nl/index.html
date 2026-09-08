@@ -27,7 +27,7 @@ function gtag(){ dataLayer.push(arguments); }
 gtag('consent', 'default', { 'ad_storage': 'denied', 'ad_user_data': 'denied', 'ad_personalization': 'denied', 'analytics_storage': 'denied', 'wait_for_update': 500 });
 gtag('set', 'url_passthrough', true);
 gtag('set', 'ads_data_redaction', true);
-window.__AW_ID__ = "__AW_ID__";
+window.__AW_ID__ = "AW-18431369420";
 if (!/^__/.test(window.__AW_ID__)) {
   var _g = document.createElement('script'); _g.async = true;
   _g.src = 'https://www.googletagmanager.com/gtag/js?id=' + window.__AW_ID__; document.head.appendChild(_g);
@@ -48,12 +48,12 @@ window.initMeta = function () {
 /* Compteurs Google Ads — un clic = UNE conversion (lecon Presto 05/09/2026 : deux actions principales sur le meme clic
    = CPA faux de moitie et signal d'enchere double). __LABEL_WA__ = action PRINCIPALE (clic WhatsApp), __LABEL_APPEL__ = action
    SECONDAIRE (Ilias ne decroche pas : jamais d'optimisation sur l'appel — FAITS-VERIFIES). Jetons a remplacer avec __AW_ID__. */
-window.__LABEL_WA__ = "__LABEL_WA__"; window.__LABEL_APPEL__ = "__LABEL_APPEL__";
+window.__LABEL_WA__ = "JHJGCJ-xyvEcEMzB4dRE"; window.__LABEL_APPEL__ = "_gjzCKKxyvEcEMzB4dRE";
 /* __LABEL_DEVIS__ = action SECONDAIRE « Devis calculé » : le prix s'est affiche pour un trajet reel.
    C'est le signal d'intention le plus fort AVANT le contact, et le plus frequent — a 23 EUR/jour Google
    n'aura que ~10-20 conversions principales par mois, trop peu pour apprendre. Jamais PRINCIPALE :
    deux actions principales sur le meme parcours = CPA faux de moitie (erreur constatee chez Presto le 05/09). */
-window.__LABEL_DEVIS__ = "__LABEL_DEVIS__";
+window.__LABEL_DEVIS__ = "vJhMCKixyvEcEMzB4dRE";
 function _convGoogle(label, valeur) {
   if (/^__/.test(window.__AW_ID__) || /^__/.test(label)) return;
   var p = { 'send_to': window.__AW_ID__ + '/' + label };
