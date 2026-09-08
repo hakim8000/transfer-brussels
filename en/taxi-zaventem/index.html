@@ -968,7 +968,7 @@ footer{background:var(--cream);padding-block:var(--s-5xl) var(--s-xl);border-top
       <div class="gl">
         <div class="gl-k">Per minute or part thereof</div>
         <div class="gl-v" data-t="prixParMinute">—</div>
-        <div class="gl-n">for the first 45 minutes</div>
+        <div class="gl-n">for the first 35 minutes</div>
       </div>
       <div class="gl">
         <div class="gl-k">Minimum fare</div>
@@ -1141,9 +1141,9 @@ window.TARIFS = {
     prixParKmTranches: [
       { jusqua:  20, prix: 2.60 },
       { jusqua:  60, prix: 1.60 },
-      { jusqua: 1e9, prix: 1.80 }
+      { jusqua: 1e9, prix: 1.50 }
     ],
-    minutesFacturablesMax: 45,
+    minutesFacturablesMax: 35,
 
     prixParKm:      2.60,
     margeTraficPct: 25
@@ -1176,6 +1176,9 @@ window.TARIFS = {
   ],
 
   
+  
+  plancherLegal: { priseEnCharge: 1.50, prixParMinute: 0.40, prixParKm: 1.50, minimum: 8.00 },
+
   horaire: {
     actif: true,
     minimumHeures: 3,
@@ -1237,7 +1240,9 @@ window.TARIFS = {
     /* le temps ne se facture que sur la partie urbaine */
     var mFactures = Math.min(m, G.minutesFacturablesMax || m);
     var brut = (G.priseEnCharge || 0) + coutDistance(km) + mFactures * (G.prixParMinute || 0);
-    return { total: Math.ceil(Math.max(brut, G.minimumCourse || 0)), minutes: m };
+    /* plancher legal : le temps compte sur TOUT le trajet (art. 8) — la grille ne peut pas descendre dessous */
+    var P = G.plancherLegal, plancher = P ? Math.max(P.minimum || 0, P.priseEnCharge + P.prixParMinute * m + P.prixParKm * km) : 0;
+    return { total: Math.ceil(Math.max(brut, G.minimumCourse || 0, plancher)), minutes: m };
   }
 
   /* UN SEUL affichage de devis pour les trois chemins (routeur, secours,
@@ -1921,7 +1926,8 @@ document.querySelectorAll(".mode").forEach(function (b) {
   function prix(km, minutes, pct) {
     var m = Math.ceil(minutes * (1 + pct / 100));
     var mf = Math.min(m, G.minutesFacturablesMax || m);
-    return Math.ceil(Math.max(G.priseEnCharge + coutDistance(km) + mf * G.prixParMinute, G.minimumCourse));
+    var P = G.plancherLegal, plancher = P ? Math.max(P.minimum || 0, P.priseEnCharge + P.prixParMinute * m + P.prixParKm * km) : 0;
+    return Math.ceil(Math.max(G.priseEnCharge + coutDistance(km) + mf * G.prixParMinute, G.minimumCourse, plancher));
   }
   var mar = (T.parCreneau || [])[1] || [];
   var nuit = mar[3] || 0, jour = mar[12] || 0, pointe = mar[8] || 0;
