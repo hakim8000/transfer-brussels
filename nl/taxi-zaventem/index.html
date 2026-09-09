@@ -726,7 +726,7 @@ footer{background:var(--cream);padding-block:var(--s-5xl) var(--s-xl);border-top
 .cookies-btns{display:flex;gap:8px;flex:1 1 100%}
 .cookies-btns button{flex:1 1 0;min-width:0;padding:9px 12px;border-radius:9px;font:inherit;font-weight:500;cursor:pointer;border:1.5px solid var(--ink);background:#fff;color:var(--ink)}
 .cookies-btns button:focus-visible{outline:3px solid #aecff3;outline-offset:2px}
-@media (max-width:1023px){.cookies{bottom:84px;left:10px;right:10px;max-width:none;padding:12px 14px}}
+@media (max-width:1023px){.cookies{bottom:0;left:0;right:0;max-width:none;padding:8px 12px;border-radius:12px 12px 0 0;font-size:12px;line-height:1.35;gap:6px 10px}.cookies p{flex:1 1 auto;min-width:0}.cookies .cookies-btns button{padding:6px 10px;font-size:12px}.cookies:not([hidden])~.wa-flot{bottom:72px}}
 .resa .ligne{display:grid;grid-template-columns:1fr 1fr 1fr;gap:var(--s-sm);margin-bottom:var(--s-xs)}
 .resa .fld{margin:0}
 .resa .actions{display:flex;gap:var(--s-xs);align-items:center;flex-wrap:wrap;margin-top:var(--s-xs)}
@@ -1893,12 +1893,13 @@ document.querySelectorAll(".mode").forEach(function (b) {
     var tel = document.getElementById("r-tel").value.trim();
     var vol = document.getElementById("r-vol").value.trim();
     var recap = document.getElementById("resa").dataset.recap || "";
-    if (!nom || !tel) {
-      (nom ? document.getElementById("r-tel") : document.getElementById("r-nom")).focus();
-      return;
-    }
+    /* 10/09/2026 : nom et telephone ne sont plus obligatoires — WhatsApp transmet le numero et le nom du profil.
+       Les exiger etait une marche de plus que Presto n'a pas (champs facultatifs chez lui) : 0 contact sur site
+       pour 35 clics le 1er jour. S'ils sont remplis, ils partent dans le message. */
     var txt = "Goedendag, ik wil graag reserveren:\n" + recap
-            + "\nNaam: " + nom + "\nTel.: " + tel
+            + (nom ? "
+Naam: " + nom : "") + (tel ? "
+Tel.: " + tel : "")
             + (vol ? "\nVlucht: " + vol : "")
             + "\n(aanvraag verstuurd via de website)";
     txt = window.refTexte(txt);
