@@ -1896,9 +1896,7 @@ document.querySelectorAll(".mode").forEach(function (b) {
        Les exiger etait une marche de plus que Presto n'a pas (champs facultatifs chez lui) : 0 contact sur site
        pour 35 clics le 1er jour. S'ils sont remplis, ils partent dans le message. */
     var txt = "Hello, I would like to book:\n" + recap
-            + (nom ? "
-Name: " + nom : "") + (tel ? "
-Tel: " + tel : "")
+            + (nom ? "\nName: " + nom : "") + (tel ? "\nTel: " + tel : "")
             + (vol ? "\nFlight: " + vol : "")
             + "\n(request sent from the website)";
     txt = window.refTexte(txt);
