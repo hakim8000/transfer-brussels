@@ -726,6 +726,8 @@ footer{background:var(--cream);padding-block:var(--s-5xl) var(--s-xl);border-top
 .resa .btn-wa:not(:disabled):active{background-color:#199046}
 .resa .btn-wa:disabled{cursor:default;background-color:#aeaeae}
 .resa .ou{font-size:14px;line-height:20px;letter-spacing:.15px;color:#aeaeae}
+.resa .refvue{margin:8px 0 0;width:100%}
+.resa .refvue b{color:#fff;font-weight:600;letter-spacing:.4px}
 .resa .ou a{position:relative;color:#fff;font-weight:500;text-decoration:underline;text-decoration-color:transparent;text-decoration-thickness:1px;text-underline-offset:4px;transition:color .2s ease-in-out,text-decoration-color .2s ease-in-out}
 .resa .ou a:hover{color:#eef1f3;text-decoration-color:currentColor}
 .resa .ou a:active{color:#c9ced3}
@@ -820,6 +822,10 @@ footer{background:var(--cream);padding-block:var(--s-5xl) var(--s-xl);border-top
         <div class="actions">
           <button type="button" class="btn btn-wa" id="r-envoyer">Envoyer sur WhatsApp</button>
           <span class="ou">ou <a href="tel:+32471984401" data-appel>appelez le +32 471 98 44 01</a></span>
+          <!-- 09/09/2026 : la reference n'existait que dans le message WhatsApp. Un client venu d'une annonce
+               qui APPELLE ne laissait aucune trace — course reelle perdue pour l'attribution des le 1er jour.
+               Affichee ici, il peut la donner de vive voix. Vide (hidden) si le visiteur ne vient pas d'une annonce. -->
+          <p class="ou refvue" id="ref-appel" hidden>Si vous appelez, donnez-nous la référence <b></b> — elle nous dit d'où vient votre demande.</p>
         </div>
       </div>
     </form>
@@ -1857,6 +1863,11 @@ document.querySelectorAll(".mode").forEach(function (b) {
 (function () {
   var b = document.getElementById("r-envoyer");
   if (!b) return;
+  /* la reference est connue des l'arrivee depuis une annonce : on l'affiche pour l'appelant */
+  (function () {
+    var c = window.refSuivi && window.refSuivi(), z = document.getElementById("ref-appel");
+    if (c && z) { z.querySelector("b").textContent = c; z.hidden = false; }
+  })();
   b.addEventListener("click", function () {
     var nom = document.getElementById("r-nom").value.trim();
     var tel = document.getElementById("r-tel").value.trim();
