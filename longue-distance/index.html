@@ -92,6 +92,13 @@ window.refSuivi = (function () {
   };
 })();
 window.refTexte = function (base) { var c = window.refSuivi(); return c ? base + " (réf. " + c + ")" : base; };
+/* 09/09/2026 : le beacon ne partait qu'au CLIC sur un bouton WhatsApp du site. Un visiteur venu d'une annonce
+   qui recopie le numero (tres frequent sur mobile) ou qui appelle ne laissait aucune trace — une vraie course
+   du 1er jour a ete perdue pour l'attribution. On enregistre desormais la visite publicitaire des l'arrivee :
+   le magasin donne alors l'heure, la page et le code, ce qui permet de rapprocher une demande d'un clic meme
+   sans que le client cite la reference. */
+if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", function () { window.refSuivi(); });
+else window.refSuivi();
 /* appel sur : ne casse jamais si le pixel n'est pas charge */
 window.evt = function (nom, data) { try { if (window.fbq) fbq('track', nom, data || {}); } catch (e) {} };
 </script>
@@ -1867,8 +1874,18 @@ document.querySelectorAll(".mode").forEach(function (b) {
   if (!b) return;
   /* la reference est connue des l'arrivee depuis une annonce : on l'affiche pour l'appelant */
   (function () {
-    var c = window.refSuivi && window.refSuivi(), z = document.getElementById("ref-appel");
-    if (c && z) { z.querySelector("b").textContent = c; z.hidden = false; }
+    var c = window.refSuivi && window.refSuivi();
+    if (!c) return;
+    var z = document.getElementById("ref-appel");
+    if (z) { z.querySelector("b").textContent = c; z.hidden = false; }
+    /* et dans le pied de page, a cote du numero : visible meme sans passer par le devis */
+    var f = document.querySelector('footer a[href^="tel:"]');
+    if (f && !document.getElementById("ref-pied")) {
+      var p = document.createElement("a"); p.id = "ref-pied"; p.href = "#reserver";
+      p.style.cssText = "display:block;opacity:.75;font-size:13px;margin-top:6px";
+      p.innerHTML = "Votre référence : <b>" + c + "</b>";
+      f.parentNode.insertBefore(p, f.nextSibling);
+    }
   })();
   b.addEventListener("click", function () {
     var nom = document.getElementById("r-nom").value.trim();
