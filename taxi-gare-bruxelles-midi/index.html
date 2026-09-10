@@ -988,7 +988,7 @@ footer{background:var(--cream);padding-block:var(--s-5xl) var(--s-xl);border-top
       </div>
     </div>
 
-    <p class="small" style="margin:20px 0 40px">Le montant tient compte de la circulation au jour et à l’heure de votre départ. Il est un maximum : vous ne paierez jamais plus.</p>
+    <p class="small" style="margin:20px 0 40px">Le montant tient compte de la circulation au jour et à l’heure de votre départ. Il est un maximum : vous ne paierez jamais plus. Brussels Airport : jamais plus de 49 € depuis une adresse de la Région bruxelloise.</p>
 
     <table class="tt reveal" id="exemples-tarifs" aria-label="Exemples de montants depuis le centre de Bruxelles">
       <thead><tr><th scope="col">Depuis le centre de Bruxelles</th><th scope="col" class="n">Distance</th><th scope="col" class="n">Nuit</th><th scope="col" class="n">Journée</th><th scope="col" class="n">Heure de pointe</th></tr></thead>
@@ -1203,6 +1203,8 @@ window.TARIFS = {
   
   
   plancherLegal: { priseEnCharge: 1.50, prixParMinute: 0.40, prixParKm: 1.50, minimum: 8.00 },
+  
+  plafonds: [ { nom: "Brussels Airport (Zaventem)", lat: 50.9010, lon: 4.4844, rayonKm: 3, distanceMaxKm: 26, prix: 49 } ],
 
   horaire: {
     actif: true,
@@ -1260,14 +1262,31 @@ window.TARIFS = {
     return total;
   }
 
-  function prix(km, minutes, pct) {
+  /* 11/09 : plafond par destination (tarifs.js plafonds[]) — A/B = [lat, lon] en chaines */
+  function plafondPour(A, B, km) {
+    var L = (window.TARIFS || {}).plafonds || [];
+    function dist(lat1, lon1, lat2, lon2) {
+      var R = 6371, dLat = (lat2 - lat1) * Math.PI / 180, dLon = (lon2 - lon1) * Math.PI / 180;
+      var x = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      return 2 * R * Math.atan2(Math.sqrt(x), Math.sqrt(1 - x));
+    }
+    for (var i = 0; i < L.length; i++) {
+      var p = L[i], a = A && A.length > 1 ? dist(+A[0], +A[1], p.lat, p.lon) : 1e9, b = B && B.length > 1 ? dist(+B[0], +B[1], p.lat, p.lon) : 1e9;
+      if ((a <= p.rayonKm || b <= p.rayonKm) && km <= p.distanceMaxKm) return p.prix;
+    }
+    return 0;
+  }
+  function prix(km, minutes, pct, plafond) {
     var m = Math.ceil(minutes * (1 + pct / 100));   /* la minute ENTAMEE */
     /* le temps ne se facture que sur la partie urbaine */
     var mFactures = Math.min(m, G.minutesFacturablesMax || m);
     var brut = (G.priseEnCharge || 0) + coutDistance(km) + mFactures * (G.prixParMinute || 0);
     /* plancher legal : le temps compte sur TOUT le trajet (art. 8) — la grille ne peut pas descendre dessous */
     var P = G.plancherLegal, plancher = P ? Math.max(P.minimum || 0, P.priseEnCharge + P.prixParMinute * m + P.prixParKm * km) : 0;
-    return { total: Math.ceil(Math.max(brut, G.minimumCourse || 0, plancher)), minutes: m };
+    var t = Math.max(brut, G.minimumCourse || 0, plancher);
+    /* plafond par destination (Zaventem 49 €) : jamais sous le plancher legal ni sous le minimum de course */
+    if (plafond) t = Math.max(Math.min(t, plafond), plancher, G.minimumCourse || 0);
+    return { total: Math.ceil(t), minutes: m, plancher: plancher };
   }
 
   /* UN SEUL affichage de devis pour les trois chemins (routeur, secours,
@@ -1486,7 +1505,7 @@ window.TARIFS = {
         var km = r.distance / 1000, min = r.duration / 60;
         var pct = surcoutTemps(document.getElementById("d").value,
                                document.getElementById("h").value);
-        var res = prix(km, min, pct);
+        var res = prix(km, min, pct, plafondPour(A, B, km));
         var total = res.total;
 
         sortie.innerHTML = "";
@@ -1537,7 +1556,7 @@ window.TARIFS = {
         var km = 2 * R * Math.asin(Math.sqrt(h)) * 1.35;
         var min = km / 40 * 60;
         var pct = surcoutTemps(document.getElementById("d").value, document.getElementById("h").value);
-        var res = prix(km, min, pct);
+        var res = prix(km, min, pct, (typeof A !== "undefined") ? plafondPour(A, B, km) : 0);
 
         sortie.innerHTML = "";
         var box = document.createElement("div");
@@ -1962,7 +1981,7 @@ document.querySelectorAll(".mode").forEach(function (b) {
     }
     return total;
   }
-  function prix(km, minutes, pct) {
+  function prix(km, minutes, pct, plafond) {
     var m = Math.ceil(minutes * (1 + pct / 100));
     var mf = Math.min(m, G.minutesFacturablesMax || m);
     var P = G.plancherLegal, plancher = P ? Math.max(P.minimum || 0, P.priseEnCharge + P.prixParMinute * m + P.prixParKm * km) : 0;
