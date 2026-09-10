@@ -881,7 +881,7 @@ footer{background:var(--cream);padding-block:var(--s-5xl) var(--s-xl);border-top
     </div>
     <div class="marks">
       <span>Night and early-morning departures</span>
-      <span>Authorised operator, valid licence</span>
+      <span>Authorised operator, licence valid until 2030</span>
       <span>Slot secured at booking</span>
       <span>Invoice on request</span>
     </div>
@@ -945,7 +945,7 @@ footer{background:var(--cream);padding-block:var(--s-5xl) var(--s-xl);border-top
         <h3>The fare, upfront</h3><p>The maximum fare is quoted to you before you confirm, VAT included. It cannot go up on the way.</p>
       </div>
       <div class="pillar">
-        <h3>Licensed</h3><p>Operator authorised by the Brussels-Capital Region, valid licence and registered vehicle.</p>
+        <h3>Licensed</h3><p>Operator authorised by the Brussels-Capital Region — licence valid until 2030 (permit 4240), registered vehicle.</p>
       </div>
       <div class="pillar">
         <h3>For businesses</h3><p>Invoice in your company’s name, recurring journeys and a single point of contact.</p>
@@ -1137,19 +1137,20 @@ window.TARIFS = {
 
   devise: '€',
   tvaIncluse: true,
+  
   grille: {
     provisoire:     false,
     priseEnCharge:  2.50,
-    prixParMinute:  0.50,
+    prixParMinute:  0.40,
     minimumCourse:  30.00,
 
     
     prixParKmTranches: [
-      { jusqua:  20, prix: 2.60 },
-      { jusqua:  60, prix: 1.60 },
+      { jusqua:  20, prix: 2.20 },
+      { jusqua:  60, prix: 1.50 },
       { jusqua: 1e9, prix: 1.50 }
     ],
-    minutesFacturablesMax: 35,
+    minutesFacturablesMax: 30,
 
     prixParKm:      2.60,
     margeTraficPct: 25
@@ -1259,7 +1260,7 @@ window.TARIFS = {
     box.className = "devis";
     var m = document.createElement("span");
     m.className = "montant";
-    m.textContent = (prefixe || "Maximum ") + montant + " €";
+    m.textContent = (prefixe || "") + montant + " €";
     box.appendChild(m);
     var d2 = document.createElement("span");
     d2.className = "detail";
@@ -1391,7 +1392,7 @@ window.TARIFS = {
         var noteH = facturees > heures
           ? "Minimum de " + mini + " heures de mise à disposition."
           : facturees + (facturees > 1 ? " heures" : " heure") + " à " + String(H.prixHeure).replace(".", ",") + " € l'heure.";
-        devis(totalH, noteH + " TVA comprise. Vous ne paierez jamais plus que ce montant.",
+        devis(totalH, noteH + " Price for your trip, VAT included. It cannot go up.",
               "Hourly hire · " + lieuH + " · " + facturees + " h · "
               + dateLisible(champDate.value) + " à " + champHeure.value);
         return;
@@ -1476,7 +1477,7 @@ window.TARIFS = {
 
         var m = document.createElement("span");
         m.className = "montant";
-        m.textContent = "Maximum " + total + " €";
+        m.textContent = total + " €";
         box.appendChild(m);
 
         var d2 = document.createElement("span");
@@ -1484,7 +1485,7 @@ window.TARIFS = {
         d2.textContent = km.toFixed(1).replace(".", ",") + " km · around "
                        + res.minutes + " min"
                        + (pct >= 45 ? " (heavy traffic at this time)" : "")
-                       + " · VAT included. You will never pay more than this amount.";
+                       + " · Price for your trip, VAT included. It cannot go up.";
         box.appendChild(d2);
 
         if (G.provisoire) {
@@ -1501,7 +1502,7 @@ window.TARIFS = {
         resa.hidden = false;
         resa.dataset.recap = document.getElementById("a").value + " → " + document.getElementById("b").value
           + " · " + dateLisible(document.getElementById("d").value) + " à " + document.getElementById("h").value
-          + " · maximum " + total + " €";
+          + " · " + total + " € VAT included";
         resa.dataset.montant = total;
         window.evt("ViewContent", { content_name: "devis", value: total, currency: "EUR" });
         window.convDevis(total);
@@ -1525,7 +1526,7 @@ window.TARIFS = {
         box.className = "devis";
         var m = document.createElement("span");
         m.className = "montant";
-        m.textContent = "Around " + res.total + " € maximum";
+        m.textContent = "Around " + res.total + " €";
         box.appendChild(m);
         var d2 = document.createElement("span");
         d2.className = "detail";
@@ -1537,7 +1538,7 @@ window.TARIFS = {
         resa.hidden = false;
         resa.dataset.recap = document.getElementById("a").value + " → " + document.getElementById("b").value
           + " · " + dateLisible(document.getElementById("d").value) + " à " + document.getElementById("h").value
-          + " · environ " + res.total + " € maximum (estimation)";
+          + " · environ " + res.total + " € (estimation)";
         resa.dataset.montant = res.total;
         window.evt("ViewContent", { content_name: "devis-estime", value: res.total, currency: "EUR" });
         window.convDevis(res.total);
