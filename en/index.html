@@ -1188,7 +1188,7 @@ window.TARIFS = {
   
   
   plafondLegal: { priseEnCharge: 3.00, prixParMinute: 0.80, prixParKm: 3.00 },
-  plafonds: [ { nom: "Brussels Airport (Zaventem)", lat: 50.9010, lon: 4.4844, rayonKm: 3, distanceMaxKm: 26, prix: 49, minimum: 39 } ],
+  plafonds: [ { nom: "Brussels Airport (Zaventem)", lat: 50.9010, lon: 4.4844, rayonKm: 3, distanceMaxKm: 26, prix: 49, minimum: 45 } ],
 
   horaire: {
     actif: true,
@@ -1270,12 +1270,15 @@ window.TARIFS = {
     var t = Math.max(brut, G.minimumCourse || 0, plancher);
     /* plafond par destination (Zaventem : minimum 39, maximum 49) — jamais sous le plancher legal ni sous le
        minimum de course, jamais au-dessus du plafond legal (200 % des minima) pour le minimum commercial */
+    var t0 = t, arrondi = Math.ceil;
     if (plafond) {
       var L2 = G.plafondLegal, plaf200 = L2 ? L2.priseEnCharge + L2.prixParMinute * m + L2.prixParKm * km : Infinity;
       if (plafond.minimum) t = Math.max(t, Math.min(plafond.minimum, plaf200));
       t = Math.max(Math.min(t, plafond.prix), plancher, G.minimumCourse || 0);
+      /* si c'est le plafond legal qui borne le minimum commercial, l'arrondi se fait vers le BAS (41,20 -> 41, pas 42) */
+      if (t > t0 && t >= plaf200) arrondi = Math.floor;
     }
-    return { total: Math.ceil(t), minutes: m, plancher: plancher };
+    return { total: arrondi(t), minutes: m, plancher: plancher };
   }
 
   /* UN SEUL affichage de devis pour les trois chemins (routeur, secours,
