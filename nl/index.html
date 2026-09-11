@@ -733,14 +733,18 @@ footer{background:var(--cream);padding-block:var(--s-5xl) var(--s-xl);border-top
 .resa{margin-top:var(--s-sm);padding-top:var(--s-sm);border-top:1px solid #fff}
 .resa[hidden]{display:none}
 /* ---- bandeau cookies (APD : deux choix equivalents, rien avant consentement) ---- */
-.cookies{position:fixed;left:16px;right:auto;bottom:16px;z-index:9999;max-width:440px;background:#fff;color:var(--ink);border:1px solid var(--hair);border-radius:12px;box-shadow:0 10px 30px rgba(15,19,25,.12);padding:14px 16px;display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;font-size:13px;line-height:1.45}
+/* 12/09/2026 : passage en MODAL au centre. La barre fine en bas etait ignoree par 42 visiteurs sur 43
+   (colonne consent vide dans le magasin de references) : Google ne voyait donc presque aucun de nos contacts.
+   Les deux boutons restent STRICTEMENT identiques (meme regle CSS, memes largeurs) — l'APD sanctionne l'inverse. */
+.cookies{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:9999;width:min(420px,calc(100% - 32px));background:#fff;color:var(--ink);border:1px solid var(--hair);border-radius:14px;box-shadow:0 18px 50px rgba(15,19,25,.22);padding:20px;display:flex;flex-wrap:wrap;gap:14px;align-items:center;font-size:15px;line-height:1.45}
+.cookies::before{content:"";position:fixed;inset:0;background:rgba(15,19,25,.45);z-index:-1}
 .cookies[hidden]{display:none}
 .cookies p{margin:0;flex:1 1 100%;color:var(--grey)}
 .cookies a{color:var(--ink);text-decoration:underline}
 .cookies-btns{display:flex;gap:8px;flex:1 1 100%}
 .cookies-btns button{flex:1 1 0;min-width:0;padding:9px 12px;border-radius:9px;font:inherit;font-weight:500;cursor:pointer;border:1.5px solid var(--ink);background:#fff;color:var(--ink)}
 .cookies-btns button:focus-visible{outline:3px solid #aecff3;outline-offset:2px}
-@media (max-width:1023px){.cookies{bottom:0;left:0;right:0;max-width:none;padding:8px 12px;border-radius:12px 12px 0 0;font-size:12px;line-height:1.35;gap:6px 10px}.cookies p{flex:1 1 auto;min-width:0}.cookies .cookies-btns button{padding:6px 10px;font-size:12px}.cookies:not([hidden])~.wa-flot{bottom:104px}}
+@media (max-width:1023px){.cookies{padding:18px;gap:12px}.cookies-btns{flex-wrap:wrap}.cookies-btns button{flex:1 1 100%;padding:12px}}
 .resa .ligne{display:grid;grid-template-columns:1fr 1fr 1fr;gap:var(--s-sm);margin-bottom:var(--s-xs)}
 .resa .fld{margin:0}
 .resa .actions{display:flex;gap:var(--s-xs);align-items:center;flex-wrap:wrap;margin-top:var(--s-xs)}
@@ -1134,9 +1138,9 @@ footer{background:var(--cream);padding-block:var(--s-5xl) var(--s-xl);border-top
   </div>
 </footer>
 
-<div id="cookies" class="cookies" role="dialog" aria-label="Cookies en bezoekersmeting" hidden>
-  <p>Deze site gebruikt cookies voor bezoekersmeting. U kunt ze accepteren of weigeren. <a href="#confidentialite">Meer informatie</a></p>
-  <div class="cookies-btns"><button type="button" id="ck-non">Weigeren</button><button type="button" id="ck-oui">Accepteren</button></div>
+<div id="cookies" class="cookies" role="dialog" aria-modal="true" aria-label="Meetcookies" hidden>
+  <p><a href="#confidentialite">Meetcookies</a></p>
+  <div class="cookies-btns"><button type="button" id="ck-non">Alleen essentiële cookies</button><button type="button" id="ck-oui">Cookies accepteren</button></div>
 </div>
 <a class="wa-flot" href="https://wa.me/32471984401" target="_blank" rel="noopener"
    data-wa aria-label="Schrijven via WhatsApp">
