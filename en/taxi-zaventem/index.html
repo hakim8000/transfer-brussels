@@ -74,21 +74,28 @@ window.convDevis = function (valeur) { _convGoogle(window.__LABEL_DEVIS__, valeu
    reellement faites sont renvoyees a Google (import hors ligne, Data Manager). Prefixe T (Presto = P).
    __REF_FORM__ = URL formResponse du Form « refs », __REF_ENTRIES__ = ses champs entry.xxx. */
 window.__REF_FORM__ = "https://docs.google.com/forms/d/e/1FAIpQLScEfM0OG91xnuF72vSDnaBXcSSPB4e2gUbBKGnpMLtYevEStw/formResponse";
-window.__REF_ENTRIES__ = {"code": "entry.972482410", "id": "entry.493331477", "type": "entry.1782808285", "page": "entry.520315805", "consent": "entry.153005485"};
+window.__REF_ENTRIES__ = {"code": "entry.972482410", "id": "entry.493331477", "type": "entry.1782808285", "page": "entry.520315805", "consent": "entry.153005485", "evenement": "entry.1028480645", "montant": "entry.48789588"};
 window.refSuivi = (function () {
   var q = new URLSearchParams(location.search), id = null, type = null;
   ["gclid", "gbraid", "wbraid"].forEach(function (k) { if (!id && q.get(k) && /^[A-Za-z0-9_-]{10,200}$/.test(q.get(k))) { id = q.get(k); type = k; } });
   if (!id) return function () { return null; };
   var h = 0x811c9dc5, i; for (i = 0; i < id.length; i++) { h ^= id.charCodeAt(i); h = (h * 16777619) >>> 0; }
   var A = "0123456789ABCDEFGHJKMNPQRSTVWXYZ", code = "T", n = h; for (i = 0; i < 5; i++) { code += A[n % 32]; n = Math.floor(n / 32); }
-  var envoye = false;
-  return function () {
-    if (!envoye && !/^__/.test(window.__REF_FORM__) && window.__REF_ENTRIES__) {
-      envoye = true;
-      var consent = window.consentPub ? (window.consentPub() ? "granted" : (window.consentChoisi && window.consentChoisi() ? "denied" : "")) : "";
-      var E = window.__REF_ENTRIES__, d = {}; d[E.code] = code; d[E.id] = id; d[E.type] = type; d[E.page] = location.pathname; d[E.consent] = consent;
-      /* application/x-www-form-urlencoded = requete « simple » (pas de preflight) ; Google Forms accepte le POST cross-origin */
-      try { navigator.sendBeacon(window.__REF_FORM__, new Blob([new URLSearchParams(d).toString()], { type: "application/x-www-form-urlencoded" })); } catch (e) {}
+  var faits = {};
+  /* refSuivi()            -> rend seulement le code (affichage, texte du message)
+     refSuivi("whatsapp", 45) -> enregistre l'action et le montant, une fois par couple (action, montant) */
+  return function (evenement, montant) {
+    if (evenement && !/^__/.test(window.__REF_FORM__) && window.__REF_ENTRIES__) {
+      var cle = evenement + "|" + (montant || "");
+      if (!faits[cle]) {
+        faits[cle] = 1;
+        var consent = window.consentPub ? (window.consentPub() ? "granted" : (window.consentChoisi && window.consentChoisi() ? "denied" : "")) : "";
+        var E = window.__REF_ENTRIES__, d = {};
+        d[E.code] = code; d[E.id] = id; d[E.type] = type; d[E.page] = location.pathname; d[E.consent] = consent;
+        d[E.evenement] = evenement; d[E.montant] = (montant > 0 ? String(Math.round(montant)) : "");
+        /* application/x-www-form-urlencoded = requete « simple » (pas de preflight) ; Google Forms accepte le POST cross-origin */
+        try { navigator.sendBeacon(window.__REF_FORM__, new Blob([new URLSearchParams(d).toString()], { type: "application/x-www-form-urlencoded" })); } catch (e) {}
+      }
     }
     return code;
   };
@@ -99,8 +106,8 @@ window.refTexte = function (base) { var c = window.refSuivi(); return c ? base +
    du 1er jour a ete perdue pour l'attribution. On enregistre desormais la visite publicitaire des l'arrivee :
    le magasin donne alors l'heure, la page et le code, ce qui permet de rapprocher une demande d'un clic meme
    sans que le client cite la reference. */
-if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", function () { window.refSuivi(); });
-else window.refSuivi();
+if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", function () { window.refSuivi("arrivee"); });
+else window.refSuivi("arrivee");
 /* appel sur : ne casse jamais si le pixel n'est pas charge */
 window.evt = function (nom, data) { try { if (window.fbq) fbq('track', nom, data || {}); } catch (e) {} };
 </script>
@@ -1105,7 +1112,7 @@ footer{background:var(--cream);padding-block:var(--s-5xl) var(--s-xl);border-top
           <p><b>Why</b> — Solely to organise and carry out the ride requested, and to confirm its fare to you. Legal basis: performance of the transport contract you are requesting.</p>
           <p><b>How it is transmitted</b> — The request is prepared as a WhatsApp message that you send yourself, from your own phone, to the chauffeur’s business number. The site keeps none of this data on a server.</p>
           <p><b>Addresses entered</b> — To suggest addresses as you type and to calculate the distance, the site queries open mapping services (Photon, OpenStreetMap). Only the text typed and the coordinates of the journey are sent to them, never your identity.</p>
-          <p><b>Audience measurement</b> — The site uses the Google Ads tag and may use the Meta pixel to measure advertising effectiveness, only if you accept this in the banner; you can withdraw your consent via the “Cookies” link at the bottom of the page. Tracking reference: if you reach this site from a Google ad and contact us, a short reference (e.g. “ref. T7K4QX”) is added to your message. It lets us know which ads lead to real rides. It is linked only to the technical identifier of the ad click, never to your name or phone number, and it is deleted after 90 days. No cookie is set for this.</p>
+          <p><b>Audience measurement</b> — Le site utilise le tag Google Ads et peut utiliser le pixel Meta pour mesurer l’efficacité de la publicité, uniquement si vous l’acceptez dans le bandeau ; vous pouvez retirer votre accord via le lien « Cookies » en bas de page. Référence de suivi : si vous arrivez sur ce site depuis une annonce Google et que vous nous contactez, une courte référence (ex. « réf. T7K4QX ») est ajoutée à votre message. It tells us which ads lead to real rides. With it we record the action taken (price calculated, message, call) and the quoted amount. It is linked only to the technical identifier of the ad click, never to your name or your number, and it is deleted after 90 days. Aucun cookie n’est déposé pour cela.</p>
           <p><b>Your rights</b> — Access, rectification, erasure, objection: write to contact@transfer.brussels. You may also lodge a complaint with the Data Protection Authority (autoriteprotectiondonnees.be).</p>
           <p><b>Retention</b> — The chauffeur keeps the ride details for as long as needed to carry it out, invoice it and meet his regulatory obligations, then deletes them.</p>
         </div>
@@ -1335,7 +1342,7 @@ window.TARIFS = {
     resa.dataset.recap = recap;
     resa.dataset.montant = montant;
     window.evt("ViewContent", { content_name: "devis", value: montant, currency: "EUR" });
-    window.convDevis(montant);
+    window.convDevis(montant); window.refSuivi && window.refSuivi("devis", montant);
   }
 
   /* comme contact(), mais avec un bouton WhatsApp pre-rempli : un message qui
@@ -1561,7 +1568,7 @@ window.TARIFS = {
           + " · " + total + " € VAT included";
         resa.dataset.montant = total;
         window.evt("ViewContent", { content_name: "devis", value: total, currency: "EUR" });
-        window.convDevis(total);
+        window.convDevis(total); window.refSuivi && window.refSuivi("devis", total);
       })
       .catch(function () {
         /* le service d'itineraire ne repond pas : on ESTIME plutot que de
@@ -1597,7 +1604,7 @@ window.TARIFS = {
           + " · environ " + res.total + " € (estimation)";
         resa.dataset.montant = res.total;
         window.evt("ViewContent", { content_name: "devis-estime", value: res.total, currency: "EUR" });
-        window.convDevis(res.total);
+        window.convDevis(res.total); window.refSuivi && window.refSuivi("devis", res.total);
       })
       .finally(function () { if (go) go.disabled = false; });
   });
@@ -1953,7 +1960,7 @@ document.querySelectorAll(".mode").forEach(function (b) {
     txt = window.refTexte(txt);
     var montant = parseFloat(document.getElementById("resa").dataset.montant) || 0;
     window.evt("Lead", { content_name: "reservation", value: montant, currency: "EUR" });
-    window.convWa(montant);
+    window.convWa(montant); window.refSuivi && window.refSuivi("whatsapp", montant);
     window.open("https://wa.me/32471984401?text=" + encodeURIComponent(txt), "_blank", "noopener");
   });
 })();
@@ -2392,10 +2399,11 @@ document.addEventListener("click", function (e) {
     var _r = document.getElementById("resa");
     var _m = (_r && !_r.hidden && _r.dataset && _r.dataset.montant) ? parseFloat(_r.dataset.montant) : 0;
     if (_m > 0) window.convWa(_m); else window.convWa();
+    window.refSuivi && window.refSuivi("whatsapp", _m);
     window.evt("Contact", { canal: "whatsapp" }); return;
   }
   var tel = e.target.closest && e.target.closest("[data-appel]");
-  if (tel) { window.convAppel(); window.evt("Contact", { canal: "appel" }); }
+  if (tel) { window.convAppel(); window.refSuivi && window.refSuivi("appel"); window.evt("Contact", { canal: "appel" }); }
 }, true);
 </script>
 
