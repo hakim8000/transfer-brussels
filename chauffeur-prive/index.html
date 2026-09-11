@@ -734,8 +734,10 @@ footer{background:var(--cream);padding-block:var(--s-5xl) var(--s-xl);border-top
 /* 12/09/2026 : passage en MODAL au centre. La barre fine en bas etait ignoree par 42 visiteurs sur 43
    (colonne consent vide dans le magasin de references) : Google ne voyait donc presque aucun de nos contacts.
    Les deux boutons restent STRICTEMENT identiques (meme regle CSS, memes largeurs) — l'APD sanctionne l'inverse. */
-.cookies{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:9999;width:min(420px,calc(100% - 32px));background:#fff;color:var(--ink);border:1px solid var(--hair);border-radius:14px;box-shadow:0 18px 50px rgba(15,19,25,.22);padding:20px;display:flex;flex-wrap:wrap;gap:14px;align-items:center;font-size:15px;line-height:1.45}
-.cookies::before{content:"";position:fixed;inset:0;background:rgba(15,19,25,.45);z-index:-1}
+/* Le fond sombre est fait par une OMBRE de 100vmax, pas par un ::before : dans un contexte d'empilement
+   (ici z-index:9999), un pseudo-element en z-index:-1 se peint PAR-DESSUS le fond de la carte et sous le
+   texte — la carte apparaissait grise au lieu de blanche (vu en capture mobile le 12/09/2026). */
+.cookies{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:9999;width:min(420px,calc(100% - 32px));background:#fff;color:var(--ink);border:1px solid var(--hair);border-radius:14px;box-shadow:0 0 0 100vmax rgba(15,19,25,.45),0 18px 50px rgba(15,19,25,.22);padding:20px;display:flex;flex-wrap:wrap;gap:14px;align-items:center;font-size:15px;line-height:1.45}
 .cookies[hidden]{display:none}
 .cookies p{margin:0;flex:1 1 100%;color:var(--grey)}
 .cookies a{color:var(--ink);text-decoration:underline}
