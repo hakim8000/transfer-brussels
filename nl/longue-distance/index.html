@@ -868,7 +868,9 @@ footer{background:var(--cream);padding-block:var(--s-5xl) var(--s-xl);border-top
         <div class="ligne">
           <div class="fld"><label for="r-nom">Uw naam</label><input id="r-nom" placeholder="Voor- en achternaam" autocomplete="name"></div>
           <div class="fld"><label for="r-tel">Uw telefoonnummer</label><input id="r-tel" type="tel" placeholder="+32 …" autocomplete="tel"></div>
-          <div class="fld"><label for="r-vol">Vluchtnummer <span style="opacity:.6">(bij luchthaven)</span></label><input id="r-vol" placeholder="SN 3722" autocomplete="off"></div>
+          <!-- 13/09/2026 : « Vluchtnummer » juge intrusif (Hakim) — il n'etait utile que pour aller CHERCHER quelqu'un a l'aeroport.
+               Champ libre et facultatif, comme chez Ahmed : n° de vol, bagages, batiment. -->
+          <div class="fld"><label for="r-vol">Opmerkingen <span style="opacity:.6">(optioneel)</span></label><input id="r-vol" placeholder="Vluchtnr., bagage, gebouw…" autocomplete="off"></div>
         </div>
         <div class="actions">
           <button type="button" class="btn btn-wa" id="r-envoyer">Verstuur via WhatsApp</button>
@@ -2022,7 +2024,7 @@ document.querySelectorAll(".mode").forEach(function (b) {
        pour 35 clics le 1er jour. S'ils sont remplis, ils partent dans le message. */
     var txt = (window.MODE_CONTACT ? "Goedendag, ik wil graag de prijs voor deze rit:" : "Goedendag, ik wil graag reserveren:") + "\n" + recap
             + (nom ? "\nNaam: " + nom : "") + (tel ? "\nTel.: " + tel : "")
-            + (vol ? "\nVlucht: " + vol : "")
+            + (vol ? "\nOpmerkingen: " + vol : "")
             + "\n(aanvraag verstuurd via de website)";
     txt = window.refTexte(txt);
     var montant = parseFloat(document.getElementById("resa").dataset.montant) || 0;
