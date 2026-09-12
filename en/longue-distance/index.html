@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#0f1319">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Long-distance taxi from Brussels – Paris, Lille, Amsterdam | Transfer Brussels">
-<meta property="og:description" content="Private driver from Brussels to Paris, Lille, Amsterdam, Luxembourg, Antwerp, Ghent or Liège. Price shown before you book, by reservation, one way or return.">
+<meta property="og:description" content="Private driver from Brussels to Paris, Lille, Amsterdam, Luxembourg, Antwerp, Ghent or Liège. Price given before you book, by reservation, one way or return.">
 <meta property="og:locale" content="en_GB">
 <link rel="alternate" hreflang="fr" href="https://transfer.brussels/longue-distance/">
 <link rel="alternate" hreflang="en" href="https://transfer.brussels/en/longue-distance/">
@@ -14,7 +14,7 @@
 <link rel="alternate" hreflang="x-default" href="https://transfer.brussels/longue-distance/">
 <link rel="canonical" href="https://transfer.brussels/en/longue-distance/">
 <meta name="robots" content="index,follow">
-<meta name="description" content="Private driver from Brussels to Paris, Lille, Amsterdam, Luxembourg, Antwerp, Ghent or Liège. Price shown before you book, by reservation, one way or return.">
+<meta name="description" content="Private driver from Brussels to Paris, Lille, Amsterdam, Luxembourg, Antwerp, Ghent or Liège. Price given before you book, by reservation, one way or return.">
 <title>Long-distance taxi from Brussels – Paris, Lille, Amsterdam | Transfer Brussels</title>
 <link rel="icon" href="/favicon.ico" sizes="32x32">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
@@ -49,7 +49,7 @@ window.initMeta = function () {
 };
 /* Compteurs Google Ads — un clic = UNE conversion (lecon Presto 05/09/2026 : deux actions principales sur le meme clic
    = CPA faux de moitie et signal d'enchere double). __LABEL_WA__ = action PRINCIPALE (clic WhatsApp), __LABEL_APPEL__ = action
-   SECONDAIRE (Ilias ne decroche pas : jamais d'optimisation sur l'appel — FAITS-VERIFIES). Jetons a remplacer avec __AW_ID__. */
+   PRINCIPALE depuis le 12/09/2026 (canal telephone ouvert le 11/09, decision Hakim — l'ancien interdit est leve). Jetons a remplacer avec __AW_ID__. */
 window.__LABEL_WA__ = "JHJGCJ-xyvEcEMzB4dRE"; window.__LABEL_APPEL__ = "_gjzCKKxyvEcEMzB4dRE";
 /* __LABEL_DEVIS__ = action SECONDAIRE « Devis calculé » : le prix s'est affiche pour un trajet reel.
    C'est le signal d'intention le plus fort AVANT le contact, et le plus frequent — a 23 EUR/jour Google
@@ -66,6 +66,26 @@ function _convGoogle(label, valeur) {
 window.convWa = function (valeur) { _convGoogle(window.__LABEL_WA__, valeur); };
 window.convAppel = function () { _convGoogle(window.__LABEL_APPEL__); };
 window.convDevis = function (valeur) { _convGoogle(window.__LABEL_DEVIS__, valeur); };
+/* ---- 13/09/2026 : MODELE « CONTACT D'ABORD » (decision Hakim, modele Presto/Ahmed) ----
+   Mesure du 12/09 : 9 devis affiches, 0 contact — dont 3 SOUS Prestige Driver (45, 49, 49 EUR). Afficher le prix faisait
+   finir le parcours sur le prix : on compare, on part. Chez Ahmed, le prix arrive DANS la conversation, or il peut vendre.
+   Le prix reste CALCULE (valeur de conversion, montant dans le magasin de references) mais il n'est plus AFFICHE :
+   la personne l'obtient sur WhatsApp. Comme chez Ahmed, AUCUN montant n'est visible : la section tarifs est masquee
+   (elle reste dans la vue chauffeur).
+   Vue chauffeur : ?vue=chauffeur-4240 affiche les prix comme avant, SANS aucune mesure (?vue=client pour revenir).
+   Retour arriere complet : MODE_CONTACT_ACTIF = false. */
+var MODE_CONTACT_ACTIF = true;
+window.VUE_CHAUFFEUR = (function () {
+  try {
+    var v = new URLSearchParams(location.search).get("vue");
+    if (v === "chauffeur-4240") localStorage.setItem("tb_vue", "chauffeur");
+    if (v === "client") localStorage.removeItem("tb_vue");
+    return localStorage.getItem("tb_vue") === "chauffeur";
+  } catch (e) { return false; }
+})();
+window.MODE_CONTACT = MODE_CONTACT_ACTIF && !window.VUE_CHAUFFEUR;
+/* les recherches du chauffeur ne doivent jamais compter comme des conversions */
+if (window.VUE_CHAUFFEUR) { window.convWa = window.convAppel = window.convDevis = function () {}; }
 /* ---- reference de suivi (STANDARD PRESTO, 06/09/2026) : clic d'annonce Google -> code court dans le message WhatsApp ----
    Rien n'est stocke sur l'appareil : l'identifiant du clic (gclid/gbraid/wbraid) est lu dans l'URL de la page
    (url_passthrough le conserve) UNIQUEMENT quand la personne choisit de contacter Transfer Brussels.
@@ -78,7 +98,7 @@ window.__REF_ENTRIES__ = {"code": "entry.972482410", "id": "entry.493331477", "t
 window.refSuivi = (function () {
   var q = new URLSearchParams(location.search), id = null, type = null;
   ["gclid", "gbraid", "wbraid"].forEach(function (k) { if (!id && q.get(k) && /^[A-Za-z0-9_-]{10,200}$/.test(q.get(k))) { id = q.get(k); type = k; } });
-  if (!id) return function () { return null; };
+  if (!id || window.VUE_CHAUFFEUR) return function () { return null; };
   var h = 0x811c9dc5, i; for (i = 0; i < id.length; i++) { h ^= id.charCodeAt(i); h = (h * 16777619) >>> 0; }
   var A = "0123456789ABCDEFGHJKMNPQRSTVWXYZ", code = "T", n = h; for (i = 0; i < 5; i++) { code += A[n % 32]; n = Math.floor(n / 32); }
   var faits = {};
@@ -842,7 +862,7 @@ footer{background:var(--cream);padding-block:var(--s-5xl) var(--s-xl);border-top
           <button class="btn" type="submit">See fare</button>
         </div>
       </div>
-      <p class="bk-note" id="out">The fare appears immediately. No payment at this stage.</p>
+      <p class="bk-note" id="out">Your fare is given to you before you book. No payment at this stage.</p>
 
       <div class="resa" id="resa" hidden>
         <div class="ligne">
@@ -867,7 +887,7 @@ footer{background:var(--cream);padding-block:var(--s-5xl) var(--s-xl);border-top
   <p style="font-size:18px;line-height:30px;margin:0 0 18px"><b>The price is calculated and given before you book</b>, VAT included, and it cannot go up. The per-kilometre rate is degressive&nbsp;: the longer the journey, the cheaper the kilometre. For these distances, simply tell us the route and the time — the amount is confirmed before you commit.</p>
   <p style="font-size:18px;line-height:30px;margin:0 0 18px">One way or return, for one person or for four. The most requested destinations from Brussels&nbsp;: Paris, Lille, Amsterdam, Luxembourg, Antwerp, Ghent, Bruges, Liège, Maastricht and Cologne. An address outside this list is booked in exactly the same way.</p>
   <p style="font-size:18px;line-height:30px;margin:0 0 18px">A long-distance journey is booked in advance&nbsp;: it blocks a full day of the driver’s time. Let us know as early as you can, especially for a night departure or a late return.</p>
-  <p style="margin:26px 0 0"><a href="#reserver" class="btn">See the price of my journey</a></p>
+  <p style="margin:26px 0 0"><a href="#reserver" class="btn">Ask for the price of my journey</a></p>
 </div></section>
 
 
@@ -1064,7 +1084,7 @@ footer{background:var(--cream);padding-block:var(--s-5xl) var(--s-xl);border-top
     <div class="head reveal"><h2>Frequently asked questions.</h2></div>
     <details>
       <summary>Which destinations do you serve from Brussels?</summary>
-      <div class="a"><p>Paris, Lille, Amsterdam, Luxembourg, Antwerp, Ghent, Liège… and any address in Belgium or the neighbouring countries, by reservation. Enter your destination: the price is shown for your exact trip.</p></div>
+      <div class="a"><p>Paris, Lille, Amsterdam, Luxembourg, Antwerp, Ghent, Liège… and any address in Belgium or the neighbouring countries, by reservation. Enter your destination: the price is given to you for your exact trip.</p></div>
     </details>
     <details>
       <summary>How long is the journey?</summary>
@@ -1252,6 +1272,16 @@ window.TARIFS = {
   var ROUTEUR = "https://router.project-osrm.org/route/v1/driving/";  /* a remplacer : voir calc.py */
   var form = document.getElementById("req");
   var sortie = document.getElementById("out");
+  /* 13/09/2026 — libelles du mode contact d'abord (le HTML garde ceux du mode prix, pour le retour arriere) */
+  if (window.MODE_CONTACT) {
+    var _go = document.querySelector('#req [type=submit]'); if (_go) _go.textContent = "Ask for the fare";
+    sortie.textContent = "Your driver replies on WhatsApp with the fare. No payment at this stage.";
+    /* comme chez Ahmed : AUCUN montant visible. La grille et ses exemples ne s'affichent que dans la vue chauffeur. */
+    var _tarifs = document.getElementById("tarifs"); if (_tarifs) _tarifs.style.display = "none";
+    document.querySelectorAll('a[href="#tarifs"], a[href$="/#tarifs"]').forEach(function (a) { a.style.display = "none"; });
+  } else if (window.VUE_CHAUFFEUR) {
+    sortie.textContent = "Driver view: fares shown, no tracking.";
+  }
   if (!form || !sortie || !window.TARIFS) return;
   var G = window.TARIFS.grille || {};
 
@@ -1343,6 +1373,7 @@ window.TARIFS = {
       box.appendChild(w);
     }
     sortie.appendChild(box);
+    if (window.MODE_CONTACT) demandePrete();
     var resa = document.getElementById("resa");
     resa.hidden = false;
     resa.dataset.recap = recap;
@@ -1366,6 +1397,22 @@ window.TARIFS = {
     a.textContent = libelle;
     a.setAttribute("data-wa", "");
     sortie.appendChild(a);
+  }
+
+  /* 13/09/2026 — mode contact d'abord : le prix est calcule mais pas affiche ; on annonce la suite (WhatsApp). */
+  function demandePrete() {
+    sortie.innerHTML = "";
+    var box = document.createElement("div");
+    box.className = "devis";
+    var t = document.createElement("span");
+    t.className = "montant";
+    t.textContent = "Your request is ready";
+    box.appendChild(t);
+    var d2 = document.createElement("span");
+    d2.className = "detail";
+    d2.textContent = "Send it on WhatsApp: your driver replies with the fare, VAT included. It cannot go up.";
+    box.appendChild(d2);
+    sortie.appendChild(box);
   }
 
   function contact(msg) {
@@ -1511,6 +1558,18 @@ window.TARIFS = {
     }
 
     if (!ca || !cb) {
+      /* 13/09/2026 — en mode contact, le montant n'est pas montre : inutile d'exiger une adresse de la liste.
+         Ahmed ne bloque pas ; le chauffeur lit l'adresse tapee dans le message. */
+      if (window.MODE_CONTACT) {
+        demandePrete();
+        var resa0 = document.getElementById("resa");
+        resa0.hidden = false;
+        resa0.dataset.recap = document.getElementById("a").value + " → " + document.getElementById("b").value
+          + " · " + dateLisible(document.getElementById("d").value) + " à " + document.getElementById("h").value;
+        resa0.dataset.montant = "";
+        window.convDevis(); window.refSuivi && window.refSuivi("devis");
+        return;
+      }
       contact("Choose the pickup point and the destination from the list that appears, "
             + "so that the fare can be calculated.");
       return;
@@ -1565,13 +1624,14 @@ window.TARIFS = {
           box.appendChild(w);
         }
         sortie.appendChild(box);
+        if (window.MODE_CONTACT) demandePrete();
 
         /* etape 2 : reserver ce trajet */
         var resa = document.getElementById("resa");
         resa.hidden = false;
         resa.dataset.recap = document.getElementById("a").value + " → " + document.getElementById("b").value
           + " · " + dateLisible(document.getElementById("d").value) + " à " + document.getElementById("h").value
-          + " · " + total + " € VAT included";
+          + (window.MODE_CONTACT ? "" : " · " + total + " € VAT included");
         resa.dataset.montant = total;
         window.evt("ViewContent", { content_name: "devis", value: total, currency: "EUR" });
         window.convDevis(total); window.refSuivi && window.refSuivi("devis", total);
@@ -1602,12 +1662,13 @@ window.TARIFS = {
         d2.textContent = "Estimate — the exact fare is confirmed when you book. VAT included.";
         box.appendChild(d2);
         sortie.appendChild(box);
+        if (window.MODE_CONTACT) demandePrete();
 
         var resa = document.getElementById("resa");
         resa.hidden = false;
         resa.dataset.recap = document.getElementById("a").value + " → " + document.getElementById("b").value
           + " · " + dateLisible(document.getElementById("d").value) + " à " + document.getElementById("h").value
-          + " · environ " + res.total + " € (estimation)";
+          + (window.MODE_CONTACT ? "" : " · environ " + res.total + " € (estimation)");
         resa.dataset.montant = res.total;
         window.evt("ViewContent", { content_name: "devis-estime", value: res.total, currency: "EUR" });
         window.convDevis(res.total); window.refSuivi && window.refSuivi("devis", res.total);
@@ -1959,7 +2020,7 @@ document.querySelectorAll(".mode").forEach(function (b) {
     /* 10/09/2026 : nom et telephone ne sont plus obligatoires — WhatsApp transmet le numero et le nom du profil.
        Les exiger etait une marche de plus que Presto n'a pas (champs facultatifs chez lui) : 0 contact sur site
        pour 35 clics le 1er jour. S'ils sont remplis, ils partent dans le message. */
-    var txt = "Hello, I would like to book:\n" + recap
+    var txt = (window.MODE_CONTACT ? "Hello, I would like the fare for this journey:" : "Hello, I would like to book:") + "\n" + recap
             + (nom ? "\nName: " + nom : "") + (tel ? "\nTel: " + tel : "")
             + (vol ? "\nFlight: " + vol : "")
             + "\n(request sent from the website)";
