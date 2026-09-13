@@ -1487,14 +1487,14 @@ window.TARIFS = {
       if (H.actif && H.prixHeure != null) {
         var lieuH = document.getElementById("a").value.trim();
         if (!lieuH) {
-          contact("Indiquez le lieu de prise en charge.");
+          contact("Vul de ophaalplaats in.");
           document.getElementById("a").focus();
           return;
         }
         var brut = document.getElementById("b").value.trim().replace(",", ".");
         var m = brut.match(/(\d+(?:\.\d+)?)/);
         if (!m) {
-          contact("Indiquez la durée souhaitée en heures (par exemple 3 heures).");
+          contact("Vul de gewenste duur in uren in (bijvoorbeeld 3 uur).");
           document.getElementById("b").focus();
           return;
         }
@@ -1509,11 +1509,11 @@ window.TARIFS = {
           return;
         }
         var noteH = facturees > heures
-          ? "Minimum de " + mini + " heures de mise à disposition."
-          : facturees + (facturees > 1 ? " heures" : " heure") + " à " + String(H.prixHeure).replace(".", ",") + " € l'heure.";
+          ? "Minimum " + mini + " uur ter beschikking."
+          : facturees + (facturees > 1 ? " uur" : " uur") + " om " + String(H.prixHeure).replace(".", ",") + " € per uur.";
         devis(totalH, noteH + " Prijs van uw rit, btw inbegrepen. Hij kan niet stijgen.",
               "Chauffeur ter beschikking · " + lieuH + " · " + facturees + " h · "
-              + dateLisible(champDate.value) + " à " + champHeure.value);
+              + dateLisible(champDate.value) + " om " + champHeure.value);
         return;
       }
       if (!H.actif || H.prixHeure == null) {
@@ -1522,15 +1522,15 @@ window.TARIFS = {
         var lieu = document.getElementById("a").value.trim();
         var duree = document.getElementById("b").value.trim();
         if (!lieu) {
-          contact("Indiquez le lieu de prise en charge.");
+          contact("Vul de ophaalplaats in.");
           document.getElementById("a").focus();
           return;
         }
         var SL = String.fromCharCode(10);
-        var txtH = "Bonjour, je souhaite une mise à disposition."
+        var txtH = "Goedendag, ik wil graag een chauffeur per uur."
           + SL + "Instaptarief : " + lieu
           + (duree ? SL + "Gewenste duur : " + duree : "")
-          + SL + "Datum : " + dateLisible(champDate.value) + " à " + champHeure.value;
+          + SL + "Datum : " + dateLisible(champDate.value) + " om " + champHeure.value;
         contactAction("La mise à disposition se convient directement, selon la durée et le trajet.",
                       "Demander sur WhatsApp", txtH);
         return;
@@ -1568,7 +1568,7 @@ window.TARIFS = {
         var resa0 = document.getElementById("resa");
         resa0.hidden = false;
         resa0.dataset.recap = document.getElementById("a").value + " → " + document.getElementById("b").value
-          + " · " + dateLisible(document.getElementById("d").value) + " à " + document.getElementById("h").value;
+          + " · " + dateLisible(document.getElementById("d").value) + " om " + document.getElementById("h").value;
         resa0.dataset.montant = "";
         window.convDevis(); window.refSuivi && window.refSuivi("devis");
         return;
@@ -1633,7 +1633,7 @@ window.TARIFS = {
         var resa = document.getElementById("resa");
         resa.hidden = false;
         resa.dataset.recap = document.getElementById("a").value + " → " + document.getElementById("b").value
-          + " · " + dateLisible(document.getElementById("d").value) + " à " + document.getElementById("h").value
+          + " · " + dateLisible(document.getElementById("d").value) + " om " + document.getElementById("h").value
           + (window.MODE_CONTACT ? "" : " · " + total + " € btw inbegrepen");
         resa.dataset.montant = total;
         window.evt("ViewContent", { content_name: "devis", value: total, currency: "EUR" });
@@ -1670,7 +1670,7 @@ window.TARIFS = {
         var resa = document.getElementById("resa");
         resa.hidden = false;
         resa.dataset.recap = document.getElementById("a").value + " → " + document.getElementById("b").value
-          + " · " + dateLisible(document.getElementById("d").value) + " à " + document.getElementById("h").value
+          + " · " + dateLisible(document.getElementById("d").value) + " om " + document.getElementById("h").value
           + (window.MODE_CONTACT ? "" : " · environ " + res.total + " € (estimation)");
         resa.dataset.montant = res.total;
         window.evt("ViewContent", { content_name: "devis-estime", value: res.total, currency: "EUR" });
@@ -2011,7 +2011,7 @@ document.querySelectorAll(".mode").forEach(function (b) {
     if (f && !document.getElementById("ref-pied")) {
       var p = document.createElement("a"); p.id = "ref-pied"; p.href = "#reserver";
       p.style.cssText = "display:block;opacity:.75;font-size:13px;margin-top:6px";
-      p.innerHTML = "Votre référence : <b>" + c + "</b>";
+      p.innerHTML = "Uw referentie: <b>" + c + "</b>";
       f.parentNode.insertBefore(p, f.nextSibling);
     }
   })();
