@@ -782,7 +782,16 @@ footer{background:var(--cream);padding-block:var(--s-5xl) var(--s-xl);border-top
 .resa .or a:hover{color:#eef1f3;text-decoration-color:currentColor}
 .resa .or a:active{color:#c9ced3}
 .resa .or a:focus-visible{border-radius:4px;outline:2px solid #0f1319;outline-offset:2px}
-@media (max-width:1023px){ .resa .ligne{grid-template-columns:1fr} .resa .actions{flex-direction:column;align-items:stretch} .resa .btn-wa{width:100%} .resa .or{text-align:center} }
+.resa .soir{color:#fff}
+.resa .autres{margin:10px 0 0}
+/* le style global details/summary est celui de la FAQ (flex, grand padding, « + » bleu, filets) : neutralise ici */
+.resa .plus{margin-top:var(--s-sm);border:0}
+.resa .plus summary{display:block;padding:0;cursor:pointer;list-style:none;font-size:14px;line-height:20px;letter-spacing:.15px;font-weight:400;color:#aeaeae}
+.resa .plus summary::-webkit-details-marker{display:none}
+.resa .plus summary::after{content:" +";color:#fff;font-size:inherit;font-weight:500}
+.resa .plus[open] summary::after{content:" −"}
+.resa .plus .ligne{margin-top:var(--s-xs)}
+@media (max-width:1023px){ .resa .ligne{grid-template-columns:1fr} .resa .actions{flex-direction:column;align-items:stretch} .resa .btn-wa{width:100%} .resa .or,.resa .plus summary{text-align:center} }
 
 /* ---------- sections legales ---------- */
 #legal{padding-block:var(--s-5xl)}
@@ -865,21 +874,29 @@ footer{background:var(--cream);padding-block:var(--s-5xl) var(--s-xl);border-top
       <p class="bk-note" id="out">Your fare is given to you before you book. No payment at this stage.</p>
 
       <div class="resa" id="resa" hidden>
-        <div class="ligne">
-          <div class="fld"><label for="r-nom">Your name</label><input id="r-nom" placeholder="Full name" autocomplete="name"></div>
-          <div class="fld"><label for="r-tel">Your phone number</label><input id="r-tel" type="tel" placeholder="+32 …" autocomplete="tel"></div>
-          <!-- 13/09/2026 : « Flight number » juge intrusif (Hakim) — il n'etait utile que pour aller CHERCHER quelqu'un a l'aeroport.
-               Champ libre et facultatif, comme chez Ahmed : n° de vol, bagages, batiment. -->
-          <div class="fld"><label for="r-vol">Details <span style="opacity:.6">(optional)</span></label><input id="r-vol" placeholder="Flight no., luggage, building…" autocomplete="off"></div>
-        </div>
+        <!-- 16/09/2026 (go Hakim) : 18 demandes preparees sur 35 ne partaient pas depuis la bascule, surtout le soir
+             (19-23h : 14 demandes -> 4 contacts). Le bouton passe AVANT les champs facultatifs (replies), une
+             alternative SMS pour qui n'a pas WhatsApp, et « meme en soiree » (Ilias repond le soir, FAITS-VERIFIES §7 ;
+             Hakim : s'il n'est pas dispo, ce n'est pas grave, la phrase incite a envoyer). -->
         <div class="actions">
           <button type="button" class="btn btn-wa" id="r-envoyer">Send on WhatsApp</button>
-          <span class="or">or <a href="tel:+32471984401" data-appel>call +32 471 98 44 01</a></span>
-          <!-- 09/09/2026 : la reference n'existait que dans le message WhatsApp. Un client venu d'une annonce
-               qui APPELLE ne laissait aucune trace — course reelle perdue pour l'attribution des le 1er jour.
-               Affichee ici, il peut la donner de vive voix. Vide (hidden) si le visiteur ne vient pas d'une annonce. -->
-          <p class="or refvue" id="ref-appel" hidden>Si vous appelez, donnez-nous la référence <b></b> — elle nous dit d'où vient votre demande.</p>
+          <span class="or soir">Quick reply, even in the evening</span>
         </div>
+        <p class="or autres">No WhatsApp? <a href="sms:+32471984401" id="r-sms">Send a text message</a> or <a href="tel:+32471984401" data-appel>call +32 471 98 44 01</a></p>
+        <!-- 09/09/2026 : la reference n'existait que dans le message WhatsApp. Un client venu d'une annonce
+             qui APPELLE ne laissait aucune trace — course reelle perdue pour l'attribution des le 1er jour.
+             Affichee ici, il peut la donner de vive voix. Vide (hidden) si le visiteur ne vient pas d'une annonce. -->
+        <p class="or refvue" id="ref-appel" hidden>Si vous appelez, donnez-nous la référence <b></b> — elle nous dit d'où vient votre demande.</p>
+        <details class="plus">
+          <summary>Add your name, phone or details <span style="opacity:.6">(optional)</span></summary>
+          <div class="ligne">
+            <div class="fld"><label for="r-nom">Your name</label><input id="r-nom" placeholder="Full name" autocomplete="name"></div>
+            <div class="fld"><label for="r-tel">Your phone number</label><input id="r-tel" type="tel" placeholder="+32 …" autocomplete="tel"></div>
+            <!-- 13/09/2026 : « Flight number » juge intrusif (Hakim) — il n'etait utile que pour aller CHERCHER quelqu'un a l'aeroport.
+                 Champ libre et facultatif, comme chez Ahmed : n° de vol, bagages, batiment. -->
+            <div class="fld"><label for="r-vol">Details <span style="opacity:.6">(optional)</span></label><input id="r-vol" placeholder="Flight no., luggage, building…" autocomplete="off"></div>
+          </div>
+        </details>
       </div>
     </form>
   </div>
@@ -1994,7 +2011,8 @@ document.querySelectorAll(".mode").forEach(function (b) {
       f.parentNode.insertBefore(p, f.nextSibling);
     }
   })();
-  b.addEventListener("click", function () {
+  /* 16/09/2026 : message commun au bouton WhatsApp et au lien SMS */
+  function messageDemande() {
     var nom = document.getElementById("r-nom").value.trim();
     var tel = document.getElementById("r-tel").value.trim();
     var vol = document.getElementById("r-vol").value.trim();
@@ -2006,11 +2024,24 @@ document.querySelectorAll(".mode").forEach(function (b) {
             + (nom ? "\nName: " + nom : "") + (tel ? "\nTel: " + tel : "")
             + (vol ? "\nDetails: " + vol : "")
             + "\n(request sent from the website)";
-    txt = window.refTexte(txt);
+    return window.refTexte(txt);
+  }
+  b.addEventListener("click", function () {
+    var txt = messageDemande();
     var montant = parseFloat(document.getElementById("resa").dataset.montant) || 0;
     window.evt("Lead", { content_name: "reservation", value: montant, currency: "EUR" });
     window.convWa(montant); window.refSuivi && window.refSuivi("whatsapp", montant);
     window.open("https://wa.me/32471984401?text=" + encodeURIComponent(txt), "_blank", "noopener");
+  });
+  /* 16/09/2026 : alternative SMS pour qui n'a pas WhatsApp — meme message, meme reference.
+     « ?&body= » est la forme lue a la fois par iOS et Android. Compte comme contact message (convWa) : meme intention. */
+  var s = document.getElementById("r-sms");
+  if (s) s.addEventListener("click", function () {
+    s.href = "sms:+32471984401?&body=" + encodeURIComponent(messageDemande());
+    var montant = parseFloat(document.getElementById("resa").dataset.montant) || 0;
+    window.evt("Lead", { content_name: "reservation_sms", value: montant, currency: "EUR" });
+    if (montant > 0) window.convWa(montant); else window.convWa();
+    window.refSuivi && window.refSuivi("sms", montant);
   });
 })();
 
