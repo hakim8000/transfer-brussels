@@ -1433,6 +1433,19 @@ window.TARIFS = {
     d2.textContent = "Send it on WhatsApp: your driver replies with the fare, VAT included. It cannot go up.";
     box.appendChild(d2);
     sortie.appendChild(box);
+    /* 21/09/2026 : la page ne defilait pas apres « Ask for the fare ». Sur telephone, le bouton WhatsApp apparait ~190 px plus bas :
+       il tombait sous le bandeau cookies (112 px en bas d'ecran, jamais ferme par ~57 % des visiteurs) or hors ecran, et la ligne
+       « No WhatsApp? SMS or appelez » etait toujours masquee — 58 demandes preparees sur 111 n'ont jamais ete envoyees.
+       On amene le titre sous l'en-tete des que la derniere ligne utile n'est pas entierement visible au-dessus du bandeau. */
+    setTimeout(function () {
+      var fin = document.querySelector("#resa .autres") || document.getElementById("r-envoyer");
+      if (!fin || fin.offsetParent === null) return;
+      var c = document.querySelector(".cookies");
+      var bas = (c && !c.hidden) ? c.getBoundingClientRect().top : window.innerHeight;
+      if (fin.getBoundingClientRect().bottom <= bas - 12) return;
+      var dy = box.getBoundingClientRect().top - 76;
+      if (dy > 4) window.scrollBy({ top: dy, behavior: "smooth" });
+    }, 200);
   }
 
   function contact(msg) {
