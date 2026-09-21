@@ -781,14 +781,15 @@ footer{background:var(--cream);padding-block:var(--s-5xl) var(--s-xl);border-top
 .resa .ou a:active{color:#c9ced3}
 .resa .ou a:focus-visible{border-radius:4px;outline:2px solid #0f1319;outline-offset:2px}
 .resa .soir{color:#fff}
-.resa .autres{margin:10px 0 0}
+.resa .autres{margin:var(--s-2xs) 0 0}
+.resa .autres a{display:inline-block;padding:12px 0;margin:-12px 0}   /* cible tactile 44, texte inchange */
 /* le style global details/summary est celui de la FAQ (flex, grand padding, « + » bleu, filets) : neutralise ici */
-.resa .plus{margin-top:var(--s-sm);border:0}
-.resa .plus summary{display:block;padding:0;cursor:pointer;list-style:none;font-size:14px;line-height:20px;letter-spacing:.15px;font-weight:400;color:#aeaeae}
+.resa .plus{margin-top:var(--s-3xs);border:0}
+.resa .plus summary{display:block;padding:12px 0;min-height:44px;cursor:pointer;list-style:none;font-size:14px;line-height:20px;letter-spacing:.15px;font-weight:400;color:#aeaeae}
 .resa .plus summary::-webkit-details-marker{display:none}
 .resa .plus summary::after{content:" +";color:#fff;font-size:inherit;font-weight:500}
 .resa .plus[open] summary::after{content:" −"}
-.resa .plus .ligne{margin-top:var(--s-xs)}
+.resa .plus .ligne{margin-top:var(--s-3xs)}
 @media (max-width:1023px){ .resa .ligne{grid-template-columns:1fr} .resa .actions{flex-direction:column;align-items:stretch} .resa .btn-wa{width:100%} .resa .ou,.resa .plus summary{text-align:center} }
 
 /* ---------- sections legales ---------- */
@@ -1437,11 +1438,20 @@ window.TARIFS = {
     setTimeout(function () {
       var fin = document.querySelector("#resa .autres") || document.getElementById("r-envoyer");
       if (!fin || fin.offsetParent === null) return;
-      var c = document.querySelector(".cookies");
-      var bas = (c && !c.hidden) ? c.getBoundingClientRect().top : window.innerHeight;
-      if (fin.getBoundingClientRect().bottom <= bas - 12) return;
-      var dy = box.getBoundingClientRect().top - 76;
-      if (dy > 4) window.scrollBy({ top: dy, behavior: "smooth" });
+      var c = document.querySelector(".cookies"), cr = (c && !c.hidden) ? c.getBoundingClientRect() : null;
+      var calme = window.matchMedia && window.matchMedia("(prefers-reduced-motion:reduce)").matches;
+      var va = function (dy) { if (dy > 4) window.scrollBy({ top: dy, behavior: calme ? "auto" : "smooth" }); };
+      if (window.matchMedia && window.matchMedia("(max-width:1023px)").matches) {
+        /* mise en page EMPILEE (meme seuil que le CSS) : le titre arrive juste sous l'en-tete fixe (hauteur lue, pas supposee) */
+        if (fin.getBoundingClientRect().bottom <= (cr ? cr.top : window.innerHeight) - 12) return;
+        var barre = document.querySelector(".bar"), hb = barre ? barre.getBoundingClientRect().bottom : 72;
+        va(box.getBoundingClientRect().top - (hb + 8));
+      } else if (cr) {
+        /* grand ecran : le formulaire est en ligne dans le heros ; le bandeau (coin bas gauche) recouvrait le bas du panneau.
+           On remonte du strict necessaire, sans jamais pousser le formulaire sous l'en-tete. */
+        var bloc = document.querySelector("#resa .plus") || fin, r = bloc.getBoundingClientRect();
+        if (r.left < cr.right && r.right > cr.left) va(r.bottom - (cr.top - 16));
+      }
     }, 200);
   }
 
