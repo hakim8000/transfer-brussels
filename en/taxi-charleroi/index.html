@@ -32,7 +32,13 @@
 
 window.__AW_ID__ = "AW-18431369420";
 window.chargerGoogle = function () {
-  if (window.__googleCharge || /^__/.test(window.__AW_ID__)) return;
+  if (/^__/.test(window.__AW_ID__)) return;
+  if (window.__googleCharge) {   
+    if (window.__fileVidee && window.gtag) { window.__fileVidee = false;
+      window.gtag('consent', 'default', { 'ad_storage': 'granted', 'ad_user_data': 'granted', 'ad_personalization': 'granted', 'analytics_storage': 'granted' });
+      window.gtag('js', new Date()); window.gtag('config', window.__AW_ID__); }
+    return;
+  }
   window.__googleCharge = true;
   window.dataLayer = window.dataLayer || [];
   window.gtag = function () { window.dataLayer.push(arguments); };
@@ -2397,6 +2403,8 @@ document.querySelectorAll(".mode").forEach(function (b) {
   function appliquer(c) {
     var ok = c === "granted", g = ok ? "granted" : "denied";
     if (AW && !/^__/.test(AW)) window["ga-disable-" + AW] = !ok;
+    
+    if (!ok && window.__googleCharge && !window.google_tag_manager && window.dataLayer) { window.dataLayer.length = 0; window.__fileVidee = true; }
     if (window.__googleCharge && window.gtag) { try { window.gtag("consent", "update", { "ad_storage": g, "ad_user_data": g, "ad_personalization": g, "analytics_storage": g }); } catch (e) {} }
     if (window.fbq) { try { window.fbq("consent", ok ? "grant" : "revoke"); } catch (e) {} }
     if (!ok) effacer();
