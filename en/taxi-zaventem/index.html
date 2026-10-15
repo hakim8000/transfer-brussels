@@ -27,24 +27,22 @@
 <link rel="icon" href="/favicon.ico" sizes="32x32">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
-<!-- Mesure : Google (Consent Mode v2, tout refuse par defaut, bandeau) + pixel Meta.
-     ⚠️ Jetons __AW_ID__ (Google Ads) et __PIXEL_ID__ (Meta) a remplacer par les identifiants
-     des comptes ; tant qu'un jeton est la, aucun script tiers correspondant n'est charge. -->
+
 <script>
-window.dataLayer = window.dataLayer || [];
-function gtag(){ dataLayer.push(arguments); }
-/* Consent Mode v2 (Belgium / APD) : tout refuse par defaut, le bandeau met a jour ; url_passthrough garde le gclid sans cookie */
-gtag('consent', 'default', { 'ad_storage': 'denied', 'ad_user_data': 'denied', 'ad_personalization': 'denied', 'analytics_storage': 'denied', 'wait_for_update': 500 });
-gtag('set', 'url_passthrough', true);
-gtag('set', 'ads_data_redaction', true);
+
 window.__AW_ID__ = "AW-18431369420";
-if (!/^__/.test(window.__AW_ID__)) {
+window.chargerGoogle = function () {
+  if (window.__googleCharge || /^__/.test(window.__AW_ID__)) return;
+  window.__googleCharge = true;
+  window.dataLayer = window.dataLayer || [];
+  window.gtag = function () { window.dataLayer.push(arguments); };
+  window.gtag('consent', 'default', { 'ad_storage': 'granted', 'ad_user_data': 'granted', 'ad_personalization': 'granted', 'analytics_storage': 'granted' });
+  window.gtag('js', new Date()); window.gtag('config', window.__AW_ID__);
   var _g = document.createElement('script'); _g.async = true;
   _g.src = 'https://www.googletagmanager.com/gtag/js?id=' + window.__AW_ID__; document.head.appendChild(_g);
-  gtag('js', new Date()); gtag('config', window.__AW_ID__);
-}
+};
 window.__PIXEL_ID__ = "__PIXEL_ID__";
-/* Le pixel Meta ne se charge qu'APRES consentement (bandeau) — appele par window.initMeta() */
+
 window.initMeta = function () {
   if (window.fbq || /^__/.test(window.__PIXEL_ID__)) return;
   !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -55,33 +53,23 @@ window.initMeta = function () {
   fbq('init', window.__PIXEL_ID__);
   fbq('track', 'PageView');
 };
-/* Compteurs Google Ads — un clic = UNE conversion (lecon Presto 05/09/2026 : deux actions principales sur le meme clic
-   = CPA faux de moitie et signal d'enchere double). __LABEL_WA__ = action PRINCIPALE (clic WhatsApp), __LABEL_APPEL__ = action
-   PRINCIPALE depuis le 12/09/2026 (canal telephone ouvert le 11/09, decision Hakim — l'ancien interdit est leve). Jetons a remplacer avec __AW_ID__. */
+
 window.__LABEL_WA__ = "JHJGCJ-xyvEcEMzB4dRE"; window.__LABEL_APPEL__ = "_gjzCKKxyvEcEMzB4dRE";
-/* __LABEL_DEVIS__ = action SECONDAIRE « Devis calculé » : le prix s'est affiche pour un trajet reel.
-   C'est le signal d'intention le plus fort AVANT le contact, et le plus frequent — a 23 EUR/jour Google
-   n'aura que ~10-20 conversions principales par mois, trop peu pour apprendre. Jamais PRINCIPALE :
-   deux actions principales sur le meme parcours = CPA faux de moitie (erreur constatee chez Presto le 05/09). */
+
 window.__LABEL_DEVIS__ = "vJhMCKixyvEcEMzB4dRE";
 function _convGoogle(label, valeur) {
   if (/^__/.test(window.__AW_ID__) || /^__/.test(label)) return;
+  
+  if (!window.__googleCharge || !window.gtag || !(window.consentPub && window.consentPub())) return;
   var p = { 'send_to': window.__AW_ID__ + '/' + label };
-  /* valeur = montant du devis (le site le calcule) : rapport par mot-cle en euros, puis Max valeur a >= 30 conv */
+  
   if (valeur > 0) { p.value = Math.round(valeur); p.currency = 'EUR'; }
-  try { gtag('event', 'conversion', p); } catch (e) {}
+  try { window.gtag('event', 'conversion', p); } catch (e) {}
 }
 window.convWa = function (valeur) { _convGoogle(window.__LABEL_WA__, valeur); };
 window.convAppel = function () { _convGoogle(window.__LABEL_APPEL__); };
 window.convDevis = function (valeur) { _convGoogle(window.__LABEL_DEVIS__, valeur); };
-/* ---- 13/09/2026 : MODELE « CONTACT D'ABORD » (decision Hakim, modele Presto/Ahmed) ----
-   Mesure du 12/09 : 9 devis affiches, 0 contact — dont 3 SOUS Prestige Driver (45, 49, 49 EUR). Afficher le prix faisait
-   finir le parcours sur le prix : on compare, on part. Chez Ahmed, le prix arrive DANS la conversation, or il peut vendre.
-   Le prix reste CALCULE (valeur de conversion, montant dans le magasin de references) mais il n'est plus AFFICHE :
-   la personne l'obtient sur WhatsApp. Comme chez Ahmed, AUCUN montant n'est visible : la section tarifs est masquee
-   (elle reste dans la vue chauffeur).
-   Vue chauffeur : ?vue=chauffeur-4240 affiche les prix comme avant, SANS aucune mesure (?vue=client pour revenir).
-   Retour arriere complet : MODE_CONTACT_ACTIF = false. */
+
 var MODE_CONTACT_ACTIF = true;
 window.VUE_CHAUFFEUR = (function () {
   try {
@@ -92,36 +80,38 @@ window.VUE_CHAUFFEUR = (function () {
   } catch (e) { return false; }
 })();
 window.MODE_CONTACT = MODE_CONTACT_ACTIF && !window.VUE_CHAUFFEUR;
-/* les recherches du chauffeur ne doivent jamais compter comme des conversions */
+
 if (window.VUE_CHAUFFEUR) { window.convWa = window.convAppel = window.convDevis = function () {}; }
-/* ---- reference de suivi (STANDARD PRESTO, 06/09/2026) : clic d'annonce Google -> code court dans le message WhatsApp ----
-   Rien n'est stocke sur l'appareil : l'identifiant du clic (gclid/gbraid/wbraid) est lu dans l'URL de la page
-   (url_passthrough le conserve) UNIQUEMENT quand la personne choisit de contacter Transfer Brussels.
-   Le code est visible dans son message ; le rapprochement code<->clic est memorise dans le Google Form technique « refs »
-   (meme pile que le carnet des demandes : les reponses tombent dans le Sheet de l'agence, 90 j), puis les courses
-   reellement faites sont renvoyees a Google (import hors ligne, Data Manager). Prefixe T (Presto = P).
-   __REF_FORM__ = URL formResponse du Form « refs », __REF_ENTRIES__ = ses champs entry.xxx. */
+
 window.__REF_FORM__ = "https://docs.google.com/forms/d/e/1FAIpQLScEfM0OG91xnuF72vSDnaBXcSSPB4e2gUbBKGnpMLtYevEStw/formResponse";
 window.__REF_ENTRIES__ = {"code": "entry.972482410", "id": "entry.493331477", "type": "entry.1782808285", "page": "entry.520315805", "consent": "entry.153005485", "evenement": "entry.1028480645", "montant": "entry.48789588"};
 window.refSuivi = (function () {
-  var q = new URLSearchParams(location.search), id = null, type = null;
-  ["gclid", "gbraid", "wbraid"].forEach(function (k) { if (!id && q.get(k) && /^[A-Za-z0-9_-]{10,200}$/.test(q.get(k))) { id = q.get(k); type = k; } });
-  if (!id || window.VUE_CHAUFFEUR) return function () { return null; };
-  var h = 0x811c9dc5, i; for (i = 0; i < id.length; i++) { h ^= id.charCodeAt(i); h = (h * 16777619) >>> 0; }
-  var A = "0123456789ABCDEFGHJKMNPQRSTVWXYZ", code = "T", n = h; for (i = 0; i < 5; i++) { code += A[n % 32]; n = Math.floor(n / 32); }
-  var faits = {};
-  /* refSuivi()            -> rend seulement le code (affichage, texte du message)
-     refSuivi("whatsapp", 45) -> enregistre l'action et le montant, une fois par couple (action, montant) */
+  var faits = {}, CLE = "tb_ref", VALIDE = /^[A-Za-z0-9_-]{10,200}$/;
+  
+  function clic() {
+    if (window.VUE_CHAUFFEUR || !(window.consentPub && window.consentPub())) return null;
+    var q = new URLSearchParams(location.search), r = null;
+    ["gclid", "gbraid", "wbraid"].forEach(function (k) { if (!r && q.get(k) && VALIDE.test(q.get(k))) r = { id: q.get(k), type: k, adresse: true }; });
+    try {
+      if (r) sessionStorage.setItem(CLE, JSON.stringify({ id: r.id, type: r.type }));
+      else { var s = JSON.parse(sessionStorage.getItem(CLE) || "null"); if (s && VALIDE.test(s.id || "")) r = { id: s.id, type: s.type, adresse: false }; }
+    } catch (e) {}
+    return r;
+  }
+  
   return function (evenement, montant) {
+    var r = clic(); if (!r) return null;
+    var id = r.id, h = 0x811c9dc5, i; for (i = 0; i < id.length; i++) { h ^= id.charCodeAt(i); h = (h * 16777619) >>> 0; }
+    var A = "0123456789ABCDEFGHJKMNPQRSTVWXYZ", code = "T", n = h; for (i = 0; i < 5; i++) { code += A[n % 32]; n = Math.floor(n / 32); }
+    if (evenement === "arrivee" && !r.adresse) return code;
     if (evenement && !/^__/.test(window.__REF_FORM__) && window.__REF_ENTRIES__) {
       var cle = evenement + "|" + (montant || "");
       if (!faits[cle]) {
         faits[cle] = 1;
-        var consent = window.consentPub ? (window.consentPub() ? "granted" : (window.consentChoisi && window.consentChoisi() ? "denied" : "")) : "";
         var E = window.__REF_ENTRIES__, d = {};
-        d[E.code] = code; d[E.id] = id; d[E.type] = type; d[E.page] = location.pathname; d[E.consent] = consent;
+        d[E.code] = code; d[E.id] = id; d[E.type] = r.type; d[E.page] = location.pathname; d[E.consent] = "granted";
         d[E.evenement] = evenement; d[E.montant] = (montant > 0 ? String(Math.round(montant)) : "");
-        /* application/x-www-form-urlencoded = requete « simple » (pas de preflight) ; Google Forms accepte le POST cross-origin */
+        
         try { navigator.sendBeacon(window.__REF_FORM__, new Blob([new URLSearchParams(d).toString()], { type: "application/x-www-form-urlencoded" })); } catch (e) {}
       }
     }
@@ -129,27 +119,23 @@ window.refSuivi = (function () {
   };
 })();
 window.refTexte = function (base) { var c = window.refSuivi(); return c ? base + " (ref. " + c + ")" : base; };
-/* 09/09/2026 : le beacon ne partait qu'au CLIC sur un bouton WhatsApp du site. Un visiteur venu d'une annonce
-   qui recopie le numero (tres frequent sur mobile) or qui appelle ne laissait aucune trace — une vraie course
-   du 1er jour a ete perdue pour l'attribution. On enregistre desormais la visite publicitaire des l'arrivee :
-   le magasin donne alors l'heure, la page et le code, ce qui permet de rapprocher une demande d'un clic meme
-   sans que le client cite la reference. */
-if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", function () { window.refSuivi("arrivee"); });
-else window.refSuivi("arrivee");
-/* appel sur : ne casse jamais si le pixel n'est pas charge */
+
+
 window.evt = function (nom, data) { try { if (window.fbq) fbq('track', nom, data || {}); } catch (e) {} };
 </script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Petrona:wght@530&display=swap">
+<link rel="preload" href="/assets/fonts/geist-latin.woff2" as="font" type="font/woff2" crossorigin>
 
 <style>
-/* ============================================================
-   BELGIUM TRANSFERT
-   Système repris de la référence fournie : fond blanc et crème
-   chaud, encre #0f1319, accent bleu #0f63bd, Geist en texte,
-   display serif éditorial. Échelle de type et rayons alignés.
-   ============================================================ */
+
+@font-face{font-family:'Geist';font-style:normal;font-weight:400;font-display:swap;src:url(/assets/fonts/geist-latin-ext.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C4,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'Geist';font-style:normal;font-weight:400;font-display:swap;src:url(/assets/fonts/geist-latin.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Geist';font-style:normal;font-weight:500;font-display:swap;src:url(/assets/fonts/geist-latin-ext.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C4,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'Geist';font-style:normal;font-weight:500;font-display:swap;src:url(/assets/fonts/geist-latin.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Geist';font-style:normal;font-weight:600;font-display:swap;src:url(/assets/fonts/geist-latin-ext.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C4,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'Geist';font-style:normal;font-weight:600;font-display:swap;src:url(/assets/fonts/geist-latin.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Petrona';font-style:normal;font-weight:530;font-display:swap;src:url(/assets/fonts/petrona-latin-ext.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C4,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'Petrona';font-style:normal;font-weight:530;font-display:swap;src:url(/assets/fonts/petrona-latin.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+
 
 :root{
   --ink:#0f1319; --ink-2:#0f1319; --grey-d:#4b4b50; --grey:#6e6e73; --grey-2:#8f9499; --grey-3:#aeaeae;
@@ -162,7 +148,7 @@ window.evt = function (nom, data) { try { if (window.fbq) fbq('track', nom, data
 }
 
 *,*::before,*::after{box-sizing:border-box}
-html,body{overflow-x:clip}   /* jamais de glissement lateral, quoi qu'il arrive */
+html,body{overflow-x:clip}   
 body{
   margin:0;background:var(--cream);color:var(--ink);
   font-family:"Geist",system-ui,-apple-system,"Segoe UI",sans-serif;
@@ -178,7 +164,7 @@ a{color:inherit;text-decoration:none}
   font-size:104px;line-height:120px;letter-spacing:.25px;
   margin:0;text-wrap:balance
 }
-/* interlignes releves chez eux : 104->120, 80->96, 64->72, 32->40, 28->36 */
+
 h2{
   font-family:"Petrona",Georgia,serif;font-weight:530;
   font-size:64px;line-height:72px;letter-spacing:.25px;
@@ -210,34 +196,26 @@ section{padding-block:var(--s-7xl)}
 .bleu h2,.bleu h3,.bleu p{color:#0f1319}
 .bleu .sub{color:var(--ink)}
 
-/* ============ VALEURS RELEVEES SUR LA REFERENCE ============
-   espacements  3xs 4 - 2xs 8 - sm 16 - md 20 - lg 24 - xl 32 - 2xl 40 - 3xl 48
-   en-tete      fixe, min-height 88px, padding 24px 48px
-   titre heros  64px/72px, letter-spacing +.25px, #aecff3, max-width 800px
-   fenetre      hauteur 108px, padding 24px, rayon 8px, blur 16px
-   boutons      rayon 999px, rempli #0f63bd (survol #0d4a8c, actif #0c4481)
-   ========================================================== */
+
 :root{
   --s-3xs:4px; --s-2xs:8px; --s-sm:16px; --s-md:20px; --s-lg:24px;
   --s-xl:32px; --s-2xl:40px; --s-3xl:48px; --s-4xl:64px; --s-6xl:80px;
   --glass-shadow:0 2px 8px 0 rgba(6,10,13,.12), inset 4px 4px 8px rgba(0,0,0,.06);
 }
 
-/* ---------- en-tete fixe, par-dessus le heros ---------- */
+
 .bar{
   position:fixed;z-index:50;top:0;left:0;width:100%;max-width:100vw;
   display:flex;flex-flow:row wrap;align-items:center;justify-content:space-between;
   min-height:88px;padding:var(--s-lg) var(--s-3xl);background:transparent
 }
-/* scrim du header : sombre sur le heros, clair ensuite (releve : gradient + blur 24) */
+
 .bar::after{
   content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
   background:linear-gradient(0deg,rgba(0,0,0,0),rgba(0,0,0,.5))
 }
 .bar.clair::after{
-  /* leur version ajoute backdrop-filter:blur(24px) — retire ici : il gele la
-     peinture de la page sur Chrome/Windows (bug compositeur, reproduit 2 nav.) ;
-     compense par un gradient un peu plus opaque, rendu quasi identique */
+  
   background:linear-gradient(180deg,#fbf8f2 30%,rgba(251,248,242,.72))
 }
 .bar.clair .logo,.bar.clair nav a:not(.btn){color:var(--ink)}
@@ -279,13 +257,13 @@ section{padding-block:var(--s-7xl)}
 .btn-ghost:hover{background-color:transparent;border-color:#fbf8f2;color:#fff}
 .btn-ghost:active{border-color:#fff}
 
-/* ---------- heros : image plein ecran, contenu en bas ---------- */
+
 .hero{
   position:relative;display:flex;min-height:100svh;padding:0;
   background-position:center center;background-size:cover;background-attachment:fixed
 }
 
-/* le parallaxe est coupe sous 1024px, comme chez eux (pas seulement au toucher) */
+
 .hero-content{
   display:flex;flex:1 1;flex-direction:column;align-items:center;justify-content:flex-end;
   width:100%;padding:0 var(--s-xl) var(--s-2xl)
@@ -297,7 +275,7 @@ section{padding-block:var(--s-7xl)}
   text-shadow:none
 }
 
-/* ---------- verre : recette relevee sur la reference ---------- */
+
 .glass{
   position:relative;-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);box-shadow:var(--glass-shadow);
   background:
@@ -316,7 +294,7 @@ section{padding-block:var(--s-7xl)}
   -webkit-mask-composite:xor; mask-composite:exclude
 }
 
-/* ---------- selecteur de categorie ---------- */
+
 .modes{
   display:inline-grid;grid-auto-columns:1fr;grid-auto-flow:column;
   gap:var(--s-3xs);padding:var(--s-2xs);border-radius:999px;margin-bottom:var(--s-sm)
@@ -333,7 +311,7 @@ section{padding-block:var(--s-7xl)}
 .mode:focus-visible{outline:2px solid #0f1319;outline-offset:2px}
 .mode:focus-visible::after{content:"";position:absolute;inset:0;border-radius:inherit;outline:2px solid #fff}
 
-/* ---------- fenetre de reservation ---------- */
+
 .booking{
   display:flex;flex-direction:column;gap:var(--s-sm);justify-content:space-between;
   width:100%;max-width:1160px;min-height:108px;padding:var(--s-lg);border-radius:8px
@@ -361,7 +339,7 @@ section{padding-block:var(--s-7xl)}
 .fld input:focus{box-shadow:inset 0 -2px 0 0 var(--blue)}
 .fld select{
   cursor:pointer;padding-right:32px;
-  box-shadow:inset 0 -1px 0 0 #aeaeae;   /* etat rempli : le select a toujours une valeur */
+  box-shadow:inset 0 -1px 0 0 #aeaeae;   
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
   background-repeat:no-repeat;background-position:right 0 top 0;background-size:24px 24px
 }
@@ -370,7 +348,7 @@ section{padding-block:var(--s-7xl)}
 .bk-note{margin:0;font-size:14px;line-height:20px;letter-spacing:.15px;color:#aeaeae;text-align:center}
 
 @media (max-width:1023px){
-  /* echelle d'espacement divisee par deux, comme la leur */
+  
   :root{
     --s-3xs:2px; --s-2xs:4px; --s-sm:12px; --s-md:16px; --s-lg:20px;
     --s-xl:24px; --s-2xl:32px; --s-3xl:40px; --s-4xl:48px; --s-6xl:64px;
@@ -378,7 +356,7 @@ section{padding-block:var(--s-7xl)}
   }
   .hero{background-attachment:scroll}
   .bar{padding:var(--s-lg) var(--s-xl);min-height:72px}
-  .hero-content{padding:72px var(--s-xl) 24px}   /* 72 = leur --header-height-mobile, 24 = leur wrapper */
+  .hero-content{padding:72px var(--s-xl) 24px}   
   .hero-title{font-size:28px;line-height:36px;max-width:100%;margin-bottom:var(--s-sm)}
   .booking{height:auto;min-height:auto;padding:var(--s-md);width:100%;max-width:100%}
   .wrap{padding-inline:24px}
@@ -406,11 +384,11 @@ section{padding-block:var(--s-7xl)}
   .booking{min-height:0}
 }
 
-/* ---------- rangée de repères ---------- */
+
 .marks{display:flex;flex-wrap:wrap;gap:var(--s-5xl);padding-block:var(--s-5xl)}
 .marks span{font-size:15px;line-height:24px;letter-spacing:.15px;color:var(--grey)}
 
-/* ---------- cartes de prestation ---------- */
+
 .head{max-width:800px;margin-bottom:var(--s-4xl)}
 .head:has(.xl){max-width:100%}
 .head .sub{margin-top:var(--s-lg)}
@@ -430,10 +408,10 @@ section{padding-block:var(--s-7xl)}
   font-weight:500;margin:0 0 var(--s-2xs)
 }
 
-/* ---------- bande pleine largeur ---------- */
+
 .band{position:relative;border-radius:var(--r-l);overflow:hidden;min-height:520px;display:grid}
 
-/* ---------- pile epinglee (leur RideSection : pin 200%, cartes qui glissent) ---------- */
+
 #moments{padding-bottom:0}
 .pinhead{margin-bottom:var(--s-5xl)}
 .pincard{position:relative;margin:0;border-radius:var(--r-l);overflow:hidden}
@@ -442,7 +420,7 @@ section{padding-block:var(--s-7xl)}
 .pincard h3{font-family:"Petrona",Georgia,serif;font-weight:530;font-size:44px;line-height:52px;letter-spacing:.25px;margin:0 0 var(--s-3xs)}
 .pincard p{font-size:18px;line-height:26px;letter-spacing:.25px;margin:0}
 .pc-photo{color:#fff}
-/* plus de degrade maison : le texte vit dans une boite de verre, comme leur ImageCard */
+
 .pc-photo figcaption{z-index:2;flex:1 1 auto;max-width:none;margin:var(--s-lg);padding:var(--s-lg);border-radius:8px;background-color:rgba(0,0,0,.2)}
 .pc-photo figcaption>*{max-width:600px}
 .pc-photo h3,.pc-photo p{color:#fff}
@@ -452,7 +430,7 @@ section{padding-block:var(--s-7xl)}
 .pc-creme h3,.pc-creme p{color:var(--ink)}
 @media (min-width:1024px){
   .pinzone{height:calc(300vh - 96px);position:relative}
-  /* epinglage a la maniere de ScrollTrigger : absolu avant, FIXE pendant, absolu apres */
+  
   .pinstick{position:absolute;top:0;left:48px;right:48px;height:calc(100vh - 120px);overflow:hidden;border-radius:var(--r-l);background:var(--cream);transform:translateZ(0)}
   .pinstick.colle{position:fixed;top:96px}
   .pinstick.apres{top:auto;bottom:24px}
@@ -462,12 +440,11 @@ section{padding-block:var(--s-7xl)}
   .pinstick .pincard:nth-child(3){z-index:1}
 }
 @media (max-width:1023px){
-  /* .pinzone est HORS .wrap : pas de marge negative ici, elle faisait deborder la page de 24 px et
-     la rendait glissable lateralement (releve sur Presto, meme code, 03/09/2026) */
+  
   .pinzone{margin-inline:0;padding-inline:24px;display:flex;gap:16px;overflow-x:auto;
     scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none}
   .pinzone::-webkit-scrollbar{display:none}
-  .pinstick{display:contents}   /* les cartes deviennent les enfants directs du rail : sans ca, elles s'empilaient au lieu de defiler */
+  .pinstick{display:contents}   
   .pincard{flex:0 0 85%;scroll-snap-align:center;height:480px;display:flex;align-items:flex-end}
   .pincard h3{font-size:28px;line-height:36px}
   #moments{padding-bottom:56px}
@@ -481,19 +458,19 @@ section{padding-block:var(--s-7xl)}
 .band h2{color:#fff;max-width:18ch}
 .band p{color:rgba(255,255,255,.86);max-width:52ch;margin:14px 0 0}
 
-/* ---------- colonnes ---------- */
+
 .two{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center}
 .two img{border-radius:var(--r-l);width:100%;aspect-ratio:4/3;object-fit:cover}
 .list{display:grid;gap:var(--s-lg);margin-top:var(--s-xl)}
 .list h3{font-size:28px;line-height:36px;margin-bottom:8px}
 .list p{font-size:18px;line-height:26px;letter-spacing:.25px;color:var(--ink);margin:0}
 
-/* ---------- piliers ---------- */
+
 .pillars{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--s-2xl)}
 .pillar h3{font-size:28px;line-height:36px;padding-top:var(--s-lg);border-top:1px solid var(--hair)}
 .pillar p{font-size:18px;line-height:26px;letter-spacing:.25px;color:var(--ink);margin:0}
 
-/* ---------- tableau tarifaire ---------- */
+
 .board{border:1px solid var(--hair);border-radius:var(--r-l);overflow:hidden;background:var(--paper)}
 .brow{
   display:grid;grid-template-columns:1fr 110px 130px;gap:16px;align-items:center;
@@ -512,7 +489,7 @@ section{padding-block:var(--s-7xl)}
 }
 .callout p{margin:0;max-width:none}
 
-/* ---------- questions ---------- */
+
 details{border-bottom:1px solid var(--hair)}
 details:first-of-type{border-top:1px solid var(--hair)}
 summary{
@@ -530,7 +507,7 @@ details[open] summary::after{content:"–"}
 details .a{padding-bottom:24px;color:var(--grey);font-size:16px}
 details .a p{margin:0}
 
-/* ---------- pied ---------- */
+
 footer{background:var(--cream);padding-block:var(--s-5xl) var(--s-xl);border-top:1px solid var(--hair)}
 .fg{display:grid;grid-template-columns:1.6fr 1fr 1fr 1.2fr 1fr;gap:32px;margin-bottom:40px}
 .fg h4{font-size:14px;line-height:20px;letter-spacing:.15px;text-transform:uppercase;color:var(--grey);margin:0 0 var(--s-sm);font-weight:600}
@@ -546,8 +523,7 @@ footer{background:var(--cream);padding-block:var(--s-5xl) var(--s-xl);border-top
   .hero{background-position:50% 72%}
   .bk-grid{grid-template-columns:1fr 1fr}
 
-  /* leurs cartes ne passent pas en grille : elles defilent, une a la fois,
-     a 85 % de la largeur, avec accrochage au centre */
+  
   .cards{
     display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;
     -webkit-overflow-scrolling:touch;scrollbar-width:none;
@@ -559,39 +535,34 @@ footer{background:var(--cream);padding-block:var(--s-5xl) var(--s-xl);border-top
   .pillars{grid-template-columns:1fr;gap:24px}
   .two{grid-template-columns:1fr;gap:28px}
   .fg{grid-template-columns:1fr}
-  /* (regle morte « .hero-content{padding:0 var(--s-xl)} » retiree le 03/09/2026 : elle ecrasait le 72 px du haut) */
+  
 
-  /* la barre tient sur une seule ligne, comme la leur (72 px) */
+  
   .bar{flex-wrap:nowrap}
   .bar .logo{font-size:17px;white-space:nowrap}
   .bar nav{gap:12px}
   .bar nav a:not(.btn):not(.lang a):not(.wa-bar):not(.tel-bar){display:none}
   .bar nav .btn-ghost{display:none}
-  /* sur mobile la barre claire est OPAQUE : sans le flou de la reference, le voile degrade
-     laissait lire le texte des sections a travers (captures de Hakim sur Presto, 03/09/2026 01h00) */
+  
   .bar.clair::after{background:#fbf8f2;box-shadow:inset 0 -1px 0 #eef1f3}
-  /* un seul WhatsApp a l'ecran : celui de la barre. Le flottant ne sert que sur ordinateur (Hakim, 03/09/2026 01h02) */
+  
   .wa-flot,.wa-flot.visible{display:none}
   .bar nav .btn{min-height:32px;padding:2px 12px}
-  /* le nom de marque + EN NL + WhatsApp + Reserver ne tiennent pas sur une ligne a 360 px :
-     le formulaire est deja a l'ecran, le bouton Reserver de la barre est superflu sur mobile (revue 03/09/2026) */
+  
   .bar nav .btn:not(.btn-ghost){display:none}
   .lang{margin-inline:0;gap:0}
   .lang a{display:inline-flex!important;align-items:center;min-height:32px;padding:0 4px}
   .lang a[aria-current]{display:none!important}
-  /* le voile sombre de la barre RESTE sur mobile : notre heros (titre + 4 champs + resultat)
-     depasse un ecran de 722 px, et des qu'on descend le titre passe sous la barre —
-     sans voile, il se melange au logo (releve par Hakim le 01/09, 23h10). */
+  
 
   .marks{gap:12px}
-  /* ces regles doivent venir APRES les regles bureau pour gagner la cascade */
+  
   .list h3,.pillar h3{font-size:20px;line-height:28px;letter-spacing:.15px}
   .card h3{line-height:28px}
-  .fld input,.fld select{min-height:44px;padding-top:12px;margin-top:-12px}   /* cible tactile 44, meme bas de champ */
+  .fld input,.fld select{min-height:44px;padding-top:12px;margin-top:-12px}   
   .fld select{background-position:right 0 top 12px}
 
-  /* leur mobile : premier ecran BLEU plein sous le heros, cartes sur blanc,
-     aucune dynamique (tout le scrub est coupe sous 1024px) */
+  
   #prestations{background:var(--paper);padding-top:0}
   #prestations.teinte{background:var(--paper)}
   .first{
@@ -601,7 +572,7 @@ footer{background:var(--cream);padding-block:var(--s-5xl) var(--s-xl);border-top
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 
-/* ---------- choregraphie (desactivee sur mobile et si mouvement reduit) ---------- */
+
 @supports not ((mask-composite:exclude) or (-webkit-mask-composite:xor)){
   .glass::before{background:none;-webkit-mask:none;mask:none;border:1px solid hsla(0,0%,100%,.4)}
 }
@@ -627,7 +598,7 @@ footer{background:var(--cream);padding-block:var(--s-5xl) var(--s-xl);border-top
   .stagger.in > *:nth-child(3){transition-delay:.4s}
   .stagger.in > *:nth-child(4){transition-delay:.6s}
 
-  /* M3 — #bord : chaque colonne vient de son cote (releve : x -150 / +150) */
+  
   #bord .two.reveal{opacity:1;transform:none;transition:none}
   #bord .two.reveal > img{opacity:0;transform:translateX(-150px);
     transition:opacity 1s cubic-bezier(.25,.46,.45,.94),transform 1s cubic-bezier(.25,.46,.45,.94)}
@@ -636,19 +607,17 @@ footer{background:var(--cream);padding-block:var(--s-5xl) var(--s-xl);border-top
   #bord .two.reveal.in > img,#bord .two.reveal.in > div{opacity:1;transform:none}
   #bord .two.sortie > img,#bord .two.sortie > div{transition:none}
 
-  /* M4/M5/P7 — les scrubs posent des styles en ligne ; pas de transition CSS concurrente */
+  
   #prestations .cards{will-change:transform,opacity}
   .pinhead,.repli-piliers{will-change:transform,opacity}
 }
 
-/* ---------- bascule de fond, reprise de la reference ----------
-   le fond de la section se teinte quand le bloc suivant franchit
-   la moitie de l'ecran, et se detient quand on remonte           */
+
 @media (prefers-reduced-motion:no-preference){
   #prestations{transition:background-color .6s cubic-bezier(.215,.61,.355,1)}
 }
 
-/* ---------- bouton WhatsApp flottant ---------- */
+
 .wa-flot{position:fixed;right:24px;bottom:24px;z-index:60;width:52px;height:52px;border-radius:999px;
   display:grid;place-items:center;background:#25D366;
   box-shadow:0 2px 8px 0 rgba(6,10,13,.12),inset 4px 4px 8px rgba(0,0,0,.06);transition:filter .2s ease-in-out}
@@ -658,11 +627,9 @@ footer{background:var(--cream);padding-block:var(--s-5xl) var(--s-xl);border-top
 .wa-flot:focus-visible::after{content:"";position:absolute;inset:0;border-radius:inherit;outline:2px solid #fff;pointer-events:none}
 .wa-flot svg{width:32px;height:32px;fill:#fff;display:block}
 @media (max-width:1023px){ .wa-flot{right:16px;bottom:16px;opacity:0;pointer-events:none;transition:opacity .2s ease-in-out} .wa-flot.visible{opacity:1;pointer-events:auto} }
-/* mobile : WhatsApp DANS LA BARRE, fixe, visible des le premier ecran sans recouvrir le formulaire
-   (Hakim, 03/09/2026, releve sur le site Presto : « sur mobile je dois descendre pour voir WhatsApp ») */
+
 .wa-bar{display:none}
-/* 11/09/2026 : pastille TELEPHONE sur mobile, a gauche du WhatsApp (Hakim : « permettre l'appel comme Ahmed »).
-   Avant, aucun numero visible avant le devis or le pied de page — 0 appel depuis le site en 2 jours. */
+
 .tel-bar{display:none}
 @media (max-width:1023px){
   .bar nav .tel-bar{display:grid;place-items:center;width:36px;height:36px;border-radius:999px;background:#0f63bd;flex:0 0 auto}
@@ -672,14 +639,9 @@ footer{background:var(--cream);padding-block:var(--s-5xl) var(--s-xl);border-top
 }
 @media (prefers-reduced-motion:reduce){ .wa-flot{transition:none} }
 
-/* ---------- autocompletion d'adresse ---------- */
+
 .fld{position:relative}
-/* Panneau OPAQUE (encre #0f1319 = la couleur du bandeau « powered by Google » de la reference).
-   Mesure le 03/09/2026 (sur Presto, meme code) : la version « verre » ne floutait jamais — un
-   backdrop-filter imbrique dans le formulaire (lui-meme en backdrop-filter) ne voit pas ce qu'il
-   y a derriere, et la teinte seule laissait lire les libelles des champs a travers la liste.
-   Geometrie et typo = les leurs : rayon 8, pilule 8/12 (4/8 mobile), nom 16/24 500, detail 14/20
-   (mobile 14/20 et 12/16), icone 20 px a 12 px du texte, survol #6e6e73.                    */
+
 .ac{position:absolute;z-index:70;top:calc(100% + 16px);left:0;right:0;
   max-height:min(356px,70vh);overflow-y:auto;border-radius:8px;padding:4px 0;margin:0;list-style:none;
   background-color:#0f1319;border:1px solid rgba(255,255,255,.14);
@@ -698,23 +660,23 @@ footer{background:var(--cream);padding-block:var(--s-5xl) var(--s-xl);border-top
 .ac li[aria-selected="true"]{background-color:#6e6e73}
 .ac li:active{background-color:#2a3038}
 .ac li .epingle{color:#aecff3}
-/* adresse absente d'OpenStreetMap (nouvelle construction) : on dit quoi faire au lieu de fermer la liste */
+
 .ac li.libre{cursor:default;color:#aeaeae;font-weight:400;font-size:14px;line-height:20px}
 .ac li.libre:hover,.ac li.libre[aria-selected="true"]{background-color:transparent}
 .ac li.libre .icone{stroke:#6e6e73}
-/* croix d'effacement dans le champ (la leur : bouton 1.5em, trait 1.5, visible des qu'il y a une valeur) */
+
 .fld .effacer{position:absolute;right:0;bottom:8px;width:24px;height:24px;padding:0;border:0;background:none;color:#fff;cursor:pointer;display:grid;place-items:center;transition:opacity .2s ease-in-out}
 .fld .effacer:hover{opacity:.7}
 .fld .effacer[hidden]{display:none}
 .fld .effacer svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
 .fld input[data-ac]{padding-right:28px}
-/* aide sous le champ : une rue choisie sans numero (la reference refuse « Please provide a valid house number ») */
+
 .fld .aide{font-size:12px;line-height:16px;letter-spacing:.25px;color:#ffd79a;margin-top:2px}
 .fld .aide[hidden]{display:none}
 @media (max-width:1023px){ .ac{padding:2px 0} .ac li{margin:4px 8px;padding:4px;font-size:14px;line-height:20px} .ac li .det{font-size:12px;line-height:16px;letter-spacing:.25px} }
 @media (prefers-reduced-motion:reduce){ .ac{animation:none} }
 
-/* ---------- resultat du devis ---------- */
+
 .devis{margin-top:4px}
 .devis .montant{
   font-family:"Petrona",Georgia,serif;font-weight:530;
@@ -729,7 +691,7 @@ footer{background:var(--cream);padding-block:var(--s-5xl) var(--s-xl);border-top
 }
 @media (max-width:1023px){ .devis .montant{font-size:24px;line-height:32px} }
 
-/* ---------- tableau des exemples ---------- */
+
 .tt{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
 .tt th,.tt td{padding:var(--s-md) 0;text-align:left;border-bottom:1px solid var(--hair);vertical-align:middle}
 .tt th{font-size:14px;line-height:20px;letter-spacing:.15px;text-transform:uppercase;color:var(--grey);font-weight:600;padding-top:0}
@@ -749,25 +711,20 @@ footer{background:var(--cream);padding-block:var(--s-5xl) var(--s-xl);border-top
   .tt td.n::before{content:attr(data-l);color:var(--grey);font-size:14px;line-height:20px;letter-spacing:.15px}
 }
 
-/* ---------- grille tarifaire publiee ---------- */
+
 .grille{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
-.gl{padding:var(--s-2xl);border:0;border-radius:var(--r-l);background:#aecff3}   /* = leur Arrive_featureCard */
+.gl{padding:var(--s-2xl);border:0;border-radius:var(--r-l);background:#aecff3}   
 .gl-k{font-size:14px;line-height:20px;letter-spacing:.15px;color:var(--grey);margin-bottom:8px}
 .gl-v{font-family:"Petrona",Georgia,serif;font-weight:530;font-size:32px;line-height:40px;letter-spacing:.25px;color:var(--ink)}
 .gl-n{font-size:14px;line-height:20px;letter-spacing:.15px;color:var(--ink);margin-top:var(--s-2xs)}
 @media (max-width:1023px){ .grille{grid-template-columns:1fr;gap:var(--s-xl)} .gl{padding:var(--s-lg)} .gl-v{font-size:24px;line-height:32px} }
 
-/* ---------- etape 2 : reserver ce trajet ---------- */
+
 .resa{margin-top:var(--s-sm);padding-top:var(--s-sm);border-top:1px solid #fff}
 .resa[hidden]{display:none}
-/* ---- bandeau cookies (APD : deux choix equivalents, rien avant consentement) ---- */
-/* 12/09/2026 : passage en MODAL au centre. La barre fine en bas etait ignoree par 42 visiteurs sur 43
-   (colonne consent vide dans le magasin de references) : Google ne voyait donc presque aucun de nos contacts.
-   Les deux boutons restent STRICTEMENT identiques (meme regle CSS, memes largeurs) — l'APD sanctionne l'inverse. */
-/* 12/09/2026 01h20 — RETOUR EN BAS DE L'ECRAN (Hakim, sur capture de son telephone). La version centree
-   se posait par-dessus le formulaire de reservation (adresse et date caches) et le voile sombre donnait
-   l'impression de bloquer le site alors que les clics passaient au travers. On garde le seul vrai progres :
-   la LISIBILITE (15 px au lieu de 12, vraies marges). Pas de voile : rien ne doit masquer le devis. */
+
+
+
 .cookies{position:fixed;left:16px;right:auto;bottom:16px;z-index:9999;width:min(420px,calc(100% - 32px));background:#fff;color:var(--ink);border:1px solid var(--hair);border-radius:14px;box-shadow:0 14px 40px rgba(15,19,25,.26);padding:18px;display:flex;flex-wrap:wrap;gap:12px;align-items:center;font-size:15px;line-height:1.45}
 .cookies[hidden]{display:none}
 .cookies p{margin:0;flex:1 1 100%;color:var(--grey)}
@@ -792,8 +749,8 @@ footer{background:var(--cream);padding-block:var(--s-5xl) var(--s-xl);border-top
 .resa .or a:focus-visible{border-radius:4px;outline:2px solid #0f1319;outline-offset:2px}
 .resa .soir{color:#fff}
 .resa .autres{margin:var(--s-2xs) 0 0}
-.resa .autres a{display:inline-block;padding:12px 0;margin:-12px 0}   /* cible tactile 44, texte inchange */
-/* le style global details/summary est celui de la FAQ (flex, grand padding, « + » bleu, filets) : neutralise ici */
+.resa .autres a{display:inline-block;padding:12px 0;margin:-12px 0}   
+
 .resa .plus{margin-top:var(--s-3xs);border:0}
 .resa .plus summary{display:block;padding:12px 0;min-height:44px;cursor:pointer;list-style:none;font-size:14px;line-height:20px;letter-spacing:.15px;font-weight:400;color:#aeaeae}
 .resa .plus summary::-webkit-details-marker{display:none}
@@ -802,7 +759,7 @@ footer{background:var(--cream);padding-block:var(--s-5xl) var(--s-xl);border-top
 .resa .plus .ligne{margin-top:var(--s-3xs)}
 @media (max-width:1023px){ .resa .ligne{grid-template-columns:1fr} .resa .actions{flex-direction:column;align-items:stretch} .resa .btn-wa{width:100%} .resa .or,.resa .plus summary{text-align:center} }
 
-/* ---------- sections legales ---------- */
+
 #legal{padding-block:var(--s-5xl)}
 .legal details{border-top:1px solid var(--hair)}
 .legal details:last-child{border-bottom:1px solid var(--hair)}
@@ -812,7 +769,7 @@ footer{background:var(--cream);padding-block:var(--s-5xl) var(--s-xl);border-top
 .legal .a{padding-bottom:var(--s-lg);max-width:600px}
 .legal .a p{font-size:15px;line-height:23px;color:var(--ink-2);margin:0 0 12px}
 
-/* --- zones desservies (04/09/2026) : pastilles, pas de liens morts --- */
+
 .zones{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
 .zones span{display:inline-block;padding:8px 14px;border:1px solid var(--hair);
   border-radius:999px;font-size:14px;line-height:20px;color:var(--ink)}
@@ -883,26 +840,20 @@ footer{background:var(--cream);padding-block:var(--s-5xl) var(--s-xl);border-top
       <p class="bk-note" id="out">Your fare is given to you before you book. No payment at this stage.</p>
 
       <div class="resa" id="resa" hidden>
-        <!-- 16/09/2026 (go Hakim) : 18 demandes preparees sur 35 ne partaient pas depuis la bascule, surtout le soir
-             (19-23h : 14 demandes -> 4 contacts). Le bouton passe AVANT les champs facultatifs (replies), une
-             alternative SMS pour qui n'a pas WhatsApp, et « meme en soiree » (Ilias repond le soir, FAITS-VERIFIES §7 ;
-             Hakim : s'il n'est pas dispo, ce n'est pas grave, la phrase incite a envoyer). -->
+        
         <div class="actions">
           <button type="button" class="btn btn-wa" id="r-envoyer">Send on WhatsApp</button>
           <span class="or soir">Quick reply, even in the evening</span>
         </div>
         <p class="or autres">No WhatsApp? <a href="sms:+32471984401" id="r-sms">Send a text message</a> or <a href="tel:+32471984401" data-appel>call +32 471 98 44 01</a></p>
-        <!-- 09/09/2026 : la reference n'existait que dans le message WhatsApp. Un client venu d'une annonce
-             qui APPELLE ne laissait aucune trace — course reelle perdue pour l'attribution des le 1er jour.
-             Affichee ici, il peut la donner de vive voix. Vide (hidden) si le visiteur ne vient pas d'une annonce. -->
+        
         <p class="or refvue" id="ref-appel" hidden>Si vous appelez, donnez-nous la référence <b></b> — elle nous dit d'où vient votre demande.</p>
         <details class="plus">
           <summary>Add your name, phone or details <span style="opacity:.6">(optional)</span></summary>
           <div class="ligne">
             <div class="fld"><label for="r-nom">Your name</label><input id="r-nom" placeholder="Full name" autocomplete="name"></div>
             <div class="fld"><label for="r-tel">Your phone number</label><input id="r-tel" type="tel" placeholder="+32 …" autocomplete="tel"></div>
-            <!-- 13/09/2026 : « Flight number » juge intrusif (Hakim) — il n'etait utile que pour aller CHERCHER quelqu'un a l'aeroport.
-                 Champ libre et facultatif, comme chez Ahmed : n° de vol, bagages, batiment. -->
+            
             <div class="fld"><label for="r-vol">Details <span style="opacity:.6">(optional)</span></label><input id="r-vol" placeholder="Flight no., luggage, building…" autocomplete="off"></div>
           </div>
         </details>
@@ -1168,7 +1119,7 @@ footer{background:var(--cream);padding-block:var(--s-5xl) var(--s-xl);border-top
           <p><b>Why</b> — Solely to organise and carry out the ride requested, and to confirm its fare to you. Legal basis: performance of the transport contract you are requesting.</p>
           <p><b>How it is transmitted</b> — The request is prepared as a WhatsApp message that you send yourself, from your own phone, to the chauffeur’s business number. The site keeps none of this data on a server.</p>
           <p><b>Addresses entered</b> — To suggest addresses as you type and to calculate the distance, the site queries open mapping services (Photon, OpenStreetMap). Only the text typed and the coordinates of the journey are sent to them, never your identity.</p>
-          <p><b>Audience measurement</b> — Le site utilise le tag Google Ads et peut utiliser le pixel Meta pour mesurer l’efficacité de la publicité, uniquement si vous l’acceptez dans le bandeau ; vous pouvez retirer votre accord via le lien « Cookies » en bas de page. Référence de suivi : si vous arrivez sur ce site depuis une annonce Google et que vous nous contactez, une courte référence (ex. « réf. T7K4QX ») est ajoutée à votre message. It tells us which ads lead to real rides. With it we record the action taken (price calculated, message, call) and the quoted amount. It is linked only to the technical identifier of the ad click, never to your name or your number, and it is deleted after 90 days. Aucun cookie n’est déposé pour cela.</p>
+          <p><b>Audience measurement</b> — The site uses the Google Ads tag and may use the Meta pixel to measure advertising effectiveness, only if you accept this in the banner: before you choose, and if you refuse, they are not loaded. With your consent, they place cookies and data in your browser’s storage (for example _gcl_au and _gcl_ls), and your choice is kept for 180 days. You can withdraw your consent at any time via the “Manage cookies” link at the bottom of the page: these cookies and data are then deleted. Tracking reference: if you reach this site from a Google ad, have accepted the banner and contact us, a short reference (e.g. “ref. T7K4QX”) is added to your message. It tells us which ads lead to real rides. With it we record the action taken (price calculated, message, call) and the quoted amount. It is linked only to the technical identifier of the ad click, never to your name or your number, and it is deleted after 90 days. During your visit, the click identifier is kept in your browser’s session storage, which is cleared when you close the tab or withdraw your consent. Without your consent, no reference is created.</p>
           <p><b>Your rights</b> — Access, rectification, erasure, objection: write to contact@transfer.brussels. You may also lodge a complaint with the Data Protection Authority (autoriteprotectiondonnees.be).</p>
           <p><b>Retention</b> — The chauffeur keeps the ride details for as long as needed to carry it out, invoice it and meet his regulatory obligations, then deletes them.</p>
         </div>
@@ -1201,7 +1152,7 @@ footer{background:var(--cream);padding-block:var(--s-5xl) var(--s-xl);border-top
       <div><h4>Services</h4><a href="#prestations">Airport transfer</a><a href="#prestations">Long distance</a><a href="#prestations">Hourly hire</a></div>
       <div><h4>Information</h4><a href="#tarifs">Fares</a><a href="#questions">FAQ</a><a href="#reserver">Book</a></div>
       <div><h4>Contact us</h4><a href="tel:+32471984401" data-appel>+32 471 98 44 01</a><a href="https://wa.me/32471984401" target="_blank" rel="noopener" data-wa>WhatsApp</a><a href="mailto:contact@transfer.brussels">contact@transfer.brussels</a></div>
-      <div><h4>Legal</h4><a href="#mentions">Legal notice</a><a href="#confidentialite">Privacy</a><a href="#conditions">Terms</a><a href="#" id="ck-ouvrir">Cookies</a></div>
+      <div><h4>Legal</h4><a href="#mentions">Legal notice</a><a href="#confidentialite">Privacy</a><a href="#conditions">Terms</a><a href="#" id="ck-ouvrir">Manage cookies</a></div>
     </div>
     <div class="mentions">
       
@@ -1293,20 +1244,16 @@ window.TARIFS = {
 };
 
 
-/* ================== calcul du prix ==================
-   prix = prise en charge + km x prix/km + minutes majorees x prix/minute
-   plancher au minimum de course, arrondi a l'euro superieur.
-   Le resultat est un MAXIMUM : l'arrete 2022042305 art. 31 §2 3° interdit
-   de reclamer plus que l'instrument de mesure, jamais moins.            */
+
 (function () {
-  var ROUTEUR = "https://router.project-osrm.org/route/v1/driving/";  /* a remplacer : voir calc.py */
+  var ROUTEUR = "https://router.project-osrm.org/route/v1/driving/";  
   var form = document.getElementById("req");
   var sortie = document.getElementById("out");
-  /* 13/09/2026 — libelles du mode contact d'abord (le HTML garde ceux du mode prix, pour le retour arriere) */
+  
   if (window.MODE_CONTACT) {
     var _go = document.querySelector('#req [type=submit]'); if (_go) _go.textContent = "Ask for the fare";
     sortie.textContent = "Your driver replies on WhatsApp with the fare. No payment at this stage.";
-    /* comme chez Ahmed : AUCUN montant visible. La grille et ses exemples ne s'affichent que dans la vue chauffeur. */
+    
     var _tarifs = document.getElementById("tarifs"); if (_tarifs) _tarifs.style.display = "none";
     document.querySelectorAll('a[href="#tarifs"], a[href$="/#tarifs"]').forEach(function (a) { a.style.display = "none"; });
   } else if (window.VUE_CHAUFFEUR) {
@@ -1317,23 +1264,19 @@ window.TARIFS = {
 
   var T = window.TARIFS.trafic || {};
 
-  /* Combien de temps en plus, au jour et a l'heure choisis par le client.
-     C'est ici que le trafic entre dans le prix : pas en temps reel, mais
-     par le creneau — et le creneau, on le connait puisqu'il le saisit. */
+  
   function surcoutTemps(dateStr, heureStr) {
     if (!T.parCreneau || !dateStr || !heureStr) return (G.margeTraficPct || 0);
     var d = new Date(dateStr + "T" + heureStr);
     if (isNaN(d.getTime())) return (G.margeTraficPct || 0);
-    var jour = (d.getDay() + 6) % 7;          /* JS : 0 = dimanche -> 0 = lundi */
+    var jour = (d.getDay() + 6) % 7;          
     var ligne = T.parCreneau[jour];
     if (!ligne) return (G.margeTraficPct || 0);
     var c = ligne[d.getHours()];
     return (typeof c === "number") ? c : (G.margeTraficPct || 0);
   }
 
-  /* prix au km DEGRESSIF : chaque tranche est facturee a son propre taux.
-     Un tarif unique donnait presque le double du marche sur les longues
-     distances (Charleroi 185-215 € au lieu de 120 €, mesure le 01/09). */
+  
   function coutDistance(km) {
     var t = G.prixParKmTranches;
     if (!t || !t.length) return km * (G.prixParKm || 0);
@@ -1346,7 +1289,7 @@ window.TARIFS = {
     return total;
   }
 
-  /* 11/09 : plafond par destination (tarifs.js plafonds[]) — A/B = [lat, lon] en chaines */
+  
   function plafondPour(A, B, km) {
     var L = (window.TARIFS || {}).plafonds || [];
     function dist(lat1, lon1, lat2, lon2) {
@@ -1361,28 +1304,26 @@ window.TARIFS = {
     return null;
   }
   function prix(km, minutes, pct, plafond) {
-    var m = Math.ceil(minutes * (1 + pct / 100));   /* la minute ENTAMEE */
-    /* le temps ne se facture que sur la partie urbaine */
+    var m = Math.ceil(minutes * (1 + pct / 100));   
+    
     var mFactures = Math.min(m, G.minutesFacturablesMax || m);
     var brut = (G.priseEnCharge || 0) + coutDistance(km) + mFactures * (G.prixParMinute || 0);
-    /* plancher legal : le temps compte sur TOUT le trajet (art. 8) — la grille ne peut pas descendre dessous */
+    
     var P = G.plancherLegal, plancher = P ? Math.max(P.minimum || 0, P.priseEnCharge + P.prixParMinute * m + P.prixParKm * km) : 0;
     var t = Math.max(brut, G.minimumCourse || 0, plancher);
-    /* plafond par destination (Zaventem : minimum 39, maximum 49) — jamais sous le plancher legal ni sous le
-       minimum de course, jamais au-dessus du plafond legal (200 % des minima) pour le minimum commercial */
+    
     var t0 = t, arrondi = Math.ceil;
     if (plafond) {
       var L2 = G.plafondLegal, plaf200 = L2 ? L2.priseEnCharge + L2.prixParMinute * m + L2.prixParKm * km : Infinity;
       if (plafond.minimum) t = Math.max(t, Math.min(plafond.minimum, plaf200));
       t = Math.max(Math.min(t, plafond.prix), plancher, G.minimumCourse || 0);
-      /* si c'est le plafond legal qui borne le minimum commercial, l'arrondi se fait vers le BAS (41,20 -> 41, pas 42) */
+      
       if (t > t0 && t >= plaf200) arrondi = Math.floor;
     }
     return { total: arrondi(t), minutes: m, plancher: plancher };
   }
 
-  /* UN SEUL affichage de devis pour les trois chemins (routeur, secours,
-     horaire) — il etait duplique, le mode horaire en aurait fait une 3e copie. */
+  
   function devis(montant, detail, recap, prefixe) {
     sortie.innerHTML = "";
     var box = document.createElement("div");
@@ -1412,8 +1353,7 @@ window.TARIFS = {
     window.convDevis(montant); window.refSuivi && window.refSuivi("devis", montant);
   }
 
-  /* comme contact(), mais avec un bouton WhatsApp pre-rempli : un message qui
-     dit « ecrivez-nous » sans lien est une impasse (releve le 03/09/2026). */
+  
   function contactAction(msg, libelle, texteWa) {
     sortie.innerHTML = "";
     var p = document.createElement("span");
@@ -1429,7 +1369,7 @@ window.TARIFS = {
     sortie.appendChild(a);
   }
 
-  /* 13/09/2026 — mode contact d'abord : le prix est calcule mais pas affiche ; on annonce la suite (WhatsApp). */
+  
   function demandePrete() {
     sortie.innerHTML = "";
     var box = document.createElement("div");
@@ -1443,10 +1383,7 @@ window.TARIFS = {
     d2.textContent = "Send it on WhatsApp: your driver replies with the fare, VAT included. It cannot go up.";
     box.appendChild(d2);
     sortie.appendChild(box);
-    /* 21/09/2026 : la page ne defilait pas apres « Ask for the fare ». Sur telephone, le bouton WhatsApp apparait ~190 px plus bas :
-       il tombait sous le bandeau cookies (112 px en bas d'ecran, jamais ferme par ~57 % des visiteurs) or hors ecran, et la ligne
-       « No WhatsApp? SMS or appelez » etait toujours masquee — 58 demandes preparees sur 111 n'ont jamais ete envoyees.
-       On amene le titre sous l'en-tete des que la derniere ligne utile n'est pas entierement visible au-dessus du bandeau. */
+    
     setTimeout(function () {
       var fin = document.querySelector("#resa .autres") || document.getElementById("r-envoyer");
       if (!fin || fin.offsetParent === null) return;
@@ -1454,13 +1391,12 @@ window.TARIFS = {
       var calme = window.matchMedia && window.matchMedia("(prefers-reduced-motion:reduce)").matches;
       var va = function (dy) { if (dy > 4) window.scrollBy({ top: dy, behavior: calme ? "auto" : "smooth" }); };
       if (window.matchMedia && window.matchMedia("(max-width:1023px)").matches) {
-        /* mise en page EMPILEE (meme seuil que le CSS) : le titre arrive juste sous l'en-tete fixe (hauteur lue, pas supposee) */
+        
         if (fin.getBoundingClientRect().bottom <= (cr ? cr.top : window.innerHeight) - 12) return;
         var barre = document.querySelector(".bar"), hb = barre ? barre.getBoundingClientRect().bottom : 72;
         va(box.getBoundingClientRect().top - (hb + 8));
       } else if (cr) {
-        /* grand ecran : le formulaire est en ligne dans le heros ; le bandeau (coin bas gauche) recouvrait le bas du panneau.
-           On remonte du strict necessaire, sans jamais pousser le formulaire sous l'en-tete. */
+        
         var bloc = document.querySelector("#resa .plus") || fin, r = bloc.getBoundingClientRect();
         if (r.left < cr.right && r.right > cr.left) va(r.bottom - (cr.top - 16));
       }
@@ -1475,12 +1411,11 @@ window.TARIFS = {
     sortie.appendChild(p);
   }
 
-  /* le calendrier ne propose pas le passe. Pose au chargement pour rester
-     juste quel que soit le jour, plutot qu'une date figee dans le code. */
+  
   var champDate = document.getElementById("d");
   var champHeure = document.getElementById("h");
 
-  /* nos listes, pas les controles natifs du navigateur */
+  
   (function remplirDateEtHeure() {
     var iso = function (d) {
       return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0")
@@ -1495,15 +1430,14 @@ window.TARIFS = {
       o.textContent = i === 0 ? "Today, " + lib : (i === 1 ? "Tomorrow, " + lib : lib);
       champDate.appendChild(o);
     }
-    var sepH = document.documentElement.lang === "fr" ? " h " : ":";   /* « 08 h 30 » en FR, « 08:30 » en EN/NL */
+    var sepH = document.documentElement.lang === "fr" ? " h " : ":";   
     for (var h = 0; h < 24; h++) for (var q = 0; q < 60; q += 15) {
       var t = document.createElement("option");
       t.value = String(h).padStart(2, "0") + ":" + String(q).padStart(2, "0");
       t.textContent = String(h).padStart(2, "0") + sepH + String(q).padStart(2, "0");
       champHeure.appendChild(t);
     }
-    /* pre-selection : le premier creneau a au moins 2 h d'ici, au quart d'heure ;
-       si la journee est finie, demain 08 h 00. Toujours valide au chargement. */
+    
     var cible = new Date(Date.now() + 2 * 3600000);
     cible.setMinutes(Math.ceil(cible.getMinutes() / 15) * 15, 0, 0);
     if (cible.getDate() !== new Date().getDate()) { cible.setHours(8, 0, 0, 0); }
@@ -1529,7 +1463,7 @@ window.TARIFS = {
     var cb = document.getElementById("b-coord").value;
     document.getElementById("resa").hidden = true;
 
-    /* mise a disposition a l'heure : pas d'itineraire a calculer */
+    
     var modeHeure = document.querySelector('.mode[aria-selected="true"]');
     if (modeHeure && modeHeure.dataset.mode === "heure") {
       var H = window.TARIFS.horaire || {};
@@ -1566,8 +1500,7 @@ window.TARIFS = {
         return;
       }
       if (!H.actif || H.prixHeure == null) {
-        /* pas de tarif horaire publie : on ne cote pas, mais on ne laisse pas
-           l'usager sans geste — le message porte un bouton WhatsApp pre-rempli. */
+        
         var lieu = document.getElementById("a").value.trim();
         var duree = document.getElementById("b").value.trim();
         if (!lieu) {
@@ -1591,18 +1524,14 @@ window.TARIFS = {
       (document.getElementById("a").value.trim() ? document.getElementById("b") : document.getElementById("a")).focus();
       return;
     }
-    /* PAS de blocage sur le numero de maison : le prix se calcule sur les coordonnees de la RUE,
-       le numero ne sert qu'au message. La reference bloque parce qu'elle geocode au metre pres ;
-       nous, bloquer empeche simplement une nouvelle construction absente de la carte de demander
-       un prix (retour d'Ahmed transpose ici, 04/09/2026). L'INVITATION reste sous le champ. */
+    
     var depart = departChoisi();
     if (depart && depart.getTime() < Date.now()) {
       contact("This date has already passed. Choose your departure time.");
       champDate.focus();
       return;
     }
-    /* depart tres proche : on ne refuse pas, on met au telephone —
-       c'est la demande la plus chaude qui soit. */
+    
     if (depart && depart.getTime() - Date.now() < 120 * 60 * 1000) {
       contact("For a departure within the next two hours, call "
             + "+32 471 98 44 01: you get an answer straight away.");
@@ -1610,8 +1539,7 @@ window.TARIFS = {
     }
 
     if (!ca || !cb) {
-      /* 13/09/2026 — en mode contact, le montant n'est pas montre : inutile d'exiger une adresse de la liste.
-         Ahmed ne bloque pas ; le chauffeur lit l'adresse tapee dans le message. */
+      
       if (window.MODE_CONTACT) {
         demandePrete();
         var resa0 = document.getElementById("resa");
@@ -1637,7 +1565,7 @@ window.TARIFS = {
     sortie.innerHTML = '<span class="spin" aria-hidden="true"></span>Calculating…';
 
     var A = ca.split(","), B = cb.split(",");
-    /* 8 s maximum : si le service d'itineraire traine, on bascule sur l'estimation au lieu de laisser « Calculating… » */
+    
     var ctrl = (typeof AbortController !== "undefined") ? new AbortController() : null;
     if (ctrl) setTimeout(function () { ctrl.abort(); }, 8000);
     fetch(ROUTEUR + A[1] + "," + A[0] + ";" + B[1] + "," + B[0] + "?overview=false", ctrl ? { signal: ctrl.signal } : {})
@@ -1678,7 +1606,7 @@ window.TARIFS = {
         sortie.appendChild(box);
         if (window.MODE_CONTACT) demandePrete();
 
-        /* etape 2 : reserver ce trajet */
+        
         var resa = document.getElementById("resa");
         resa.hidden = false;
         resa.dataset.recap = document.getElementById("a").value + " → " + document.getElementById("b").value
@@ -1689,9 +1617,7 @@ window.TARIFS = {
         window.convDevis(total); window.refSuivi && window.refSuivi("devis", total);
       })
       .catch(function () {
-        /* le service d'itineraire ne repond pas : on ESTIME plutot que de
-           laisser le client sans rien. Vol d'oiseau x 1,35 (facteur routier
-           usuel en Belgium), 40 km/h de moyenne. Marque comme estimation. */
+        
         var R = 6371, toRad = Math.PI / 180;
         var la1 = +A[0] * toRad, la2 = +B[0] * toRad;
         var dLa = la2 - la1, dLo = (+B[1] - +A[1]) * toRad;
@@ -1742,16 +1668,14 @@ document.querySelectorAll(".mode").forEach(function (b) {
     var i = dest.querySelector("input");
     i.placeholder = horaire ? "3 hours, half a day…" : "Address, airport, hotel…";
     i.value = "";
-    /* en mode horaire ce champ recoit une DUREE, pas une adresse : on eteint
-       l'autocompletion, on ferme la liste et on vide les coordonnees. */
+    
     i.dataset.pasDAdresse = horaire ? "1" : "";
     var li = document.getElementById("ac-" + i.id);
     if (li) { li.hidden = true; li.innerHTML = ""; }
     i.setAttribute("aria-expanded", "false");
     var co = document.getElementById(i.id + "-coord");
     if (co) co.value = "";
-    /* un devis calcule dans l'autre mode n'a plus de sens ici : on vide
-       l'affichage et on referme le panneau de reservation (03/09/2026). */
+    
     var out = document.getElementById("out");
     if (out) out.innerHTML = "";
     var resa = document.getElementById("resa");
@@ -1761,18 +1685,15 @@ document.querySelectorAll(".mode").forEach(function (b) {
   });
 });
 
-/* l'ancien gestionnaire de demonstration a ete retire :
-   le vrai calcul de prix est plus bas dans ce meme script. */
 
-/* ---- choregraphie ---- */
+
+
 (function () {
   var fin = window.matchMedia("(min-width:1024px)").matches &&
             !window.matchMedia("(prefers-reduced-motion:reduce)").matches;
   if (!fin) return;
 
-  /* FILET DE SECURITE — si les animations ne tournent pas (onglet en arriere-plan,
-     moteur de rendu en pause, navigateur exotique), le contenu ne doit JAMAIS
-     rester invisible. Au bout de 2,5 s on force l'etat final. */
+  
   setTimeout(function () {
     document.querySelectorAll(".anim-hero-title,.anim-hero-tabs,.anim-hero-widget")
       .forEach(function (el) {
@@ -1788,25 +1709,22 @@ document.querySelectorAll(".mode").forEach(function (b) {
     });
   }, 2500);
 
-  /* entrees / sorties de section — equivalent de toggleActions "play none none reverse" */
+  
   var io = new IntersectionObserver(function (entries) {
     entries.forEach(function (e) { e.target.classList.toggle("in", e.isIntersecting); });
   }, { rootMargin: "0px 0px -12% 0px", threshold: 0.1 });
   document.querySelectorAll(".reveal, .stagger").forEach(function (el) { io.observe(el); });
 
-  /* 🔴 Une animation CSS l'emporte sur un style en ligne dans la cascade.
-     Tant que l'animation d'entree (fill-mode: both) reste posee, elle fige
-     opacity:1 / transform:none et le depart au scroll n'a aucun effet.
-     On la retire donc des qu'elle a fini de jouer. */
+  
   ["/*t*/.anim-hero-tabs", ".anim-hero-widget"].forEach(function (sel) {
     var el = document.querySelector(sel.replace("/*t*/", ""));
     if (!el) return;
     var liberer = function () { el.style.animation = "none"; };
     el.addEventListener("animationend", liberer, { once: true });
-    setTimeout(liberer, 2000);           /* filet si l'animation ne joue pas */
+    setTimeout(liberer, 2000);           
   });
 
-  /* le heros s'en va au scroll : y -200, opacity 0, lie au defilement */
+  
   var tabs = document.querySelector(".modes"),
       widget = document.querySelector(".booking"),
       hero = document.querySelector(".hero");
@@ -1815,10 +1733,8 @@ document.querySelectorAll(".mode").forEach(function (b) {
   var maj = function () {
     tic = false;
     var p = Math.min(1, Math.max(0, -hero.getBoundingClientRect().top / (window.innerHeight * 0.55)));
-    /* NE JAMAIS passer par cssText : il effacerait aussi le "animation:none"
-       pose plus haut, et l'animation d'entree reprendrait le dessus. */
-    /* on s'efface PLUS VITE qu'on ne monte : sinon les onglets viennent
-       chevaucher le titre a mi-parcours (le heros est moins aere que le leur) */
+    
+    
     var t = p <= 0 ? "" : "translateY(" + (-200 * p) + "px)";
     var o = p <= 0 ? "" : String(Math.max(0, 1 - p * 2.2));
     tabs.style.transform = t;   tabs.style.opacity = o;
@@ -1829,7 +1745,7 @@ document.querySelectorAll(".mode").forEach(function (b) {
   }, { passive: true });
 })();
 
-/* ---- header : sombre sur le heros, clair ensuite (leur colorMode) ---- */
+
 (function () {
   var bar = document.querySelector(".bar");
   var hero = document.querySelector(".hero");
@@ -1849,10 +1765,7 @@ document.querySelectorAll(".mode").forEach(function (b) {
   maj();
 })();
 
-/* ---- repli du titre des prestations, reproduit de leur timeline ----
-   entree  : from{y:50,opacity:0}  scrub, entre 85% et 60% de l'ecran
-   repli   : to{y:-400,height:0,marginBottom:0,opacity:0,scale:0}
-             scrub, quand les CARTES passent de 60% a 30% de l'ecran      */
+
 (function () {
   var fin = window.matchMedia("(min-width:1024px)").matches &&
             !window.matchMedia("(prefers-reduced-motion:reduce)").matches;
@@ -1861,7 +1774,7 @@ document.querySelectorAll(".mode").forEach(function (b) {
   var cartes = document.querySelector("#prestations .cards");
   if (!first || !cartes) return;
   var h0 = 0, firstAbs = 0, cartesAbs = 0, raf = null;
-  /* positions d'origine FIGEES, .first deplie — comme le refresh de ScrollTrigger */
+  
   var mesure = function () {
     first.style.height = ""; first.style.marginBottom = "";
     h0 = first.offsetHeight;
@@ -1889,7 +1802,7 @@ document.querySelectorAll(".mode").forEach(function (b) {
         first.style.marginBottom = "";
         first.style.opacity = String(p1);
         first.style.transform = "translateY(" + (50 * (1 - p1)) + "px)";
-        /* cascade : le sous-titre entre sur la seconde moitie (leur h4 anime deux fois) */
+        
         var sub = first.querySelector(".sub");
         if (sub) {
           var pS = Math.min(1, Math.max(0, p1 * 2 - 1));
@@ -1897,7 +1810,7 @@ document.querySelectorAll(".mode").forEach(function (b) {
           sub.style.transform = "translateY(" + (50 * (1 - pS)) + "px)";
         }
       }
-      /* M5 — le bloc cartes entier : from{opacity:.3,y:50}, scrub 80% -> 30% */
+      
       var pc = Math.min(1, Math.max(0, (y - (cartesAbs - vh * .8)) / (vh * .5)));
       cartes.style.opacity = String(.3 + .7 * pc);
       cartes.style.transform = "translateY(" + (50 * (1 - pc)) + "px)";
@@ -1907,7 +1820,7 @@ document.querySelectorAll(".mode").forEach(function (b) {
   onScroll();
 })();
 
-/* ---- M1 : la pile epinglee (leur pin : end +=200%, cartes yPercent -110) ---- */
+
 (function () {
   var fin = window.matchMedia("(min-width:1024px)").matches &&
             !window.matchMedia("(prefers-reduced-motion:reduce)").matches;
@@ -1916,8 +1829,7 @@ document.querySelectorAll(".mode").forEach(function (b) {
   if (!zone) return;
   var c = zone.querySelectorAll(".pincard");
   if (c.length < 3) return;
-  /* leur pin est scrubbe avec lissage (scrub:1) : la carte RATTRAPE la
-     position au lieu de la suivre sechement. Interpolation exponentielle. */
+  
   var cible = 0, lisse = 0, anime = false;
   var stick = zone.firstElementChild;
   var peindre = function () {
@@ -1930,7 +1842,7 @@ document.querySelectorAll(".mode").forEach(function (b) {
   var onS = function () {
     var r = zone.getBoundingClientRect();
     cible = Math.min(1, Math.max(0, (96 - r.top) / (2 * window.innerHeight)));
-    /* l'epinglage, lui, reste exact — c'est la position de la page */
+    
     stick.classList.toggle("colle", cible > 0 && cible < 1);
     stick.classList.toggle("apres", cible >= 1);
     if (!anime) { anime = true; requestAnimationFrame(peindre); }
@@ -1939,7 +1851,7 @@ document.querySelectorAll(".mode").forEach(function (b) {
   onS();
 })();
 
-/* ---- P7 : le titre de la pile arrive de hors ecran (scrub 120% -> 60%) ---- */
+
 (function () {
   var fin = window.matchMedia("(min-width:1024px)").matches &&
             !window.matchMedia("(prefers-reduced-motion:reduce)").matches;
@@ -1961,7 +1873,7 @@ document.querySelectorAll(".mode").forEach(function (b) {
   onS();
 })();
 
-/* ---- M4 : repli du titre des piliers quand il touche le haut (0 -> -20%) ---- */
+
 (function () {
   var fin = window.matchMedia("(min-width:1024px)").matches &&
             !window.matchMedia("(prefers-reduced-motion:reduce)").matches;
@@ -1998,7 +1910,7 @@ document.querySelectorAll(".mode").forEach(function (b) {
   onS();
 })();
 
-/* ---- M3 : sortie scrubbee du bloc a bord (bottom 60% -> 20%, x symetriques) ---- */
+
 (function () {
   var fin = window.matchMedia("(min-width:1024px)").matches &&
             !window.matchMedia("(prefers-reduced-motion:reduce)").matches;
@@ -2029,7 +1941,7 @@ document.querySelectorAll(".mode").forEach(function (b) {
   onS();
 })();
 
-/* ---- M8 : mobile, scroll doux au focus des champs ---- */
+
 (function () {
   if (!window.matchMedia("(max-width:1023px)").matches) return;
   var form = document.getElementById("req"), bar = document.querySelector(".bar");
@@ -2043,36 +1955,33 @@ document.querySelectorAll(".mode").forEach(function (b) {
   });
 })();
 
-/* ---- envoi de la demande : WhatsApp pre-rempli vers le numero dedie ----
-   Zero serveur. Le client envoie lui-meme depuis son telephone ; Ilias recoit
-   tout, en clair, sur le numero de la campagne. L'evenement Lead part ici. */
+
 (function () {
   var b = document.getElementById("r-envoyer");
   if (!b) return;
-  /* la reference est connue des l'arrivee depuis une annonce : on l'affiche pour l'appelant */
-  (function () {
+  
+  window.afficherReference = function () {
     var c = window.refSuivi && window.refSuivi();
-    if (!c) return;
-    var z = document.getElementById("ref-appel");
+    var z = document.getElementById("ref-appel"), q = document.getElementById("ref-pied");
+    if (!c) { if (z) z.hidden = true; if (q) q.parentNode.removeChild(q); return; }
     if (z) { z.querySelector("b").textContent = c; z.hidden = false; }
-    /* et dans le pied de page, a cote du numero : visible meme sans passer par le devis */
+    
     var f = document.querySelector('footer a[href^="tel:"]');
-    if (f && !document.getElementById("ref-pied")) {
+    if (f && !q) {
       var p = document.createElement("a"); p.id = "ref-pied"; p.href = "#reserver";
       p.style.cssText = "display:block;opacity:.75;font-size:13px;margin-top:6px";
       p.innerHTML = "Your reference: <b>" + c + "</b>";
       f.parentNode.insertBefore(p, f.nextSibling);
     }
-  })();
-  /* 16/09/2026 : message commun au bouton WhatsApp et au lien SMS */
+  };
+  window.afficherReference();
+  
   function messageDemande() {
     var nom = document.getElementById("r-nom").value.trim();
     var tel = document.getElementById("r-tel").value.trim();
     var vol = document.getElementById("r-vol").value.trim();
     var recap = document.getElementById("resa").dataset.recap || "";
-    /* 10/09/2026 : nom et telephone ne sont plus obligatoires — WhatsApp transmet le numero et le nom du profil.
-       Les exiger etait une marche de plus que Presto n'a pas (champs facultatifs chez lui) : 0 contact sur site
-       pour 35 clics le 1er jour. S'ils sont remplis, ils partent dans le message. */
+    
     var txt = (window.MODE_CONTACT ? "Hello, I would like the fare for this journey:" : "Hello, I would like to book:") + "\n" + recap
             + (nom ? "\nName: " + nom : "") + (tel ? "\nTel: " + tel : "")
             + (vol ? "\nDetails: " + vol : "")
@@ -2086,8 +1995,7 @@ document.querySelectorAll(".mode").forEach(function (b) {
     window.convWa(montant); window.refSuivi && window.refSuivi("whatsapp", montant);
     window.open("https://wa.me/32471984401?text=" + encodeURIComponent(txt), "_blank", "noopener");
   });
-  /* 16/09/2026 : alternative SMS pour qui n'a pas WhatsApp — meme message, meme reference.
-     « ?&body= » est la forme lue a la fois par iOS et Android. Compte comme contact message (convWa) : meme intention. */
+  
   var s = document.getElementById("r-sms");
   if (s) s.addEventListener("click", function () {
     s.href = "sms:+32471984401?&body=" + encodeURIComponent(messageDemande());
@@ -2098,9 +2006,7 @@ document.querySelectorAll(".mode").forEach(function (b) {
   });
 })();
 
-/* ---- la grille publiee et ses exemples, lus dans TARIFS ----
-   Une seule source : config/tarifs.js. Les exemples sont CALCULES, jamais
-   saisis — un montant fige par trajet est reserve au Gouvernement. */
+
 (function () {
   var G = (window.TARIFS || {}).grille;
   var T = (window.TARIFS || {}).trafic || {};
@@ -2123,13 +2029,13 @@ document.querySelectorAll(".mode").forEach(function (b) {
     }
   }
 
-  /* exemples : km et minutes mesures le 01/09/2026 (OSRM, depuis la Grand-Place) */
+  
   var EX = [
     { nom: "Brussels Airport (Zaventem)", km: 15.0, min: 22 },
     { nom: "Brussels-Midi",                km: 2.2,  min: 8  },
     { nom: "Charleroi Airport",           km: 56.1, min: 45 },
     { nom: "Antwerp",                      km: 53.7, min: 48 }
-    /* Lille retiree le 03/09/2026 : trajet transfrontalier, hors droit bruxellois — tarifs.js le dit, le tableau le contredisait */
+    
   ];
   function coutDistance(km) {
     var reste = km, bas = 0, total = 0;
@@ -2168,9 +2074,7 @@ document.querySelectorAll(".mode").forEach(function (b) {
     + "Maximum fares, VAT included, from central Brussels. The exact fare for your journey is shown in the form.";
 })();
 
-/* ---- bascule de fond : leur scrollTrigger start/end "top 50%" ----
-   la zone d'observation est reduite a une ligne au milieu de l'ecran,
-   donc un bloc l'intersecte exactement quand son haut la franchit. */
+
 (function () {
   var section = document.getElementById("prestations");
   var first = section && section.querySelector(".first");
@@ -2192,18 +2096,7 @@ document.querySelectorAll(".mode").forEach(function (b) {
   maj();
 })();
 
-/* ================== autocompletion d'adresse ==================
-   Source : Photon (Komoot), libre, sans cle, CORS ouvert.
-   Trois corrections mesurees le 01/09/2026 sur ses reponses brutes :
-   1. EPINGLES — les lieux qui font l'essentiel des courses passent devant,
-      parce que Photon ne les sortait pas (« zaventem » ne proposait aucun
-      aeroport).
-   2. FILTRE PAYS — « hotel amigo » renvoyait la Hongrie, l'Angola et la
-      Colombie dans les cinq premiers.
-   3. SCORE PAR CATEGORIE + liste noire — une pharmacie passait devant
-      l'Atomium, un arret de bus devant l'aeroport de Charleroi.
-   Si Photon ne repond pas, le champ reste un champ texte : on ne bloque
-   jamais une demande parce qu'un service gratuit est tombe.            */
+
 (function () {
   var EPINGLES = [
     { nom:"Brussels Airport (Zaventem)", det:"Zaventem · BRU", lat:50.9010, lon:4.4844,
@@ -2222,13 +2115,7 @@ document.querySelectorAll(".mode").forEach(function (b) {
       mots:"grand place grote markt centre ville bruxelles" }
   ];
 
-  /* PRE-REMPLISSAGE de la destination (07/09/2026, audit des tunnels Google Ads).
-     Une annonce « Taxi vers Charleroi Airport » qui atterrit sur un champ Destination VIDE fait
-     retaper au visiteur ce qu'il vient de cliquer : c'est la friction n°1 du tunnel. Les pages
-     /taxi-charleroi/, /taxi-zaventem/, /taxi-gare-bruxelles-midi/ appellent preremplir(code) ;
-     l'accueil accepte aussi #charleroi, #zaventem, #midi (destination) et #heure (mise a
-     disposition) dans les URL des annonces. On ne touche JAMAIS au depart : c'est SON adresse.
-     Les coordonnees viennent des EPINGLES, comme si le visiteur avait choisi la suggestion. */
+  
   var CODES = { charleroi: /CRL/, zaventem: /BRU/, midi: /Eurostar/ };
   window.preremplir = function (code) {
     var re = CODES[code]; if (!re) return false;
@@ -2253,13 +2140,13 @@ document.querySelectorAll(".mode").forEach(function (b) {
                 house:55, residential:50, pedestrian:50, living_street:48,
                 city:45, town:44, village:38, suburb:36, quarter:34, neighbourhood:32,
                 square:62, place:50, monument:45, memorial:40, castle:45, park:35,
-                /* les grandes voies valaient 8, comme un commerce (audit 03/09/2026) */
+                
                 primary:60, secondary:60, tertiary:58, unclassified:50, trunk:40, service:28 };
   var NOIRE = { bus_stop:1, artwork:1, charging_station:1, bicycle_rental:1,
                 bicycle_parking:1, parking:1, waste_basket:1, bench:1, tree:1,
                 pharmacy:1, atm:1, vending_machine:1, post_box:1, recycling:1,
                 traffic_signals:1, crossing:1, street_lamp:1, surveillance:1,
-                path:1, footway:1, cycleway:1, steps:1, track:1, bridleway:1 };   /* « Avenue » rendait dix allees de cimetiere */
+                path:1, footway:1, cycleway:1, steps:1, track:1, bridleway:1 };   
   var ICONES = {
     pin:   '<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>',
     avion: '<path d="M22 2 11 13"/><path d="m22 2-7 20-4-9-9-4 20-7z"/>',
@@ -2271,21 +2158,20 @@ document.querySelectorAll(".mode").forEach(function (b) {
     if (/station|halt|gare\b/.test(t)) return ICONES.train;
     return ICONES.pin;
   }
-  var PAYS = { BE:1, FR:1, NL:1, LU:1, DE:1 };   /* code pays, pas le libelle : Photon repond en francais, anglais or local selon la langue de la page */
+  var PAYS = { BE:1, FR:1, NL:1, LU:1, DE:1 };   
 
   function nu(t) {
     try { return (t || "").toLowerCase().normalize("NFD").replace(/\p{Diacritic}/gu, ""); }
     catch (e) { return (t || "").toLowerCase(); }
   }
 
-  /* le DERNIER mot peut n'avoir qu'une lettre : « Gare de W » doit deja ne garder que Wavre */
+  
   function mots(q) {
     var t = nu(q).split(/[^a-z0-9]+/).filter(Boolean);
     return t.filter(function (m, i) { return m.length > 1 || i === t.length - 1; });
   }
 
-  /* correspondance par MOTS, pas par chaine entiere : « gare du midi » doit
-     trouver « Brussels-Midi station ». Les mots outils sont ignores. */
+  
   var OUTILS = { de:1, du:1, la:1, le:1, les:1, des:1, et:1, aux:1, "a":1 };
   function epinglesPour(q) {
     var ms = mots(q).filter(function (m) { return !OUTILS[m]; });
@@ -2298,12 +2184,7 @@ document.querySelectorAll(".mode").forEach(function (b) {
     });
   }
 
-  /* Photon, DEUX appels (mesure le 03/09/2026 sur Presto, meme code : pour « Rue de », l'appel
-     simple rendait le Conseil de l'UE, la Monnaie, les Beaux-Arts — des BUREAUX de la rue de la
-     Loi — avant la moindre rue) :
-     (1) dans la ZONE (Brussels + Brabant wallon + aeroports), limite aux RUES (`layer=street`)
-         quand la saisie commence par un type de voie sans numero ;
-     (2) sans zone, pour les destinations lointaines (Paris, Amsterdam, Lille) — classe apres.  */
+  
   var ZONE = "4.10,50.40,5.10,50.95";
   var VOIE = /^(rue|r\.|av|av\.|avenue|chauss[ée]e|ch[ée]e|place|pl\.|boulevard|bd|bld|dr[èe]ve|clos|all[ée]e|chemin|square|sentier|cours|quai|impasse|voie|route|rte|venelle|ruelle|straat|laan|steenweg|plein|dreef)\b/i;
   function photon(q, extra) {
@@ -2331,24 +2212,21 @@ document.querySelectorAll(".mode").forEach(function (b) {
       var cle = nu(nom) + "|" + nu(p.city || "");
       if (vus[cle]) return;
       vus[cle] = 1;
-      /* categorie inconnue = commerce le plus souvent : on la place bas */
+      
       var sc = SCORE[p.osm_value] || (p.housenumber ? 52 : 8);
-      /* la Belgium passe devant a nom egal ; un numero de maison a l'etranger est du bruit
-         (« Rue de la Belle Etoile 39 » sortait 7 adresses francaises et aucune belge, 04/09/2026).
-         Les VILLES etrangeres (Paris, Lille, Amsterdam) ne sont pas touchees : elles n'ont pas de numero. */
+      
       if (p.countrycode === "BE") sc += 70;
       else if (p.housenumber) sc -= 40;
       if (p.state && /bruxelles|brussel|brabant/i.test(p.state)) sc += 20;
-      if (rue && p.osm_key === "highway") sc += 80;          /* on a tape un type de voie : les rues d'abord */
+      if (rue && p.osm_key === "highway") sc += 80;          
       if (rue && p.osm_key !== "highway") sc -= 30;
-      /* une VILLE tapee en entier passe devant les commerces qui portent son nom (« Paris » = Paris, pas un bar de Ghent) */
+      
       if (p.osm_key === "place" && /^(city|town|village|municipality)$/.test(p.osm_value) && nu(nom) === nu(q)) sc += 90;
       var nn = nu(nom), nq = nu(q);
-      if (nn === nq) sc += 60;                 /* nom exact : « atomium » */
-      else if (nn.indexOf(nq) === 0) sc += 15; /* commence par la requete */
-      /* part des mots tapes reellement presents dans le nom :
-         « rue neuve » couvre 2/2 sur « Rue Neuve », 1/2 sur « Leuven-la-Neuve » */
-      var ms = mots(q).filter(function (m) { return !OUTILS[m]; });   /* « de » ne compte pas comme mot trouve */
+      if (nn === nq) sc += 60;                 
+      else if (nn.indexOf(nq) === 0) sc += 15; 
+      
+      var ms = mots(q).filter(function (m) { return !OUTILS[m]; });   
       if (ms.length) {
         var trouves = 0;
         ms.forEach(function (m) { if (nn.indexOf(m) >= 0) trouves++; });
@@ -2359,12 +2237,12 @@ document.querySelectorAll(".mode").forEach(function (b) {
     out.sort(function (a, b) { return b.sc - a.sc; });
     return out;
   }
-  /* une epingle et le meme lieu renvoye par Photon ne s'affichent pas deux fois */
+  
   function fusionner(pins, res) {
     var cles = pins.map(function (p) { return nu(p.nom); });
     return pins.concat(res.filter(function (r) {
       var n = nu(r.nom), memeFamille = /station|halt|aerodrome|terminal|stop/.test(r.type || "");
-      /* on n'ecarte que le MEME lieu (gare or aeroport deja epingle), pas la commune qui porte son nom */
+      
       return !cles.some(function (c) { return c === n || (memeFamille && (c.indexOf(n) >= 0 || n.indexOf(c) >= 0)); });
     }));
   }
@@ -2393,8 +2271,7 @@ document.querySelectorAll(".mode").forEach(function (b) {
       champCoord.value = it.lat.toFixed(6) + "," + it.lon.toFixed(6);
       var rue = /^highway\//.test(it.type || "") && !/\d/.test(it.nom);
       if (rue) {
-        /* une RUE sans numero : on l'ecrit « Rue, Ville », curseur apres la rue, et on reclame le numero.
-           Les coordonnees de la rue suffisent au calcul du prix ; le numero part dans le message. */
+        
         input.value = it.nom + (it.det ? ", " + it.det.split(",")[0] : "");
         input.dataset.sansNumero = "1";
         if (aide) aide.hidden = false;
@@ -2408,9 +2285,7 @@ document.querySelectorAll(".mode").forEach(function (b) {
       if (aide) aide.hidden = true;
       fermer();
     }
-    /* Ici le PRIX exige des coordonnees : on ne peut pas accepter une adresse libre comme sur un
-       site sans calcul. L'echappatoire est donc « choisissez la rue, ajoutez votre numero » — les
-       coordonnees de la rue suffisent au calcul (retour d'Ahmed transpose ici, 04/09/2026). */
+    
     function aideLibre() {
       var li0 = document.createElement("li");
       li0.className = "libre";
@@ -2455,16 +2330,16 @@ document.querySelectorAll(".mode").forEach(function (b) {
       surligner(-1);
     }
 
-    /* la croix d'effacement */
+    
     var effacer = input.parentNode.querySelector(".effacer");
     function majCroix() { if (effacer) effacer.hidden = !input.value; }
     if (effacer) effacer.addEventListener("click", function () { input.value = ""; champCoord.value = ""; majCroix(); fermer(); input.focus(); });
     majCroix();
 
     input.addEventListener("input", function () {
-      /* mode « A l'heure » : ce champ porte une duree, aucune adresse a chercher */
+      
       if (input.dataset.pasDAdresse === "1") { fermer(); return; }
-      /* on garde les coordonnees de la rue si l'usager ne fait qu'ajouter son numero */
+      
       if (!(input.dataset.sansNumero === "1" && /\d/.test(input.value))) champCoord.value = "";
       if (/\d/.test(input.value)) { input.dataset.sansNumero = ""; if (aide) aide.hidden = true; }
       majCroix();
@@ -2498,37 +2373,74 @@ document.querySelectorAll(".mode").forEach(function (b) {
 </script>
 
 <script>
-/* ---- bandeau cookies : refus par defaut, choix garde 180 jours, Consent Mode v2 + pixel Meta apres accord ---- */
+
 (function () {
   var K = "overtime_consent", el = document.getElementById("cookies"); if (!el) return;
-  function lire() { try { var v = JSON.parse(localStorage.getItem(K) || "null"); if (v && v.t && Date.now() - v.t < 180 * 864e5) return v.c; } catch (e) {} return null; }
+  var DUREE = 180 * 864e5, AW = window.__AW_ID__, actif = false;
+  function lire() { try { var v = JSON.parse(localStorage.getItem(K) || "null"); if (v && v.t && Date.now() - v.t < DUREE) return v.c; } catch (e) {} return null; }
   window.consentPub = function () { return lire() === "granted"; };
   window.consentChoisi = function () { return lire() !== null; };
-  function appliquer(c) {
-    var g = c === "granted" ? "granted" : "denied";
-    try { gtag("consent", "update", { "ad_storage": g, "ad_user_data": g, "ad_personalization": g, "analytics_storage": g }); } catch (e) {}
-    if (c === "granted" && window.initMeta) window.initMeta();
+  
+  var TRACES = /^(_ga$|_ga_|_gid|_gat|FPID|FPLC|FPGSID|_gcl_|_gac_|FPAU|FPGCL|__gads|__gpi|_fbp|_fbc|tb_ref$)/;
+  function effacer() {
+    var h = location.hostname.split(".");
+    document.cookie.split(";").forEach(function (k) {
+      var n = k.split("=")[0].trim();
+      if (!n || !TRACES.test(n)) return;
+      for (var i = 0; i < h.length - 1; i++) document.cookie = n + "=; Max-Age=0; path=/; domain=." + h.slice(i).join(".");
+      document.cookie = n + "=; Max-Age=0; path=/";
+    });
+    ["localStorage", "sessionStorage"].forEach(function (nom) {
+      try { var st = window[nom]; Object.keys(st).forEach(function (n) { if (TRACES.test(n)) st.removeItem(n); }); } catch (e) {}
+    });
   }
-  function choisir(c) { try { localStorage.setItem(K, JSON.stringify({ c: c, t: Date.now() })); } catch (e) {} appliquer(c); el.hidden = true; }
-  var c = lire();
-  if (c) { appliquer(c); } else { el.hidden = false; }
+  
+  function appliquer(c) {
+    var ok = c === "granted", g = ok ? "granted" : "denied";
+    if (AW && !/^__/.test(AW)) window["ga-disable-" + AW] = !ok;
+    if (window.__googleCharge && window.gtag) { try { window.gtag("consent", "update", { "ad_storage": g, "ad_user_data": g, "ad_personalization": g, "analytics_storage": g }); } catch (e) {} }
+    if (window.fbq) { try { window.fbq("consent", ok ? "grant" : "revoke"); } catch (e) {} }
+    if (!ok) effacer();
+    var retire = actif && !ok && !!(window.__googleCharge || window.fbq);
+    actif = ok;
+    if (ok) { if (window.chargerGoogle) window.chargerGoogle(); if (window.initMeta) window.initMeta(); }
+    if (window.afficherReference) window.afficherReference();
+    return retire;
+  }
+  function reappliquer() { var c = lire(); appliquer(c || "denied"); el.hidden = !!c; }
+  function choisir(c) {
+    try { localStorage.setItem(K, JSON.stringify({ c: c, t: Date.now() })); } catch (e) {}
+    el.hidden = true;
+    if (appliquer(c)) { location.reload(); return; }   // retrait sur une page or la balise tournait : page propre, rien en memoire
+    if (c === "granted" && window.refSuivi) window.refSuivi("arrivee");   // accord donne sur la page d'arrivee d'une annonce
+  }
+  var c0 = lire();
+  appliquer(c0 || "denied");   // sans accord valable (jamais donne, refuse, expire) : aucune trace ne reste
+  if (!c0) el.hidden = false;
+  else if (c0 === "granted" && window.refSuivi) window.refSuivi("arrivee");
   document.getElementById("ck-oui").addEventListener("click", function () { choisir("granted"); });
   document.getElementById("ck-non").addEventListener("click", function () { choisir("denied"); });
   var o = document.getElementById("ck-ouvrir"); if (o) o.addEventListener("click", function (e) { e.preventDefault(); el.hidden = false; el.querySelector("button").focus(); });
+  window.addEventListener("storage", function (e) { if (e.key === K || e.key === null) reappliquer(); });   // choix fait dans un autre onglet
+  window.addEventListener("pageshow", function (e) { if (e.persisted) reappliquer(); });                      // page revenue par « Retour »
 })();
 </script>
 
 <script>
-/* ---- clics WhatsApp / appel -> compteurs (delegation : liens statiques ET crees par le devis) ---- */
+
 document.addEventListener("click", function (e) {
   var wa = e.target.closest && e.target.closest("[data-wa]");
   if (wa) {
     var c = window.refSuivi && window.refSuivi();
-    if (c && wa.href && wa.href.indexOf("wa.me") > -1 && wa.href.indexOf("text=") < 0) {
-      wa.href = wa.href.split("?")[0] + "?text=" + encodeURIComponent("Hello, I would like to book a ride. (ref. " + c + ")");
+    if (wa.href && wa.href.indexOf("wa.me") > -1) {
+      var m = wa.href.split("?text=");
+      if (!c && m.length > 1) {   
+        try { wa.href = m[0] + "?text=" + encodeURIComponent(decodeURIComponent(m[1]).replace(/ ?\(r[ée]f\. T[0-9A-Z]{5}\)/g, "")); } catch (er) { wa.href = m[0]; }
+      } else if (c && m.length < 2) {
+        wa.href = m[0].split("?")[0] + "?text=" + encodeURIComponent("Hello, I would like to book a ride. (ref. " + c + ")");
+      }
     }
-    /* 08/09 (revue) : ce chemin envoyait une conversion a 0 EUR — et ONE_PER_CLICK fige ce 0 pour tout le clic.
-       Si le panneau de reservation est ouvert, son montant est le devis affiche : on le propage. Sinon rien (pas 0). */
+    
     var _r = document.getElementById("resa");
     var _m = (_r && !_r.hidden && _r.dataset && _r.dataset.montant) ? parseFloat(_r.dataset.montant) : 0;
     if (_m > 0) window.convWa(_m); else window.convWa();
