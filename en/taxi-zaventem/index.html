@@ -124,7 +124,15 @@ window.refSuivi = (function () {
     return code;
   };
 })();
-window.refTexte = function (base) { var c = window.refSuivi(); return c ? base + " (ref. " + c + ")" : base; };
+
+window.refDemande = (function () {
+  var A = "0123456789ABCDEFGHJKMNPQRSTVWXYZ", code = "D", v = new Uint32Array(5), i;
+  try { crypto.getRandomValues(v); } catch (e) { for (i = 0; i < 5; i++) v[i] = Math.floor(Math.random() * 4294967296); }
+  for (i = 0; i < 5; i++) code += A[v[i] % 32];
+  return function () { return code; };
+})();
+window.refCode = function () { return (window.refSuivi && window.refSuivi()) || window.refDemande(); };
+window.refTexte = function (base) { return base + " (ref. " + window.refCode() + ")"; };
 
 
 window.evt = function (nom, data) { try { if (window.fbq) fbq('track', nom, data || {}); } catch (e) {} };
@@ -1125,7 +1133,7 @@ footer{background:var(--cream);padding-block:var(--s-5xl) var(--s-xl);border-top
           <p><b>Why</b> — Solely to organise and carry out the ride requested, and to confirm its fare to you. Legal basis: performance of the transport contract you are requesting.</p>
           <p><b>How it is transmitted</b> — The request is prepared as a WhatsApp message that you send yourself, from your own phone, to the chauffeur’s business number. The site keeps none of this data on a server.</p>
           <p><b>Addresses entered</b> — To suggest addresses as you type and to calculate the distance, the site queries open mapping services (Photon, OpenStreetMap). Only the text typed and the coordinates of the journey are sent to them, never your identity.</p>
-          <p><b>Audience measurement</b> — The site uses the Google Ads tag and may use the Meta pixel to measure advertising effectiveness, only if you accept this in the banner: before you choose, and if you refuse, they are not loaded. With your consent, they place cookies and data in your browser’s storage (for example _gcl_au and _gcl_ls), and your choice is kept for 180 days. You can withdraw your consent at any time via the “Manage cookies” link at the bottom of the page: these cookies and data are then deleted. Tracking reference: if you reach this site from a Google ad, have accepted the banner and contact us, a short reference (e.g. “ref. T7K4QX”) is added to your message. It tells us which ads lead to real rides. With it we record the action taken (price calculated, message, call) and the quoted amount. It is linked only to the technical identifier of the ad click, never to your name or your number, and it is deleted after 90 days. During your visit, the click identifier is kept in your browser’s session storage, which is cleared when you close the tab or withdraw your consent. Without your consent, no reference is created.</p>
+          <p><b>Audience measurement</b> — The site uses the Google Ads tag and may use the Meta pixel to measure advertising effectiveness, only if you accept this in the banner: before you choose, and if you refuse, they are not loaded. With your consent, they place cookies and data in your browser’s storage (for example _gcl_au and _gcl_ls), and your choice is kept for 180 days. You can withdraw your consent at any time via the “Manage cookies” link at the bottom of the page: these cookies and data are then deleted. Tracking reference: if you reach this site from a Google ad, have accepted the banner and contact us, a short reference (e.g. “ref. T7K4QX”) is added to your message. It tells us which ads lead to real rides. With it we record the action taken (price calculated, message, call) and the quoted amount. It is linked only to the technical identifier of the ad click, never to your name or your number, and it is deleted after 90 days. During your visit, the click identifier is kept in your browser’s session storage, which is cleared when you close the tab or withdraw your consent. Without your consent, no tracking reference is created. A simple request number (e.g. “réf. D4K7QX”), drawn at random when the page opens, may be added to your message so that we can find your request: it is linked to no ad and no data, is stored nowhere, and is only sent with the message you choose to send.</p>
           <p><b>Your rights</b> — Access, rectification, erasure, objection: write to contact@transfer.brussels. You may also lodge a complaint with the Data Protection Authority (autoriteprotectiondonnees.be).</p>
           <p><b>Retention</b> — The chauffeur keeps the ride details for as long as needed to carry it out, invoice it and meet his regulatory obligations, then deletes them.</p>
         </div>
@@ -2439,12 +2447,13 @@ document.querySelectorAll(".mode").forEach(function (b) {
 document.addEventListener("click", function (e) {
   var wa = e.target.closest && e.target.closest("[data-wa]");
   if (wa) {
-    var c = window.refSuivi && window.refSuivi();
+    
+    var c = window.refCode ? window.refCode() : null;
     if (wa.href && wa.href.indexOf("wa.me") > -1) {
       var m = wa.href.split("?text=");
-      if (!c && m.length > 1) {   
-        try { wa.href = m[0] + "?text=" + encodeURIComponent(decodeURIComponent(m[1]).replace(/ ?\(r[ée]f\. T[0-9A-Z]{5}\)/g, "")); } catch (er) { wa.href = m[0]; }
-      } else if (c && m.length < 2) {
+      if (m.length > 1) {
+        try { wa.href = m[0] + "?text=" + encodeURIComponent(decodeURIComponent(m[1]).replace(/ ?\(r[ée]f\. [TD][0-9A-Z]{5}\)/g, "") + (c ? " (ref. " + c + ")" : "")); } catch (er) { wa.href = m[0]; }
+      } else if (c) {
         wa.href = m[0].split("?")[0] + "?text=" + encodeURIComponent("Hello, I would like to book a ride. (ref. " + c + ")");
       }
     }

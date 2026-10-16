@@ -124,7 +124,15 @@ window.refSuivi = (function () {
     return code;
   };
 })();
-window.refTexte = function (base) { var c = window.refSuivi(); return c ? base + " (ref. " + c + ")" : base; };
+
+window.refDemande = (function () {
+  var A = "0123456789ABCDEFGHJKMNPQRSTVWXYZ", code = "D", v = new Uint32Array(5), i;
+  try { crypto.getRandomValues(v); } catch (e) { for (i = 0; i < 5; i++) v[i] = Math.floor(Math.random() * 4294967296); }
+  for (i = 0; i < 5; i++) code += A[v[i] % 32];
+  return function () { return code; };
+})();
+window.refCode = function () { return (window.refSuivi && window.refSuivi()) || window.refDemande(); };
+window.refTexte = function (base) { return base + " (ref. " + window.refCode() + ")"; };
 
 
 window.evt = function (nom, data) { try { if (window.fbq) fbq('track', nom, data || {}); } catch (e) {} };
@@ -1107,7 +1115,7 @@ footer{background:var(--cream);padding-block:var(--s-5xl) var(--s-xl);border-top
           <p><b>Waarom</b> — Uitsluitend om de gevraagde rit te organiseren en uit te voeren, en u het bedrag ervan te bevestigen. Rechtsgrond: de uitvoering van de vervoersovereenkomst die u aanvraagt.</p>
           <p><b>Hoe dat verloopt</b> — De aanvraag wordt u voorgesteld als WhatsApp-bericht dat u zelf, vanaf uw telefoon, naar het professionele nummer van de chauffeur stuurt. De site bewaart geen van deze gegevens op een server.</p>
           <p><b>Ingevoerde adressen</b> — Om u tijdens het typen adressen voor te stellen en de afstand te berekenen, raadpleegt de site vrije kaartdiensten (Photon, OpenStreetMap). Alleen de getypte tekst en de coördinaten van de rit worden aan hen doorgegeven, nooit uw identiteit.</p>
-          <p><b>Bezoekersmeting</b> — De site gebruikt de Google Ads-tag en kan de Meta-pixel gebruiken om de doeltreffendheid van de reclame te meten, alleen als u dit in de banner aanvaardt: vóór uw keuze, en als u weigert, worden ze niet geladen. Met uw toestemming plaatsen ze cookies en gegevens in de opslag van uw browser (bijvoorbeeld _gcl_au en _gcl_ls), en uw keuze wordt 180 dagen bewaard. U kunt uw toestemming op elk moment intrekken via de link “Cookies beheren” onderaan de pagina: deze cookies en gegevens worden dan gewist. Opvolgingsreferentie: als u deze site via een Google-advertentie bereikt, de banner hebt aanvaard en contact met ons opneemt, wordt een korte referentie (bv. “ref. T7K4QX”) aan uw bericht toegevoegd. Zo weten we welke advertenties tot echte ritten leiden. We registreren daarbij de actie (prijs berekend, bericht, oproep) en het bedrag van de offerte. Ze is enkel gekoppeld aan de technische identificatie van de advertentieklik, nooit aan uw naam of nummer, en wordt na 90 dagen gewist. Tijdens uw bezoek wordt de identificatie van de klik bewaard in de sessieopslag van uw browser, die gewist wordt wanneer u het tabblad sluit of uw toestemming intrekt. Zonder uw toestemming wordt geen referentie aangemaakt.</p>
+          <p><b>Bezoekersmeting</b> — De site gebruikt de Google Ads-tag en kan de Meta-pixel gebruiken om de doeltreffendheid van de reclame te meten, alleen als u dit in de banner aanvaardt: vóór uw keuze, en als u weigert, worden ze niet geladen. Met uw toestemming plaatsen ze cookies en gegevens in de opslag van uw browser (bijvoorbeeld _gcl_au en _gcl_ls), en uw keuze wordt 180 dagen bewaard. U kunt uw toestemming op elk moment intrekken via de link “Cookies beheren” onderaan de pagina: deze cookies en gegevens worden dan gewist. Opvolgingsreferentie: als u deze site via een Google-advertentie bereikt, de banner hebt aanvaard en contact met ons opneemt, wordt een korte referentie (bv. “ref. T7K4QX”) aan uw bericht toegevoegd. Zo weten we welke advertenties tot echte ritten leiden. We registreren daarbij de actie (prijs berekend, bericht, oproep) en het bedrag van de offerte. Ze is enkel gekoppeld aan de technische identificatie van de advertentieklik, nooit aan uw naam of nummer, en wordt na 90 dagen gewist. Tijdens uw bezoek wordt de identificatie van de klik bewaard in de sessieopslag van uw browser, die gewist wordt wanneer u het tabblad sluit of uw toestemming intrekt. Zonder uw toestemming wordt geen volgreferentie aangemaakt. Een eenvoudig aanvraagnummer (bv. „réf. D4K7QX”), willekeurig gekozen bij het openen van de pagina, kan aan uw bericht worden toegevoegd zodat wij uw aanvraag terugvinden: het is aan geen enkele advertentie of gegeven gekoppeld, wordt nergens bewaard en vertrekt alleen met het bericht dat u zelf verstuurt.</p>
           <p><b>Uw rechten</b> — Inzage, verbetering, wissing, bezwaar: schrijf naar contact@transfer.brussels. U kunt zich ook wenden tot de Gegevensbeschermingsautoriteit (gegevensbeschermingsautoriteit.be).</p>
           <p><b>Bewaring</b> — De chauffeur bewaart de gegevens van de rit zolang nodig voor de uitvoering, de facturatie en zijn wettelijke verplichtingen, en verwijdert ze daarna.</p>
         </div>
@@ -2421,12 +2429,13 @@ document.querySelectorAll(".mode").forEach(function (b) {
 document.addEventListener("click", function (e) {
   var wa = e.target.closest && e.target.closest("[data-wa]");
   if (wa) {
-    var c = window.refSuivi && window.refSuivi();
+    
+    var c = window.refCode ? window.refCode() : null;
     if (wa.href && wa.href.indexOf("wa.me") > -1) {
       var m = wa.href.split("?text=");
-      if (!c && m.length > 1) {   
-        try { wa.href = m[0] + "?text=" + encodeURIComponent(decodeURIComponent(m[1]).replace(/ ?\(r[ée]f\. T[0-9A-Z]{5}\)/g, "")); } catch (er) { wa.href = m[0]; }
-      } else if (c && m.length < 2) {
+      if (m.length > 1) {
+        try { wa.href = m[0] + "?text=" + encodeURIComponent(decodeURIComponent(m[1]).replace(/ ?\(r[ée]f\. [TD][0-9A-Z]{5}\)/g, "") + (c ? " (ref. " + c + ")" : "")); } catch (er) { wa.href = m[0]; }
+      } else if (c) {
         wa.href = m[0].split("?")[0] + "?text=" + encodeURIComponent("Goedendag, ik wil graag een rit reserveren. (ref. " + c + ")");
       }
     }
