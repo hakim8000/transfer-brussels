@@ -861,7 +861,7 @@ footer{background:var(--cream);padding-block:var(--s-5xl) var(--s-xl);border-top
         </div>
         <p class="or autres">No WhatsApp? <a href="sms:+32471984401" id="r-sms">Send a text message</a> or <a href="tel:+32471984401" data-appel>call +32 471 98 44 01</a></p>
         
-        <p class="or refvue" id="ref-appel" hidden>Si vous appelez, donnez-nous la référence <b></b> — elle nous dit d'où vient votre demande.</p>
+        <p class="or refvue" id="ref-appel" hidden>If you call, give us the reference <b></b> — it tells us where your request comes from.</p>
         <details class="plus">
           <summary>Add your name, phone or details <span style="opacity:.6">(optional)</span></summary>
           <div class="ligne">
@@ -2131,8 +2131,23 @@ document.querySelectorAll(".mode").forEach(function (b) {
 
   
   var CODES = { charleroi: /CRL/, zaventem: /BRU/, midi: /Eurostar/ };
+  
+  var DEPARTS = { "from-charleroi": /CRL/, "depuis-charleroi": /CRL/, "vanaf-charleroi": /CRL/ };
+  function epingle(re) {
+    for (var k = 0; k < EPINGLES.length; k++) { if (re.test(EPINGLES[k].det)) return EPINGLES[k]; }
+    return null;
+  }
+  window.preremplirDepart = function (code) {
+    var re = DEPARTS[code]; if (!re) return false;
+    var it = epingle(re), a = document.getElementById("a"), ac = document.getElementById("a-coord");
+    if (!it || !a || !ac || a.value) return false;
+    a.value = it.nom;
+    ac.value = it.lat.toFixed(6) + "," + it.lon.toFixed(6);
+    return true;
+  };
   window.preremplir = function (code) {
     var re = CODES[code]; if (!re) return false;
+    if (DEPARTS[(location.hash || "").replace("#", "").toLowerCase()]) return false;   
     var it = null;
     for (var k = 0; k < EPINGLES.length; k++) { if (re.test(EPINGLES[k].det)) { it = EPINGLES[k]; break; } }
     var b = document.getElementById("b"), bc = document.getElementById("b-coord");
@@ -2147,6 +2162,7 @@ document.querySelectorAll(".mode").forEach(function (b) {
   };
   var hachage = (location.hash || "").replace("#", "").toLowerCase();
   if (hachage === "heure") window.modeHeure(); else if (CODES[hachage]) window.preremplir(hachage);
+  else if (DEPARTS[hachage]) window.preremplirDepart(hachage);
 
   var SCORE = { aerodrome:100, terminal:95, station:85, halt:70, hotel:70, hostel:55,
                 hospital:65, university:50, college:45, museum:40, attraction:40,
